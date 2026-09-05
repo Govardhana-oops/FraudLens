@@ -1,15 +1,26 @@
 {
   "version": 2,
-  "builds": [
+  "cleanUrls": true,
+  "rewrites": [
     {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
+      "source": "/",
+      "destination": "/module9_officer_console/index.html"
+    },
     {
-      "src": "/(.*)",
-      "dest": "api/index.py"
+      "source": "/index.css",
+      "destination": "/module9_officer_console/index.css"
+    },
+    {
+      "source": "/app.js",
+      "destination": "/module9_officer_console/app.js"
+    },
+    {
+      "source": "/console",
+      "destination": "/module9_officer_console/index.html"
+    },
+    {
+      "source": "/console/(.*)",
+      "destination": "/module9_officer_console/$1"
     }
   ]
 }

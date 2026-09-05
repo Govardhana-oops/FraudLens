@@ -12,7 +12,10 @@ if module_root not in sys.path:
 if proto_root not in sys.path:
     sys.path.insert(0, proto_root)
 
-from src.main import create_app
+try:
+    from src.main import create_app
+except ModuleNotFoundError:
+    from module8_backend_api.src.main import create_app
 
 @pytest.fixture
 def client():

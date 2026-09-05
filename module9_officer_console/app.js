@@ -1,9 +1,33 @@
-/**
- * AI-DIDSS Inspection Officer Web Console Client Logic
- */
+function getApiBaseUrl() {
+    // 1. Injected via window.__API_BASE_URL__ or window.API_BASE
+    if (window.__API_BASE_URL__ && typeof window.__API_BASE_URL__ === 'string' && window.__API_BASE_URL__.trim() !== '') {
+        return window.__API_BASE_URL__.replace(/\/+$/, '');
+    }
+    if (window.API_BASE && typeof window.API_BASE === 'string' && window.API_BASE.trim() !== '') {
+        return window.API_BASE.replace(/\/+$/, '');
+    }
+    // 2. Injected via HTML <meta name="api-base-url" content="...">
+    const metaTag = document.querySelector('meta[name="api-base-url"]');
+    if (metaTag && metaTag.content && metaTag.content.trim() !== '' && !metaTag.content.startsWith('%')) {
+        return metaTag.content.replace(/\/+$/, '');
+    }
+    // 3. User runtime override stored in localStorage
+    try {
+        const saved = localStorage.getItem('AI_DIDSS_API_BASE');
+        if (saved && saved.trim() !== '') {
+            return saved.replace(/\/+$/, '');
+        }
+    } catch (e) {}
+    // 4. Same origin if running on FastAPI server directly
+    if (window.location.port === '8000' || window.location.pathname.startsWith('/console')) {
+        return '';
+    }
+    // 5. Default local fallback for local development (port 3000 -> 8000)
+    return 'http://localhost:8000';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE = (window.location.port === '8000') ? '' : 'http://localhost:8000';
+    const API_BASE = getApiBaseUrl();
 
     // DOM Elements
     const docDropzone = document.getElementById('doc-dropzone');

@@ -26,11 +26,21 @@ def create_app() -> FastAPI:
         redoc_url="/redoc"
     )
 
-    # 1. CORS Middleware
+    # 1. Environment-Configurable CORS Middleware
+    import os
+    allowed_origins_env = os.environ.get("ALLOWED_ORIGINS")
+    if allowed_origins_env:
+        origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+        allow_creds = True
+    else:
+        # Default development & preview origins
+        origins = ["*"]
+        allow_creds = False
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
+        allow_origins=origins,
+        allow_credentials=allow_creds,
         allow_methods=["*"],
         allow_headers=["*"]
     )
