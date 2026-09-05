@@ -1,0 +1,19 @@
+# AI-DIDSS Module 7 Integration Engine Configuration
+
+version: "1.0.0"
+
+orchestrator:
+  enable_module1_ocr: true
+  enable_module2_validation: true
+  enable_module3_tampering: true
+  enable_module4_biometrics: true
+  enable_module5_evidence_fusion: true
+  enable_module6_database_audit: true
+
+timeouts:
+  max_total_pipeline_timeout_ms: 2000
+  module_timeout_ms: 500
+
+defaults:
+  default_checkpoint_id: "AIRPORT-GATE-01"
+  default_officer_id: "OFFICER-DEFAULT"

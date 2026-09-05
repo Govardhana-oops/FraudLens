@@ -1,0 +1,50 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "national_id",
+    "confidence": 0.95
+  },
+  "fields": {
+    "id_number": {
+      "value": "ID-990619241",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "NOAH JOHNSON",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1999-06-19",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "nationality": {
+      "value": "USA",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": {
+    "status": "VALID",
+    "mrz_format": "TD1",
+    "lines": [
+      "I<USA9906192411<<<<<<<<<<<<<<<",
+      "9906194M2912039USA<<<<<<<<<<<6",
+      "JOHNSON<<NOAH<<<<<<<<<<<<<<<<<"
+    ],
+    "checksum_valid": true,
+    "checks": {
+      "document_number": true,
+      "date_of_birth": true,
+      "composite": true
+    }
+  },
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

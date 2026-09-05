@@ -1,0 +1,46 @@
+{
+  "module_name": "module2_document_validation",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 161,
+  "tests_passed": 161,
+  "tests_failed": 0,
+  "supported_document_types": [
+    "passport",
+    "visa",
+    "driver_license",
+    "national_id",
+    "permit"
+  ],
+  "supported_mrz_formats": [
+    "TD1",
+    "TD2",
+    "TD3",
+    "MRV-A",
+    "MRV-B"
+  ],
+  "status_taxonomy": [
+    "VALID",
+    "INVALID",
+    "EXPIRED",
+    "UNKNOWN",
+    "REVIEW_REQUIRED",
+    "UNSUPPORTED_DOCUMENT",
+    "INVALID_INPUT",
+    "PROCESSING_ERROR"
+  ],
+  "status_precedence": [
+    "INVALID_INPUT",
+    "UNSUPPORTED_DOCUMENT",
+    "INVALID",
+    "UNKNOWN",
+    "REVIEW_REQUIRED",
+    "EXPIRED",
+    "VALID"
+  ],
+  "performance": {
+    "avg_latency_ms": 0.25,
+    "throughput_docs_per_sec": 4000.0
+  },
+  "safety_mandate": "Zero autonomous judicial fraud decisions (no FRAUD, CRIMINAL, DETAIN, REJECT tags)"
+}

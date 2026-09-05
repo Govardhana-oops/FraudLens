@@ -1,0 +1,33 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.5
+  },
+  "fields": {
+    "visa_number": {
+      "value": "V9876543",
+      "confidence": 0.7,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "EMMA JONES",
+      "confidence": 0.7,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2028-06-15",
+      "confidence": 0.7,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": [
+    "Borderline classification confidence"
+  ]
+}

@@ -1,0 +1,310 @@
+{
+  "baseline_v1": {
+    "validation": {
+      "extractor_version": "baseline_v1",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_f1": 0.2037,
+        "mean_exact_match": 0.1482,
+        "mean_cer": 0.0,
+        "mean_wer": 0.0,
+        "mean_latency_ms": 70.79
+      },
+      "by_document_type": {
+        "national_id": {
+          "samples_count": 6,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 91.97
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 49.91
+        },
+        "visa": {
+          "samples_count": 12,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 67.8
+        },
+        "passport": {
+          "samples_count": 8,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 84.5
+        },
+        "driver_license": {
+          "samples_count": 2,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 53.88
+        }
+      },
+      "by_field_accuracy": {
+        "document_type": 0.4444,
+        "id_number": 0.0,
+        "full_name": 0.0,
+        "date_of_birth": 0.0,
+        "nationality": 0.0,
+        "expiry_date": 0.0,
+        "mrz_line1": 0.0,
+        "mrz_line2": 0.0,
+        "mrz_line3": 0.0,
+        "permit_number": 0.0,
+        "permit_category": 1.0,
+        "valid_until": 0.0,
+        "sponsor": 1.0,
+        "visa_number": 0.0,
+        "passport_number": 0.0,
+        "issue_date": 0.0,
+        "entries": 0.0,
+        "issuing_country": 0.0,
+        "surname": 0.0,
+        "given_names": 1.0,
+        "gender": 0.0,
+        "date_of_issue": 0.0,
+        "date_of_expiry": 0.0,
+        "license_number": 0.0,
+        "address": 0.0,
+        "vehicle_class": 0.0
+      }
+    },
+    "test": {
+      "extractor_version": "baseline_v1",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_f1": 0.1759,
+        "mean_exact_match": 0.1296,
+        "mean_cer": 0.0,
+        "mean_wer": 0.0,
+        "mean_latency_ms": 61.33
+      },
+      "by_document_type": {
+        "driver_license": {
+          "samples_count": 12,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 59.44
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 52.63
+        },
+        "visa": {
+          "samples_count": 6,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 67.78
+        },
+        "passport": {
+          "samples_count": 4,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 86.5
+        },
+        "national_id": {
+          "samples_count": 6,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 53.52
+        }
+      },
+      "by_field_accuracy": {
+        "document_type": 0.3333,
+        "license_number": 0.0,
+        "full_name": 0.0,
+        "address": 0.0,
+        "date_of_birth": 0.0,
+        "gender": 0.0,
+        "issue_date": 0.0,
+        "expiry_date": 0.0,
+        "vehicle_class": 0.0,
+        "permit_number": 0.0,
+        "permit_category": 1.0,
+        "valid_until": 0.0,
+        "sponsor": 1.0,
+        "visa_number": 0.0,
+        "passport_number": 0.0,
+        "entries": 0.0,
+        "mrz_line1": 0.0,
+        "mrz_line2": 0.0,
+        "issuing_country": 0.0,
+        "surname": 0.0,
+        "given_names": 1.0,
+        "nationality": 0.0,
+        "date_of_issue": 0.0,
+        "date_of_expiry": 0.0,
+        "id_number": 0.0,
+        "mrz_line3": 0.0
+      }
+    }
+  },
+  "improved_v2": {
+    "validation": {
+      "extractor_version": "improved_v2",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_f1": 0.3081,
+        "mean_exact_match": 0.2469,
+        "mean_cer": 0.0,
+        "mean_wer": 0.0,
+        "mean_latency_ms": 63.97
+      },
+      "by_document_type": {
+        "national_id": {
+          "samples_count": 6,
+          "mean_f1": 0.1111,
+          "mean_exact_match": 0.1111,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 55.74
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 51.02
+        },
+        "visa": {
+          "samples_count": 12,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 67.5
+        },
+        "passport": {
+          "samples_count": 8,
+          "mean_f1": 0.6087,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 81.07
+        },
+        "driver_license": {
+          "samples_count": 2,
+          "mean_f1": 0.1111,
+          "mean_exact_match": 0.1111,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 50.86
+        }
+      },
+      "by_field_accuracy": {
+        "document_type": 0.4444,
+        "id_number": 0.0,
+        "full_name": 0.0357,
+        "date_of_birth": 0.0,
+        "nationality": 1.0,
+        "expiry_date": 0.0,
+        "mrz_line1": 0.0,
+        "mrz_line2": 0.0,
+        "mrz_line3": 0.0,
+        "permit_number": 0.0,
+        "permit_category": 1.0,
+        "valid_until": 0.0,
+        "sponsor": 1.0,
+        "visa_number": 0.0,
+        "passport_number": 0.0,
+        "issue_date": 0.0,
+        "entries": 0.0,
+        "issuing_country": 0.0,
+        "surname": 1.0,
+        "given_names": 1.0,
+        "gender": 0.9,
+        "date_of_issue": 0.0,
+        "date_of_expiry": 1.0,
+        "license_number": 0.0,
+        "address": 0.0,
+        "vehicle_class": 0.0
+      }
+    },
+    "test": {
+      "extractor_version": "improved_v2",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_f1": 0.2713,
+        "mean_exact_match": 0.2222,
+        "mean_cer": 0.0,
+        "mean_wer": 0.0,
+        "mean_latency_ms": 55.67
+      },
+      "by_document_type": {
+        "driver_license": {
+          "samples_count": 12,
+          "mean_f1": 0.1111,
+          "mean_exact_match": 0.1111,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 51.29
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 46.45
+        },
+        "visa": {
+          "samples_count": 6,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 61.0
+        },
+        "passport": {
+          "samples_count": 4,
+          "mean_f1": 0.6087,
+          "mean_exact_match": 0.5,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 68.67
+        },
+        "national_id": {
+          "samples_count": 6,
+          "mean_f1": 0.1111,
+          "mean_exact_match": 0.1111,
+          "mean_cer": 0.0,
+          "mean_latency_ms": 62.73
+        }
+      },
+      "by_field_accuracy": {
+        "document_type": 0.3333,
+        "license_number": 0.0,
+        "full_name": 0.2812,
+        "address": 0.0,
+        "date_of_birth": 0.0,
+        "gender": 0.4375,
+        "issue_date": 0.0,
+        "expiry_date": 0.0,
+        "vehicle_class": 0.0,
+        "permit_number": 0.0,
+        "permit_category": 1.0,
+        "valid_until": 0.0,
+        "sponsor": 1.0,
+        "visa_number": 0.0,
+        "passport_number": 0.0,
+        "entries": 0.0,
+        "mrz_line1": 0.0,
+        "mrz_line2": 0.0,
+        "issuing_country": 0.0,
+        "surname": 1.0,
+        "given_names": 1.0,
+        "nationality": 1.0,
+        "date_of_issue": 0.0,
+        "date_of_expiry": 1.0,
+        "id_number": 0.0,
+        "mrz_line3": 0.0
+      }
+    }
+  }
+}

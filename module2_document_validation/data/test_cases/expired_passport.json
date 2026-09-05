@@ -1,0 +1,65 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.99
+  },
+  "fields": {
+    "passport_number": {
+      "value": "P88776655",
+      "confidence": 1.0,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "ROBERT CHEN",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "nationality": {
+      "value": "CAN",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1975-03-10",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_issue": {
+      "value": "2010-01-15",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2020-01-15",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "gender": {
+      "value": "M",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": {
+    "status": "VALID",
+    "mrz_format": "TD3",
+    "lines": [
+      "P<CANCHEN<<ROBERT<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+      "P887766555CAN7503108M2001159<<<<<<<<<<<<<<<4"
+    ],
+    "checksum_valid": true,
+    "checks": {
+      "document_number": true,
+      "date_of_birth": true,
+      "date_of_expiry": true,
+      "composite": true
+    }
+  },
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

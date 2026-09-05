@@ -1,0 +1,48 @@
+# =====================================================================
+# AI-DIDSS Module 2: Document Validation Configuration
+# =====================================================================
+
+module_version: "0.1.0"
+reference_verification_date: "2026-09-02"
+
+weights:
+  critical: 1.0
+  high: 0.75
+  medium: 0.50
+  low: 0.25
+  info: 0.0
+
+thresholds:
+  min_pass_score: 0.80
+  expiry_warning_days: 90
+  max_passport_validity_years: 10.5
+  min_driver_license_age: 16.0
+  max_permit_validity_years: 5.0
+
+iso_country_codes:
+  - "USA"
+  - "GBR"
+  - "CAN"
+  - "DEU"
+  - "FRA"
+  - "ITA"
+  - "ESP"
+  - "AUS"
+  - "JPN"
+  - "IND"
+  - "CHN"
+  - "BRA"
+  - "MEX"
+  - "ZAF"
+  - "NLD"
+  - "CHE"
+  - "SWE"
+  - "NOR"
+  - "DNK"
+  - "FIN"
+  - "UTO"
+  - "ATL"
+  - "ELD"
+  - "XAN"
+  - "ARC"
+  - "VAL"

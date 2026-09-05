@@ -1,0 +1,37 @@
+# AI-DIDSS Module 3 Tampering Detection Configuration
+
+version: "1.0.0"
+
+thresholds:
+  potential_tampering_score: 0.65
+  review_required_score: 0.35
+  ela_anomaly_threshold: 0.50
+  noise_variance_ratio_threshold: 2.2
+  gradient_jump_threshold: 0.55
+  spectral_peak_threshold: 0.60
+  font_texture_threshold: 0.50
+
+weights:
+  ela: 0.25
+  noise_inconsistency: 0.25
+  edge_gradient: 0.20
+  frequency_spectral: 0.15
+  font_texture: 0.15
+
+ela_params:
+  quality: 90
+  scale: 15
+  blur_sigma: 1.0
+
+noise_params:
+  patch_size: 32
+  high_freq_filter_size: 5
+
+spectral_params:
+  notch_filter_radius: 12
+  peak_prominence: 3.5
+
+quality_limits:
+  min_width: 200
+  min_height: 200
+  min_sharpness: 10.0

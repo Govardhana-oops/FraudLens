@@ -1,0 +1,36 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "visa",
+    "confidence": 0.95
+  },
+  "fields": {
+    "visa_number": {
+      "value": "V9876543",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "EMMA JONES",
+      "confidence": 0.92,
+      "status": "VALID"
+    },
+    "date_of_issue": {
+      "value": "2028-01-01",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2027-01-01",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

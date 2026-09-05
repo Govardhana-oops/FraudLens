@@ -1,0 +1,21 @@
+{
+  "status": "INVALID_INPUT",
+  "document_type": {
+    "value": "unknown_document",
+    "confidence": 0.0
+  },
+  "fields": {},
+  "mrz": null,
+  "consistency": {
+    "status": "NOT_APPLICABLE",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": [
+    "Corrupted input image"
+  ],
+  "error_details": {
+    "type": "INVALID_INPUT",
+    "message": "Image decode failure"
+  }
+}

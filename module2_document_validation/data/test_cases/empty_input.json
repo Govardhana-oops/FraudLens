@@ -1,0 +1,21 @@
+{
+  "status": "INVALID_INPUT",
+  "document_type": {
+    "value": "unknown_document",
+    "confidence": 0.0
+  },
+  "fields": {},
+  "mrz": null,
+  "consistency": {
+    "status": "NOT_APPLICABLE",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": [
+    "Provided image bytes are empty"
+  ],
+  "error_details": {
+    "type": "EMPTY_BYTES",
+    "message": "0 byte input"
+  }
+}

@@ -1,0 +1,19 @@
+# AI-DIDSS Module 6 Database & Synchronization Configuration
+
+version: "1.0.0"
+
+storage:
+  database_filename: "offline_border_store.sqlite3"
+  use_in_memory_index: true
+  enable_wal_mode: true
+  busy_timeout_ms: 5000
+
+sync:
+  auto_sync_interval_seconds: 60
+  max_batch_push_size: 500
+  checkpoint_id: "CP-TERMINAL-01"
+  officer_default_id: "OFFICER-DEFAULT"
+
+security:
+  chain_genesis_hash: "0000000000000000000000000000000000000000000000000000000000000000"
+  hash_algorithm: "sha256"

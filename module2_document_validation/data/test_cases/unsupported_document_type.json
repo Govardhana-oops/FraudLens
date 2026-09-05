@@ -1,0 +1,26 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "voter_registration_card",
+    "confidence": 0.95
+  },
+  "fields": {
+    "card_number": {
+      "value": "VOTE-998877",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "JANE DOE",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

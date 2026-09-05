@@ -1,0 +1,1958 @@
+{
+  "exp1_raw": {
+    "validation": {
+      "split": "validation",
+      "preprocessing_mode": "raw",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.2037,
+        "mean_exact_match_ratio": 0.1482,
+        "mean_latency_ms": 30.25,
+        "p95_latency_ms": 41.48
+      },
+      "by_document_type": {
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 24.7
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 24.91
+        },
+        "visa": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 33.29
+        },
+        "passport": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 35.59
+        },
+        "driver_license": {
+          "samples_count": 2,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 28.58
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v1.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v2.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "SPECIAL SKILLS TALENT",
+              "extracted": "SPECIAL SKILLS TALENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "VALHALLA TECH CORP",
+              "extracted": "VALHALLA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "XANADU TECH CORP",
+              "extracted": "XANADU TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0060_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93568503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "AVA SMITH",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "ACADEMIC RESEARCH",
+              "extracted": "ACADEMIC RESEARCH",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2034-01-07",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "test": {
+      "split": "test",
+      "preprocessing_mode": "raw",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.1759,
+        "mean_exact_match_ratio": 0.1296,
+        "mean_latency_ms": 26.38,
+        "p95_latency_ms": 33.63
+      },
+      "by_document_type": {
+        "driver_license": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 25.47
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 24.09
+        },
+        "visa": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 30.33
+        },
+        "passport": {
+          "samples_count": 4,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 33.91
+        },
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 22.25
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v1.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.091
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "SS 2300 MAPLE BLVD NEW HAVEN AR",
+              "exact_match": false,
+              "similarity": 0.17
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "CLASS<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS C (STANDARD PASSENGER)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v2.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "NATIONAL_ID",
+              "exact_match": false,
+              "similarity": 0.08
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "VEHICLECLASS CLASS A COMMERCIA",
+              "exact_match": false,
+              "similarity": 0.174
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "ADDRES",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS A (COMMERCIAL)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ATLANTIS TECH CORP",
+              "extracted": "ATLANTIS TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "PERMANENT RESIDENT",
+              "extracted": "PERMANENT RESIDENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_VISA_0108_v1.png",
+          "document_type": "visa",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "VISA",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.167
+            },
+            "visa_number": {
+              "ground_truth": "V28628439",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "PATRICIA GARCIA",
+              "extracted": "PATRICIA NE1 VN XANGARCIA",
+              "exact_match": false,
+              "similarity": 0.75
+            },
+            "passport_number": {
+              "ground_truth": "P52773159",
+              "extracted": "MRZLINE2",
+              "exact_match": false,
+              "similarity": 0.118
+            },
+            "issue_date": {
+              "ground_truth": "2020-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2025-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "entries": {
+              "ground_truth": "MULTIPLE",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE1<VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            },
+            "mrz_line2": {
+              "ground_truth": "V286284393XAN6612212F2503055<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<V286284393XAN6612212F2503055<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            }
+          }
+        }
+      ]
+    }
+  },
+  "exp2_standard": {
+    "validation": {
+      "split": "validation",
+      "preprocessing_mode": "standard",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.2037,
+        "mean_exact_match_ratio": 0.1482,
+        "mean_latency_ms": 71.9,
+        "p95_latency_ms": 92.32
+      },
+      "by_document_type": {
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 90.18
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 53.06
+        },
+        "visa": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 69.96
+        },
+        "passport": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 84.27
+        },
+        "driver_license": {
+          "samples_count": 2,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 54.53
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v1.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v2.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "SPECIAL SKILLS TALENT",
+              "extracted": "SPECIAL SKILLS TALENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "VALHALLA TECH CORP",
+              "extracted": "VALHALLA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "XANADU TECH CORP",
+              "extracted": "XANADU TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0060_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93568503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "AVA SMITH",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "ACADEMIC RESEARCH",
+              "extracted": "ACADEMIC RESEARCH",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2034-01-07",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "test": {
+      "split": "test",
+      "preprocessing_mode": "standard",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.1759,
+        "mean_exact_match_ratio": 0.1296,
+        "mean_latency_ms": 60.73,
+        "p95_latency_ms": 83.43
+      },
+      "by_document_type": {
+        "driver_license": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 57.94
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 53.1
+        },
+        "visa": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 65.65
+        },
+        "passport": {
+          "samples_count": 4,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 83.61
+        },
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 56.28
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v1.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.091
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "SS 2300 MAPLE BLVD NEW HAVEN AR",
+              "exact_match": false,
+              "similarity": 0.17
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "CLASS<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS C (STANDARD PASSENGER)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v2.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "NATIONAL_ID",
+              "exact_match": false,
+              "similarity": 0.08
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "VEHICLECLASS CLASS A COMMERCIA",
+              "exact_match": false,
+              "similarity": 0.174
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "ADDRES",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS A (COMMERCIAL)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ATLANTIS TECH CORP",
+              "extracted": "ATLANTIS TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "PERMANENT RESIDENT",
+              "extracted": "PERMANENT RESIDENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_VISA_0108_v1.png",
+          "document_type": "visa",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "VISA",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.167
+            },
+            "visa_number": {
+              "ground_truth": "V28628439",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "PATRICIA GARCIA",
+              "extracted": "PATRICIA NE1 VN XANGARCIA",
+              "exact_match": false,
+              "similarity": 0.75
+            },
+            "passport_number": {
+              "ground_truth": "P52773159",
+              "extracted": "MRZLINE2",
+              "exact_match": false,
+              "similarity": 0.118
+            },
+            "issue_date": {
+              "ground_truth": "2020-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2025-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "entries": {
+              "ground_truth": "MULTIPLE",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE1<VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            },
+            "mrz_line2": {
+              "ground_truth": "V286284393XAN6612212F2503055<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<V286284393XAN6612212F2503055<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            }
+          }
+        }
+      ]
+    }
+  },
+  "exp3_contrast_enhanced": {
+    "validation": {
+      "split": "validation",
+      "preprocessing_mode": "contrast_enhanced",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.2037,
+        "mean_exact_match_ratio": 0.1482,
+        "mean_latency_ms": 65.1,
+        "p95_latency_ms": 88.26
+      },
+      "by_document_type": {
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 53.52
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 56.12
+        },
+        "visa": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 68.07
+        },
+        "passport": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 80.48
+        },
+        "driver_license": {
+          "samples_count": 2,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 56.49
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v1.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_NATIONAL_ID_0019_v2.png",
+          "document_type": "national_id",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "NATIONAL_ID",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.211
+            },
+            "id_number": {
+              "ground_truth": "ID-E19196777",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "JAMES RODRIGUEZ",
+              "extracted": "NE2 980222M290413UTO",
+              "exact_match": false,
+              "similarity": 0.114
+            },
+            "date_of_birth": {
+              "ground_truth": "1998-02-22",
+              "extracted": "IGUEZ<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "nationality": {
+              "ground_truth": "UTO",
+              "extracted": "ODR",
+              "exact_match": false,
+              "similarity": 0.333
+            },
+            "expiry_date": {
+              "ground_truth": "2029-04-13",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "I<UTOE19196777<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<980222M290413UTO<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.568
+            },
+            "mrz_line2": {
+              "ground_truth": "980222M290413UTO<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE3<RODRIGUEZ<<JAMES<<<<<<<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.459
+            },
+            "mrz_line3": {
+              "ground_truth": "RODRIGUEZ<<JAMES<<<<<<<<<<<<<<",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "SPECIAL SKILLS TALENT",
+              "extracted": "SPECIAL SKILLS TALENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "VALHALLA TECH CORP",
+              "extracted": "VALHALLA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0030_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93638503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "LIAM MILLER",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2028-12-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "XANADU TECH CORP",
+              "extracted": "XANADU TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0060_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-A93568503",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "AVA SMITH",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "ACADEMIC RESEARCH",
+              "extracted": "ACADEMIC RESEARCH",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2034-01-07",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        }
+      ]
+    },
+    "test": {
+      "split": "test",
+      "preprocessing_mode": "contrast_enhanced",
+      "total_samples": 36,
+      "overall_metrics": {
+        "mean_cer": 0.0,
+        "char_accuracy": 1.0,
+        "mean_wer": 0.0,
+        "word_accuracy": 1.0,
+        "mean_field_f1": 0.1759,
+        "mean_exact_match_ratio": 0.1296,
+        "mean_latency_ms": 62.83,
+        "p95_latency_ms": 80.84
+      },
+      "by_document_type": {
+        "driver_license": {
+          "samples_count": 12,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 70.12
+        },
+        "permit": {
+          "samples_count": 8,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.6667,
+          "mean_exact_match": 0.5,
+          "mean_latency_ms": 49.82
+        },
+        "visa": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 68.56
+        },
+        "passport": {
+          "samples_count": 4,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.25,
+          "mean_exact_match": 0.1667,
+          "mean_latency_ms": 74.5
+        },
+        "national_id": {
+          "samples_count": 6,
+          "mean_cer": 0.0,
+          "mean_wer": 0.0,
+          "mean_f1": 0.0,
+          "mean_exact_match": 0.0,
+          "mean_latency_ms": 52.08
+        }
+      },
+      "error_cases_count": 36,
+      "sample_error_cases": [
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v1.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.091
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "SS 2300 MAPLE BLVD NEW HAVEN AR",
+              "exact_match": false,
+              "similarity": 0.17
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "CLASS<",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS C (STANDARD PASSENGER)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_DRIVER_LICENSE_0022_v2.png",
+          "document_type": "driver_license",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "DRIVER_LICENSE",
+              "extracted": "NATIONAL_ID",
+              "exact_match": false,
+              "similarity": 0.08
+            },
+            "license_number": {
+              "ground_truth": "DL-A92097999",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "OLIVER RODRIGUEZ",
+              "extracted": "VEHICLECLASS CLASS A COMMERCIA",
+              "exact_match": false,
+              "similarity": 0.174
+            },
+            "address": {
+              "ground_truth": "2300 MAPLE BLVD, NEW HAVEN, ARC",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "date_of_birth": {
+              "ground_truth": "2001-09-01",
+              "extracted": "ADDRES",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "gender": {
+              "ground_truth": "M",
+              "extracted": "U",
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "issue_date": {
+              "ground_truth": "2023-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2028-09-10",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "vehicle_class": {
+              "ground_truth": "CLASS A (COMMERCIAL)",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v1.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "WORK AUTHORIZATION",
+              "extracted": "WORK AUTHORIZATION",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ATLANTIS TECH CORP",
+              "extracted": "ATLANTIS TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_PERMIT_0050_v2.png",
+          "document_type": "permit",
+          "f1": 0.6667,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "RESIDENCE_PERMIT",
+              "extracted": "RESIDENCE_PERMIT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "permit_number": {
+              "ground_truth": "RP-D47111151",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "MICHAEL BROWN",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "permit_category": {
+              "ground_truth": "PERMANENT RESIDENT",
+              "extracted": "PERMANENT RESIDENT",
+              "exact_match": true,
+              "similarity": 1.0
+            },
+            "valid_until": {
+              "ground_truth": "2025-02-27",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "sponsor": {
+              "ground_truth": "ARCADIA TECH CORP",
+              "extracted": "ARCADIA TECH CORP",
+              "exact_match": true,
+              "similarity": 1.0
+            }
+          }
+        },
+        {
+          "image_id": "DOC_VISA_0108_v1.png",
+          "document_type": "visa",
+          "f1": 0.0,
+          "cer": 0.0,
+          "field_details": {
+            "document_type": {
+              "ground_truth": "VISA",
+              "extracted": "PASSPORT",
+              "exact_match": false,
+              "similarity": 0.167
+            },
+            "visa_number": {
+              "ground_truth": "V28628439",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "full_name": {
+              "ground_truth": "PATRICIA GARCIA",
+              "extracted": "PATRICIA NE1 VN XANGARCIA",
+              "exact_match": false,
+              "similarity": 0.75
+            },
+            "passport_number": {
+              "ground_truth": "P52773159",
+              "extracted": "MRZLINE2",
+              "exact_match": false,
+              "similarity": 0.118
+            },
+            "issue_date": {
+              "ground_truth": "2020-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "expiry_date": {
+              "ground_truth": "2025-03-05",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "entries": {
+              "ground_truth": "MULTIPLE",
+              "extracted": null,
+              "exact_match": false,
+              "similarity": 0.0
+            },
+            "mrz_line1": {
+              "ground_truth": "VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE1<VN<XANGARCIA<<PATRICIA<<<<<<<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            },
+            "mrz_line2": {
+              "ground_truth": "V286284393XAN6612212F2503055<<<<<<<<<<<<<<<<",
+              "extracted": "MRZLINE2<V286284393XAN6612212F2503055<<<<<<<",
+              "exact_match": false,
+              "similarity": 0.795
+            }
+          }
+        }
+      ]
+    }
+  }
+}

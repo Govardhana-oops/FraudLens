@@ -1,0 +1,15 @@
+{
+  "model_version": "v1.0.0-baseline",
+  "model_name": "DocumentOCR-Baseline",
+  "created_at": "2026-09-02T19:00:00Z",
+  "architecture": "OpenCV Morphological Optical Reader + Linear Regex Parser",
+  "dataset_version": "SynthID-Doc v1.0",
+  "preprocessing": "Standard (Deskew + CLAHE)",
+  "metrics": {
+    "validation_field_f1": 0.2037,
+    "test_field_f1": 0.1759,
+    "test_exact_match": 0.1296,
+    "mean_latency_ms": 60.7
+  },
+  "status": "SUPERSEDED"
+}

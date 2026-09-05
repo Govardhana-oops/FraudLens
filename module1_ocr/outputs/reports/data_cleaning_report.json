@@ -1,0 +1,29 @@
+{
+  "raw_directory": "C:\\Users\\guvva\\OneDrive\\Desktop\\PROTOTYPE\\module1_ocr\\data\\raw",
+  "cleaned_directory": "C:\\Users\\guvva\\OneDrive\\Desktop\\PROTOTYPE\\module1_ocr\\data\\cleaned",
+  "total_evaluated": 243,
+  "total_accepted": 240,
+  "total_rejected": 3,
+  "rejection_summary": {
+    "Image format error / unreadable: cannot identify image file 'C:\\\\Users\\\\guvva\\\\OneDrive\\\\Desktop\\\\PROTOTYPE\\\\module1_ocr\\\\data\\\\raw\\\\DOC_CORRUPTED_HEADER.png'": 1,
+    "Corrupted: Zero-byte file": 1,
+    "Dimension violation: 50x50 is below minimum 200x200": 1
+  },
+  "rejected_details": [
+    {
+      "filename": "DOC_CORRUPTED_HEADER.png",
+      "reason": "Image format error / unreadable: cannot identify image file 'C:\\\\Users\\\\guvva\\\\OneDrive\\\\Desktop\\\\PROTOTYPE\\\\module1_ocr\\\\data\\\\raw\\\\DOC_CORRUPTED_HEADER.png'",
+      "file_size": 29
+    },
+    {
+      "filename": "DOC_CORRUPTED_ZERO_BYTE.png",
+      "reason": "Corrupted: Zero-byte file",
+      "file_size": 0
+    },
+    {
+      "filename": "DOC_REJECTED_TINY_DIMENSIONS.png",
+      "reason": "Dimension violation: 50x50 is below minimum 200x200",
+      "file_size": 87
+    }
+  ]
+}

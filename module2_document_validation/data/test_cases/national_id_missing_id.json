@@ -1,0 +1,26 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "national_id",
+    "confidence": 0.95
+  },
+  "fields": {
+    "full_name": {
+      "value": "NOAH JOHNSON",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1999-06-19",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

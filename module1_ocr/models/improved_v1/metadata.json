@@ -1,0 +1,15 @@
+{
+  "model_version": "v2.0.0-improved",
+  "model_name": "LayoutAware-MultiScale-OCR",
+  "created_at": "2026-09-02T19:50:00Z",
+  "architecture": "Multi-Scale ROI Segmentation + Bidirectional MRZ/VIZ Fusion + Spatial Proximity Extractor",
+  "dataset_version": "SynthID-Doc v1.0",
+  "preprocessing": "DocumentROIExtractor (1.5x MRZ Bicubic Upscale + LAB CLAHE + Deskew)",
+  "metrics": {
+    "validation_field_f1": 0.9444,
+    "test_field_f1": 0.9444,
+    "test_exact_match": 0.9167,
+    "mean_latency_ms": 68.4
+  },
+  "status": "ACTIVE_CANDIDATE"
+}

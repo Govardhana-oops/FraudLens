@@ -1,0 +1,5 @@
+# Module 2: Document Validation Engine Requirements
+pydantic>=2.5.0
+pyyaml>=6.0.1
+pytest>=7.4.0
+pytest-cov>=4.1.0

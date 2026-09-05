@@ -1,0 +1,25 @@
+# AI-DIDSS Module 4 Biometric Verification Configuration
+
+version: "1.0.0"
+
+thresholds:
+  match_threshold: 0.72
+  no_match_threshold: 0.48
+  min_face_size: 60
+  min_sharpness_score: 20.0
+  min_illumination_uniformity: 0.60
+  max_glare_percentage: 5.0
+  min_liveness_score: 0.65
+
+weights:
+  spatial_gradients: 0.50
+  color_moments: 0.30
+  gabor_texture: 0.20
+
+quality_standards:
+  icao_9303_strict: true
+  iso_19794_5_compliant: true
+
+feature_extractor:
+  embedding_dimensions: 128
+  alignment_target_size: 160

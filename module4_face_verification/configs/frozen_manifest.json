@@ -1,0 +1,28 @@
+{
+  "module_name": "module4_face_verification",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 28,
+  "tests_passed": 28,
+  "tests_failed": 0,
+  "standards_supported": [
+    "ICAO Doc 9303 Part 9",
+    "ISO/IEC 19794-5 Biometric Data Interchange Formats"
+  ],
+  "status_taxonomy": [
+    "MATCH",
+    "NO_MATCH",
+    "REVIEW_REQUIRED",
+    "POOR_QUALITY",
+    "NO_FACE_DETECTED",
+    "SPOOF_ATTEMPT_DETECTED",
+    "UNKNOWN",
+    "INVALID_INPUT",
+    "PROCESSING_ERROR"
+  ],
+  "performance": {
+    "avg_latency_ms": 13.5,
+    "throughput_pairs_per_sec": 74.0
+  },
+  "safety_mandate": "Zero autonomous criminal/fraud decisions (no CRIMINAL, IMPOSTER, DETAIN, REJECT tags)"
+}

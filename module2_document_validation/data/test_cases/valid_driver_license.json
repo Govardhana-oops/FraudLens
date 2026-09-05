@@ -1,0 +1,46 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "driver_license",
+    "confidence": 0.95
+  },
+  "fields": {
+    "license_number": {
+      "value": "DL-A85329037",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "JOHN BROWN",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1980-12-21",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "issue_date": {
+      "value": "2020-09-14",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "expiry_date": {
+      "value": "2030-09-14",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "address": {
+      "value": "7459 WASHINGTON ST, SUNNYVALE, XAN",
+      "confidence": 0.9,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

@@ -1,0 +1,27 @@
+{
+  "document_type": "unknown_document",
+  "document_type_confidence": 0.0,
+  "raw_text": "",
+  "fields": {},
+  "mrz_validation": null,
+  "cross_field_conflicts": [],
+  "validation_summary": null,
+  "processing_metadata": {
+    "source_image": "DOC_PASSPORT_0001_v1.png",
+    "preprocessing_mode": "roi_multiscale_standard",
+    "quality_assessment": {
+      "is_valid": true,
+      "width": 1000,
+      "height": 700,
+      "blur_score": 1761.65,
+      "is_blurry": false,
+      "glare_ratio": 0.0,
+      "has_glare": false,
+      "resolution_ok": true,
+      "quality_score": 1.0,
+      "status": "ACCEPTABLE"
+    }
+  },
+  "status": "UNKNOWN",
+  "review_required": true
+}

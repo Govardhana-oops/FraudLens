@@ -1,0 +1,35 @@
+# ==============================================================================
+# AI-DIDSS: AI-Based Fake Identity & Document Screening System
+# Production Runtime & Deployment Requirements (GitHub & Streamlit Cloud)
+# ==============================================================================
+
+# Streamlit UI & Web Dashboard (Main Deployment Entrypoint: streamlit_app.py)
+streamlit>=1.35.0
+
+# Web Framework & API Backend (Module 8)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Core Math & Data Structures
+numpy>=1.24.0
+pydantic>=2.5.0
+pyyaml>=6.0.1
+pandas>=2.0.0
+
+# Computer Vision, Deep Learning & OCR (Modules 1, 3, 4)
+pillow>=10.0.0
+opencv-python-headless>=4.8.0
+torch>=2.0.0
+torchvision>=0.15.0
+easyocr>=1.7.0
+scikit-image>=0.21.0
+scikit-learn>=1.3.0
+
+# HTTP & Security Client Utilities
+httpx>=0.25.0
+requests>=2.31.0
+
+# Quality Assurance & Testing Suite
+pytest>=7.4.0
+pytest-cov>=4.1.0

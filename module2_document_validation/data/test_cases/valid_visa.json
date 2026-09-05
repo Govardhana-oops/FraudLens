@@ -1,0 +1,54 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "visa",
+    "confidence": 0.95
+  },
+  "fields": {
+    "visa_number": {
+      "value": "V9876543",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "EMMA JONES",
+      "confidence": 0.92,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1992-06-15",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2028-06-15",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "entries": {
+      "value": "MULTIPLE",
+      "confidence": 0.9,
+      "status": "VALID"
+    }
+  },
+  "mrz": {
+    "status": "VALID",
+    "mrz_format": "MRV-A",
+    "lines": [
+      "VN<USAJONES<<EMMA<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+      "V9876543<1USA9206159F2806158<<<<<<<<<<<<<<<<"
+    ],
+    "checksum_valid": true,
+    "checks": {
+      "document_number": true,
+      "date_of_birth": true,
+      "date_of_expiry": true
+    }
+  },
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

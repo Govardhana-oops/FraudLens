@@ -1,0 +1,36 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.99
+  },
+  "fields": {
+    "full_name": {
+      "value": "JOHN SMITH",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "nationality": {
+      "value": "USA",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1985-04-12",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2030-08-25",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

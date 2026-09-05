@@ -1,0 +1,55 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.99
+  },
+  "fields": {
+    "passport_number": {
+      "value": "P12345678",
+      "confidence": 1.0,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "JOHN MICHAEL SMITH",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "nationality": {
+      "value": "USA",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1985-04-12",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_expiry": {
+      "value": "2030-08-25",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": {
+    "status": "VALID",
+    "mrz_format": "TD3",
+    "lines": [
+      "P<USASMITH<<JOHN<MICHAEL<<<<<<<<<<<<<<<<<<<<",
+      "P123456780USA8504120M3008250<<<<<<<<<<<<<<<0"
+    ],
+    "checksum_valid": false,
+    "checks": {
+      "document_number": false,
+      "date_of_birth": false,
+      "date_of_expiry": false,
+      "composite": false
+    }
+  },
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

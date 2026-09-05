@@ -1,0 +1,41 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.99
+  },
+  "fields": {
+    "passport_number": {
+      "value": "P12345678",
+      "confidence": 1.0,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "LEAP BABY",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "nationality": {
+      "value": "USA",
+      "confidence": 0.98,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "2001-02-29",
+      "confidence": 0.95,
+      "status": "INVALID"
+    },
+    "date_of_expiry": {
+      "value": "2030-08-25",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

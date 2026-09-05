@@ -1,0 +1,17 @@
+# AI-DIDSS Module 8 Backend API Configuration
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  title: "AI-DIDSS Verification Decision Support API"
+  version: "1.0.0"
+  description: "RESTful Decision Support API for Border Control Officers"
+
+security:
+  cors_allowed_origins: ["*"]
+  enable_security_headers: true
+  max_upload_size_mb: 25
+
+rate_limiting:
+  enabled: false
+  max_requests_per_minute: 600

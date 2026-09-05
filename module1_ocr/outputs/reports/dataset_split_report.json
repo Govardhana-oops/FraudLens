@@ -1,0 +1,50 @@
+{
+  "total_unique_document_identities": 120,
+  "total_cleaned_images": 240,
+  "external_test_isolated_identities": 30,
+  "leakage_verification": {
+    "train_val_overlap": 0,
+    "train_test_overlap": 0,
+    "val_test_overlap": 0,
+    "external_train_overlap": 0,
+    "leakage_status": "ZERO_LEAKAGE_CERTIFIED"
+  },
+  "split_breakdown": {
+    "train": {
+      "document_groups_count": 84,
+      "total_images_count": 168,
+      "percentage_of_total_groups": 70.0,
+      "document_type_distribution": {
+        "national_id": 36,
+        "passport": 36,
+        "permit": 32,
+        "driver_license": 34,
+        "visa": 30
+      }
+    },
+    "validation": {
+      "document_groups_count": 18,
+      "total_images_count": 36,
+      "percentage_of_total_groups": 15.0,
+      "document_type_distribution": {
+        "national_id": 6,
+        "permit": 8,
+        "visa": 12,
+        "passport": 8,
+        "driver_license": 2
+      }
+    },
+    "test": {
+      "document_groups_count": 18,
+      "total_images_count": 36,
+      "percentage_of_total_groups": 15.0,
+      "document_type_distribution": {
+        "driver_license": 12,
+        "permit": 8,
+        "visa": 6,
+        "passport": 4,
+        "national_id": 6
+      }
+    }
+  }
+}

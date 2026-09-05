@@ -1,0 +1,28 @@
+{
+  "module_name": "module3_tampering_detection",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 32,
+  "tests_passed": 32,
+  "tests_failed": 0,
+  "supported_modalities": [
+    "error_level_analysis",
+    "noise_inconsistency",
+    "edge_gradient_discontinuity",
+    "font_texture_inconsistency",
+    "frequency_fft_spectral"
+  ],
+  "status_taxonomy": [
+    "NO_TAMPERING_EVIDENCE",
+    "REVIEW_REQUIRED",
+    "POTENTIAL_TAMPERING",
+    "UNKNOWN",
+    "INVALID_INPUT",
+    "PROCESSING_ERROR"
+  ],
+  "performance": {
+    "avg_latency_ms": 91.5,
+    "throughput_docs_per_sec": 11.0
+  },
+  "safety_mandate": "Zero autonomous judicial fraud decisions (no FRAUD, CRIMINAL, DETAIN, REJECT, FORGERY tags)"
+}

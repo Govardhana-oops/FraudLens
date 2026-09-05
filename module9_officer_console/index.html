@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-DIDSS | Border Inspection & Document Screening Console</title>
+    <meta name="description" content="AI-Based Fake Identity & Travel Document Screening System Officer Console">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Header -->
+        <header class="app-header">
+            <div class="brand-group">
+                <div class="logo-shield">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-icon">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">AI-DIDSS</h1>
+                    <span class="brand-subtitle">Border Inspection & Screening Console</span>
+                </div>
+            </div>
+
+            <div class="station-telemetry">
+                <div class="telemetry-pill">
+                    <span class="pill-label">STATION</span>
+                    <span class="pill-val" id="station-id">GATE-04</span>
+                </div>
+                <div class="telemetry-pill">
+                    <span class="pill-label">OFFICER</span>
+                    <span class="pill-val" id="officer-id">CP-0082</span>
+                </div>
+                <div class="telemetry-pill status-pill">
+                    <span class="status-indicator online"></span>
+                    <span class="pill-val" id="network-status">ONLINE</span>
+                </div>
+                <button id="sync-btn" class="btn btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    Sync
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-grid">
+            <!-- Left Column: Document Scanner & Viewfinder -->
+            <section class="card glass-card" id="document-section">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-icon">
+                            <rect width="18" height="14" x="3" y="5" rx="2"/>
+                            <path d="M7 15h4M15 15h2M7 11h2M13 11h4"/>
+                        </svg>
+                        1. Document Optical Scanner
+                    </h2>
+                    <span class="badge" id="doc-type-badge">NO DOCUMENT</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="dropzone" id="doc-dropzone">
+                        <input type="file" id="doc-file-input" accept="image/jpeg,image/png" hidden>
+                        <div class="dropzone-content" id="doc-dropzone-prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                            </svg>
+                            <p class="dropzone-text">Drag & drop passport scan or click to browse</p>
+                            <span class="dropzone-sub">Supports High-Res JPEG / PNG (up to 25MB)</span>
+                        </div>
+                        <img id="doc-preview-img" class="preview-image" alt="Document Preview" hidden>
+                    </div>
+
+                    <div class="extracted-fields-grid" id="fields-container">
+                        <div class="field-item">
+                            <span class="field-label">Document Number</span>
+                            <span class="field-value" id="f-doc-num">—</span>
+                        </div>
+                        <div class="field-item">
+                            <span class="field-label">Holder Name</span>
+                            <span class="field-value" id="f-name">—</span>
+                        </div>
+                        <div class="field-item">
+                            <span class="field-label">Issuing State</span>
+                            <span class="field-value" id="f-issuing-country">—</span>
+                        </div>
+                        <div class="field-item">
+                            <span class="field-label">Date of Birth</span>
+                            <span class="field-value" id="f-dob">—</span>
+                        </div>
+                        <div class="field-item">
+                            <span class="field-label">Date of Expiry</span>
+                            <span class="field-value" id="f-expiry">—</span>
+                        </div>
+                    </div>
+
+                    <div class="mrz-box">
+                        <div class="mrz-header">
+                            <span>ICAO DOC 9303 MRZ STREAM</span>
+                            <span class="mrz-badge" id="mrz-status">STANDBY</span>
+                        </div>
+                        <pre class="mrz-text" id="mrz-display">P<UTO<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n0000000000UTO0000000M0000000<<<<<<<<<<<<<<<0</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Column: Biometric Facial Verification -->
+            <section class="card glass-card" id="biometric-section">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-icon">
+                            <circle cx="12" cy="8" r="5"/>
+                            <path d="M20 21a8 8 0 1 0-16 0"/>
+                        </svg>
+                        2. Biometric Face Verification
+                    </h2>
+                    <span class="badge" id="bio-status-badge">AWAITING PROBE</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="biometric-compare-grid">
+                        <div class="bio-frame">
+                            <span class="bio-frame-label">EXTRACTED PORTRAIT</span>
+                            <div class="face-crop-box">
+                                <img id="doc-face-crop" class="face-crop-img" alt="Extracted Portrait" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%231e293b'/%3E%3C/svg%3E">
+                            </div>
+                        </div>
+
+                        <div class="bio-frame">
+                            <span class="bio-frame-label">LIVE CAMERA PROBE</span>
+                            <div class="face-crop-box" id="live-face-box">
+                                <input type="file" id="live-file-input" accept="image/*" hidden>
+                                <div id="live-upload-prompt" class="live-prompt">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="camera-icon">
+                                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                        <circle cx="12" cy="13" r="4"/>
+                                    </svg>
+                                    <span>Capture / Upload</span>
+                                </div>
+                                <img id="live-face-crop" class="face-crop-img" alt="Live Probe" hidden>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="match-meter-container">
+                        <div class="match-meter-header">
+                            <span>1:1 Facial Similarity</span>
+                            <span class="match-val" id="bio-similarity-val">0.00</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="bio-progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="pad-anti-spoof-box">
+                        <span class="pad-label">PRESENTATION ATTACK DETECTION (PAD)</span>
+                        <div class="pad-status-row">
+                            <span id="pad-status-text">Sensor Ready</span>
+                            <span class="pad-badge" id="pad-badge">LIVENESS OK</span>
+                        </div>
+                    </div>
+
+                    <button id="run-screen-btn" class="btn btn-primary btn-block">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.3-4.3"/>
+                        </svg>
+                        Execute Multi-Modal Screening
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Decision Support & Explainable Dossier -->
+            <section class="card glass-card" id="dossier-section">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-icon">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        3. Explainable Decision Dossier
+                    </h2>
+                    <span class="badge" id="audit-badge">AUDIT READY</span>
+                </div>
+
+                <div class="card-body">
+                    <!-- Action Recommendation Banner -->
+                    <div class="decision-banner clear" id="decision-banner">
+                        <div class="decision-icon-wrap" id="decision-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="banner-icon">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="decision-text-wrap">
+                            <span class="decision-sub">RECOMMENDED ACTION</span>
+                            <h3 class="decision-title" id="decision-title">STANDBY</h3>
+                        </div>
+                    </div>
+
+                    <!-- Risk Gauges -->
+                    <div class="risk-summary-grid">
+                        <div class="risk-meter-box">
+                            <span class="risk-meter-label">Overall Risk Index</span>
+                            <span class="risk-meter-val" id="risk-index-val">0.00</span>
+                        </div>
+                        <div class="risk-breakdown">
+                            <div class="risk-bar-row">
+                                <span>Syntactic (M2)</span>
+                                <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-doc-fill" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="risk-bar-row">
+                                <span>Tampering (M3)</span>
+                                <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-tamp-fill" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="risk-bar-row">
+                                <span>Biometric (M4)</span>
+                                <div class="mini-bar-track"><div class="mini-bar-fill" id="risk-bio-fill" style="width: 0%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itemized Evidence Checklist -->
+                    <div class="evidence-checklist-box">
+                        <h4 class="checklist-title">FORENSIC AUDIT TRAIL</h4>
+                        <ul class="evidence-list" id="evidence-list">
+                            <li class="evidence-item positive">Awaiting document input for multi-module inspection.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Actionable Guidance -->
+                    <div class="guidance-box">
+                        <span class="guidance-label">OFFICER INSTRUCTIONS</span>
+                        <p class="guidance-text" id="guidance-text">Insert document into optical feeder to begin inspection flow.</p>
+                    </div>
+
+                    <!-- Manual Override & Escalation -->
+                    <div class="action-btn-row">
+                        <button class="btn btn-outline" id="btn-secondary-escalate">Secondary Escalate</button>
+                        <button class="btn btn-primary" id="btn-admit-clear">Admit Passenger</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Telemetry Footer -->
+        <footer class="app-footer">
+            <div class="footer-telemetry">
+                <span>Total Latency: <strong id="latency-val">0.0 ms</strong></span>
+                <span>•</span>
+                <span>SHA-256 Audit Hash: <code id="audit-hash-display">0000000000000000000000000000000000000000</code></span>
+            </div>
+            <div class="footer-version">AI-DIDSS v1.0.0-FROZEN</div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

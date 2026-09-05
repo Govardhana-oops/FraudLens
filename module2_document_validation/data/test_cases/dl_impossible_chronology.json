@@ -1,0 +1,36 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "driver_license",
+    "confidence": 0.95
+  },
+  "fields": {
+    "license_number": {
+      "value": "DL-A85329037",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "JOHN BROWN",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "2030-01-01",
+      "confidence": 0.95,
+      "status": "INVALID"
+    },
+    "expiry_date": {
+      "value": "2020-01-01",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

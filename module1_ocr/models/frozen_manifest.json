@@ -1,0 +1,55 @@
+{
+  "module": "module1_ocr",
+  "module_version": "1.0.0",
+  "model_version": "LayoutAware-MultiScale-OCR-v2.0",
+  "status": "FROZEN",
+  "external_test_status": "COMPLETED",
+  "evaluation_status": "VERIFIED_WITH_CAVEATS",
+  "freeze_timestamp": "2026-09-02T20:30:00Z",
+  "validation_scope": "VALIDATED FOR PROJECT PROTOTYPE",
+  "components": {
+    "src/interface.py": {
+      "role": "Public DocumentOCR Interface & Input Validator",
+      "sha256": "8ebf63f538cb33246ebcfd9d28dbd60dbfb5a73e6d18a383d47bf1451b66fe6e"
+    },
+    "src/api.py": {
+      "role": "FastAPI Production REST Service",
+      "sha256": "3d91cf98ec453982845a7e373bc0c19bbdf2394c8e7ef9e8fef4bcf68e590403"
+    },
+    "src/preprocessing/pipeline.py": {
+      "role": "Vision Preprocessing Pipeline (Deskew, Illumination, Quality Check)",
+      "sha256": "9cb2f643e2fbc4df7e0fe727ba0f0322b62d8544f1c1f547806540c49bc8061d"
+    },
+    "src/preprocessing/roi_extractor.py": {
+      "role": "Multi-Scale Functional ROI Zoning (1.5x Bicubic MRZ Upscaling)",
+      "sha256": "7b66804a919016fb310da5fb7a3e74659b8be434f0c40e107f90fbb6ca45efb0"
+    },
+    "src/ocr/mrz_parser.py": {
+      "role": "ICAO Doc 9303 MRZ Engine & Modulo-10 Checksum Validator",
+      "sha256": "f6ff3a27c320a16b97621c0ad1e32d56a2364c20573ae0317e3f42bca0d2cb2f"
+    },
+    "src/extraction/pipeline.py": {
+      "role": "Document Understanding Pipeline Orchestrator",
+      "sha256": "1ef9c8112521713b194a20b080f550fe86a117094b8e235cb9aa910c666f7f6f"
+    },
+    "src/extraction/validator.py": {
+      "role": "Chronological & Consistency Validator",
+      "sha256": "a5f4581c3c2b8b981cf3ec55e1c4df29ae7d9d71439281a8b2520dfcb52e6931"
+    },
+    "src/extraction/normalizer.py": {
+      "role": "ISO 8601 Date Normalizer & Character Disambiguator",
+      "sha256": "c8742b66e01a1829e16089bbab94e09fefec1d7e237fb3e75a59a7f34c2ee39a"
+    }
+  },
+  "benchmark_summary": {
+    "internal_test_field_f1": 0.2436,
+    "internal_test_exact_match": 0.1944,
+    "external_test_field_f1": 0.2810,
+    "external_test_exact_match": 0.2259,
+    "generalization_gap": -0.0374,
+    "document_classification_accuracy": 0.40,
+    "mean_latency_ms": 76.2,
+    "mrz_checksum_pass_rate": 1.0,
+    "test_suite_status": "34_PASSED_0_FAILED"
+  }
+}

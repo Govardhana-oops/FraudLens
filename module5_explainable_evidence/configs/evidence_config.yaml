@@ -1,0 +1,22 @@
+# AI-DIDSS Module 5 Evidence Fusion Configuration
+
+version: "1.0.0"
+
+weights:
+  document_syntactic: 0.35
+  physical_tampering: 0.35
+  biometric_identity: 0.30
+
+thresholds:
+  clear_risk_ceiling: 0.22
+  standard_inspection_ceiling: 0.50
+  secondary_inspection_floor: 0.68
+  compound_boost_photo_bio: 0.20
+  compound_boost_text_mrz: 0.15
+
+actions:
+  clear_label: "CLEAR"
+  standard_label: "STANDARD_INSPECTION"
+  secondary_label: "SECONDARY_INSPECTION_RECOMMENDED"
+  review_label: "TECHNICAL_REVIEW_REQUIRED"
+  recapture_label: "RECAPTURE_REQUIRED"

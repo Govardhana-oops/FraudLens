@@ -1,0 +1,34 @@
+{
+  "status": "UNKNOWN",
+  "document_type": {
+    "value": "unknown_document",
+    "confidence": 0.0
+  },
+  "fields": {},
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": [],
+  "processing_metadata": {
+    "module": "module1_ocr",
+    "module_version": "1.0.0",
+    "model_version": "LayoutAware-MultiScale-OCR-v2.0",
+    "quality_assessment": {
+      "is_valid": true,
+      "width": 1000,
+      "height": 700,
+      "blur_score": 1761.65,
+      "is_blurry": false,
+      "glare_ratio": 0.0,
+      "has_glare": false,
+      "resolution_ok": true,
+      "quality_score": 1.0,
+      "status": "ACCEPTABLE"
+    },
+    "preprocessing_mode": "roi_multiscale_standard",
+    "user_metadata": {}
+  }
+}

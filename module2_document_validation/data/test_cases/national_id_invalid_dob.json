@@ -1,0 +1,31 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "national_id",
+    "confidence": 0.95
+  },
+  "fields": {
+    "id_number": {
+      "value": "ID-9906192412",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "full_name": {
+      "value": "NOAH JOHNSON",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "date_of_birth": {
+      "value": "1999-13-45",
+      "confidence": 0.95,
+      "status": "INVALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": []
+}

@@ -1,0 +1,22 @@
+{
+  "module_name": "module5_explainable_evidence",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 26,
+  "tests_passed": 26,
+  "tests_failed": 0,
+  "action_taxonomy": [
+    "CLEAR",
+    "STANDARD_INSPECTION",
+    "SECONDARY_INSPECTION_RECOMMENDED",
+    "TECHNICAL_REVIEW_REQUIRED",
+    "RECAPTURE_REQUIRED",
+    "INVALID_INPUT",
+    "PROCESSING_ERROR"
+  ],
+  "performance": {
+    "avg_latency_ms": 0.064,
+    "throughput_dossiers_per_sec": 15000.0
+  },
+  "safety_mandate": "Zero autonomous criminal/fraud decisions (no FRAUD, CRIMINAL, DETAIN, REJECT, FORGERY tags)"
+}

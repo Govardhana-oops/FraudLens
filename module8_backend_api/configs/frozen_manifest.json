@@ -1,0 +1,21 @@
+{
+  "module_name": "module8_backend_api",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 13,
+  "tests_passed": 13,
+  "tests_failed": 0,
+  "framework": "FastAPI ASGI",
+  "endpoints": [
+    "POST /api/v1/screening/inspect",
+    "GET /api/v1/watchlist/check/{doc_number}",
+    "POST /api/v1/sync/differential",
+    "GET /api/v1/audit/logs",
+    "GET /api/v1/health"
+  ],
+  "performance": {
+    "avg_rest_latency_ms": 19.83,
+    "throughput_requests_per_sec": 50.0
+  },
+  "safety_mandate": "Zero autonomous criminal/fraud decisions (no FRAUD, CRIMINAL, DETAIN, REJECT tags)"
+}

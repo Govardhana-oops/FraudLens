@@ -1,0 +1,9 @@
+{
+  "field_f1_gap": -0.0374,
+  "exact_match_gap": -0.0315,
+  "classification_accuracy_gap": -0.0667,
+  "latency_delta_ms": 29.87,
+  "internal_field_f1": 0.2436,
+  "external_field_f1": 0.281,
+  "assessment": "Stable Generalization (Gap < 5%)"
+}

@@ -1,0 +1,50 @@
+{
+  "passport": {
+    "passport": 6,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 0,
+    "unknown_document": 0
+  },
+  "visa": {
+    "passport": 6,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 0,
+    "unknown_document": 0
+  },
+  "driver_license": {
+    "passport": 1,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 0,
+    "unknown_document": 5
+  },
+  "national_id": {
+    "passport": 6,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 0,
+    "unknown_document": 0
+  },
+  "permit": {
+    "passport": 0,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 6,
+    "unknown_document": 0
+  },
+  "unknown_document": {
+    "passport": 0,
+    "visa": 0,
+    "driver_license": 0,
+    "national_id": 0,
+    "permit": 0,
+    "unknown_document": 0
+  }
+}

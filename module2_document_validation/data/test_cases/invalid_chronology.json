@@ -1,0 +1,19 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "passport",
+    "confidence": 0.99
+  },
+  "fields": {
+    "passport_number": {"value": "P99887766", "confidence": 1.0, "status": "VALID"},
+    "full_name": {"value": "ALICE WONDER", "confidence": 0.95, "status": "VALID"},
+    "nationality": {"value": "GBR", "confidence": 0.98, "status": "VALID"},
+    "date_of_birth": {"value": "2028-05-10", "confidence": 0.95, "status": "INVALID"},
+    "date_of_issue": {"value": "2024-01-01", "confidence": 0.95, "status": "VALID"},
+    "date_of_expiry": {"value": "2022-01-01", "confidence": 0.95, "status": "VALID"}
+  },
+  "mrz": null,
+  "consistency": {"status": "CONSISTENT", "conflicts": []},
+  "review_required": true,
+  "warnings": ["Chronological anomaly detected"]
+}

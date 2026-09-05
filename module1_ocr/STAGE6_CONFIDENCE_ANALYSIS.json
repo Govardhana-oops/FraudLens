@@ -1,0 +1,35 @@
+{
+  "expected_calibration_error": 0.5262,
+  "confidence_bins": {
+    "0.0-0.2": {
+      "count": 0,
+      "mean_confidence": 0.0,
+      "accuracy": 0.0,
+      "error_rate": 0.0
+    },
+    "0.2-0.4": {
+      "count": 0,
+      "mean_confidence": 0.0,
+      "accuracy": 0.0,
+      "error_rate": 0.0
+    },
+    "0.4-0.6": {
+      "count": 0,
+      "mean_confidence": 0.0,
+      "accuracy": 0.0,
+      "error_rate": 0.0
+    },
+    "0.6-0.8": {
+      "count": 0,
+      "mean_confidence": 0.0,
+      "accuracy": 0.0,
+      "error_rate": 0.0
+    },
+    "0.8-1.0": {
+      "count": 133,
+      "mean_confidence": 0.9547,
+      "accuracy": 0.4286,
+      "error_rate": 0.5714
+    }
+  }
+}

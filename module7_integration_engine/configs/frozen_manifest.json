@@ -1,0 +1,21 @@
+{
+  "module_name": "module7_integration_engine",
+  "version": "v1.0.0-FROZEN",
+  "freeze_date": "2026-09-03",
+  "total_tests": 10,
+  "tests_passed": 10,
+  "tests_failed": 0,
+  "orchestration_layers": [
+    "module1_ocr",
+    "module2_document_validation",
+    "module3_tampering_detection",
+    "module4_face_verification",
+    "module5_explainable_evidence",
+    "module6_database_sync"
+  ],
+  "performance": {
+    "avg_full_pipeline_latency_ms": 39.77,
+    "throughput_passengers_per_sec": 25.0
+  },
+  "safety_mandate": "Zero autonomous criminal/fraud decisions (no FRAUD, CRIMINAL, DETAIN, REJECT tags)"
+}

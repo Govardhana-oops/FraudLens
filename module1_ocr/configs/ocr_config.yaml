@@ -1,0 +1,54 @@
+# =====================================================================
+# Module 1: OCR & Document Extraction Configuration
+# =====================================================================
+
+module_info:
+  name: "module1_ocr"
+  version: "1.0.0"
+  description: "Identity Document OCR, MRZ Parser, and Field Extractor"
+
+hardware:
+  device: "cpu"
+  num_threads: 4
+
+preprocessing:
+  target_dpi: 300
+  max_dimension: 1920
+  min_dimension: 800
+  quality_check:
+    blur_threshold: 100.0        # Laplacian variance threshold
+    glare_threshold_ratio: 0.05  # Percentage of saturated pixels
+    min_resolution: [600, 400]
+  deskew:
+    max_angle: 45.0
+    enable_auto_rotation: true
+  enhancement:
+    enable_contrast_enhancement: true
+    clahe_clip_limit: 2.0
+    clahe_tile_grid_size: [8, 8]
+
+ocr:
+  primary_engine: "tesseract"     # Options: tesseract, paddleocr, easyocr
+  psm_mode: 6                    # Assume single uniform block of text
+  oem_mode: 3                    # Default LSTM engine
+  languages: ["eng"]
+  confidence_threshold: 0.60     # Below this threshold, mark as UNKNOWN/REVIEW_REQUIRED
+
+mrz:
+  supported_formats: ["TD1", "TD2", "TD3"]
+  strict_checksum: true
+
+barcode:
+  enable_pdf417: true
+  enable_qr: true
+
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  train_data: "data/train"
+  val_data: "data/validation"
+  test_data: "data/test"
+  external_test_data: "data/external_test"
+  output_logs: "outputs/logs"
+  output_reports: "outputs/reports"
+  visual_debug: "outputs/visual_debug"

@@ -1,0 +1,36 @@
+{
+  "status": "SUCCESS",
+  "document_type": {
+    "value": "permit",
+    "confidence": 0.95
+  },
+  "fields": {
+    "permit_number": {
+      "value": "PRM-A98765432",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "permit_category": {
+      "value": "WORK AUTHORIZATION",
+      "confidence": 0.95,
+      "status": "VALID"
+    },
+    "sponsor": {
+      "value": "VALHALLA TECH CORP",
+      "confidence": 0.9,
+      "status": "VALID"
+    },
+    "valid_until": {
+      "value": "2029-05-15",
+      "confidence": 0.95,
+      "status": "VALID"
+    }
+  },
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": false,
+  "warnings": []
+}

@@ -1,0 +1,17 @@
+{
+  "status": "UNKNOWN",
+  "document_type": {
+    "value": "unknown_document",
+    "confidence": 0.0
+  },
+  "fields": {},
+  "mrz": null,
+  "consistency": {
+    "status": "CONSISTENT",
+    "conflicts": []
+  },
+  "review_required": true,
+  "warnings": [
+    "Low confidence OCR recognition"
+  ]
+}

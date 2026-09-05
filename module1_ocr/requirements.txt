@@ -1,0 +1,31 @@
+# =====================================================================
+# Module 1: OCR Extraction & Identity Document Parsing Requirements
+# Tailored for CPU execution (AMD Ryzen / Windows 64-bit)
+# =====================================================================
+
+# Core Math & Data Structures
+numpy>=1.24.0
+pandas>=2.0.0
+pydantic>=2.5.0
+pyyaml>=6.0.1
+
+# Computer Vision & Image Processing
+opencv-python>=4.8.0
+pillow>=10.0.0
+scikit-image>=0.21.0
+
+# OCR Engines & Identity Document Parsers
+pytesseract>=0.3.10
+# Note: For MRZ & Barcodes (ICAO Doc 9303 / PDF417)
+passporteye>=2.1.0
+pyzbar>=0.1.9
+pdf417decoder>=0.1.3
+
+# Evaluation & Metrics
+scikit-learn>=1.3.0
+python-Levenshtein>=0.23.0
+jiwer>=3.0.0
+
+# Testing & Quality Assurance
+pytest>=7.4.0
+pytest-cov>=4.1.0

@@ -1,0 +1,315 @@
+{
+  "evaluation_timestamp": "2026-09-02 20:15:56",
+  "dataset_name": "SynthID-Doc-External v1.0",
+  "total_samples": 30,
+  "ocr_metrics": {
+    "mean_cer": 0.0,
+    "mean_wer": 0.0,
+    "mean_latency_ms": 76.23,
+    "median_latency_ms": 60.41,
+    "throughput_fps": 13.12,
+    "failure_rate": 0.0
+  },
+  "document_classification": {
+    "accuracy": 0.4,
+    "confusion_matrix": {
+      "passport": {
+        "passport": 6,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 0,
+        "unknown_document": 0
+      },
+      "visa": {
+        "passport": 6,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 0,
+        "unknown_document": 0
+      },
+      "driver_license": {
+        "passport": 1,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 0,
+        "unknown_document": 5
+      },
+      "national_id": {
+        "passport": 6,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 0,
+        "unknown_document": 0
+      },
+      "permit": {
+        "passport": 0,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 6,
+        "unknown_document": 0
+      },
+      "unknown_document": {
+        "passport": 0,
+        "visa": 0,
+        "driver_license": 0,
+        "national_id": 0,
+        "permit": 0,
+        "unknown_document": 0
+      }
+    }
+  },
+  "field_metrics": {
+    "mean_f1": 0.281,
+    "mean_exact_match": 0.2259,
+    "mean_precision": 0.3532,
+    "mean_recall": 0.2426,
+    "unknown_rate": 0.1667,
+    "review_required_rate": 0.8,
+    "by_document_type": {
+      "passport": {
+        "samples": 6,
+        "f1": 0.6087,
+        "exact_match": 0.5,
+        "precision": 0.6364,
+        "recall": 0.5833,
+        "latency_ms": 141.93
+      },
+      "driver_license": {
+        "samples": 6,
+        "f1": 0.0185,
+        "exact_match": 0.0185,
+        "precision": 0.0185,
+        "recall": 0.0185,
+        "latency_ms": 58.84
+      },
+      "visa": {
+        "samples": 6,
+        "f1": 0.0,
+        "exact_match": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "latency_ms": 71.43
+      },
+      "national_id": {
+        "samples": 6,
+        "f1": 0.1111,
+        "exact_match": 0.1111,
+        "precision": 0.1111,
+        "recall": 0.1111,
+        "latency_ms": 57.97
+      },
+      "permit": {
+        "samples": 6,
+        "f1": 0.6667,
+        "exact_match": 0.5,
+        "precision": 1.0,
+        "recall": 0.5,
+        "latency_ms": 51.0
+      }
+    },
+    "by_field": {
+      "document_type": {
+        "precision": 0.48,
+        "recall": 0.4,
+        "f1": 0.4364,
+        "exact_match_ratio": 0.4
+      },
+      "issuing_country": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "passport_number": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "surname": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      },
+      "given_names": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      },
+      "nationality": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      },
+      "date_of_birth": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "gender": {
+        "precision": 1.0,
+        "recall": 0.5833,
+        "f1": 0.7368,
+        "exact_match_ratio": 0.5833
+      },
+      "date_of_issue": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "date_of_expiry": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      },
+      "mrz_line1": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "mrz_line2": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "license_number": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "full_name": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "address": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "issue_date": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "expiry_date": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "vehicle_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "visa_number": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "entries": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "id_number": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "mrz_line3": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "permit_number": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "permit_category": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      },
+      "valid_until": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "exact_match_ratio": 0.0
+      },
+      "sponsor": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_match_ratio": 1.0
+      }
+    }
+  },
+  "mrz_metrics": {
+    "mrz_present_count": 24,
+    "mrz_valid_checksum_count": 5,
+    "mrz_checksum_valid_rate": 0.2083,
+    "cross_field_conflict_count": 49
+  },
+  "confidence_calibration": {
+    "expected_calibration_error": 0.5226,
+    "confidence_bins": {
+      "0.0-0.2": {
+        "count": 0,
+        "mean_confidence": 0.0,
+        "accuracy": 0.0,
+        "error_rate": 0.0
+      },
+      "0.2-0.4": {
+        "count": 0,
+        "mean_confidence": 0.0,
+        "accuracy": 0.0,
+        "error_rate": 0.0
+      },
+      "0.4-0.6": {
+        "count": 0,
+        "mean_confidence": 0.0,
+        "accuracy": 0.0,
+        "error_rate": 0.0
+      },
+      "0.6-0.8": {
+        "count": 0,
+        "mean_confidence": 0.0,
+        "accuracy": 0.0,
+        "error_rate": 0.0
+      },
+      "0.8-1.0": {
+        "count": 141,
+        "mean_confidence": 0.9552,
+        "accuracy": 0.4326,
+        "error_rate": 0.5674
+      }
+    }
+  }
+}
