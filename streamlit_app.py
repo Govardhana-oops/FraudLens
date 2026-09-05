@@ -973,8 +973,12 @@ with col_mid:
     bio_badge = "AWAITING PROBE"
     if live_bytes:
         bio_badge = "PROBE CAPTURED"
-    if dossier.get("modules_telemetry", {}).get("module4_face_verification"):
-        bio_badge = dossier["modules_telemetry"]["module4_face_verification"].status
+    m4_tel = dossier.get("modules_telemetry", {}).get("module4_face_verification") if isinstance(dossier, dict) else getattr(dossier, "modules_telemetry", {}).get("module4_face_verification", None)
+    if m4_tel:
+        if hasattr(m4_tel, "status"):
+            bio_badge = str(m4_tel.status)
+        elif isinstance(m4_tel, dict):
+            bio_badge = str(m4_tel.get("status", bio_badge))
 
     st.markdown(f"""
     <div class="card">
@@ -1207,8 +1211,9 @@ with col_right:
 # -----------------------------------------------------------------------------
 # Bottom Telemetry Footer
 # -----------------------------------------------------------------------------
-latency_display = dossier.get("total_latency_ms", st.session_state.screening_latency)
-audit_hash = dossier.get("audit_log", {}).get("entry_hash", "0000000000000000000000000000000000000000")
+latency_display = dossier.get("total_latency_ms") or st.session_state.screening_latency or 0.0
+audit_log = dossier.get("audit_log") or {}
+audit_hash = audit_log.get("entry_hash", "0000000000000000000000000000000000000000") if isinstance(audit_log, dict) else getattr(audit_log, "entry_hash", "0000000000000000000000000000000000000000")
 
 st.markdown(f"""
 <footer class="app-footer">
