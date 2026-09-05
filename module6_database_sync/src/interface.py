@@ -29,7 +29,10 @@ class DatabaseSyncService:
             db_path = db_override_path
         else:
             filename = self.config.get("storage", {}).get("database_filename", "offline_border_store.sqlite3")
-            db_path = str(Path(__file__).parent.parent / "data" / filename)
+            if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+                db_path = f"/tmp/{filename}"
+            else:
+                db_path = str(Path(__file__).parent.parent / "data" / filename)
 
         genesis = self.config.get("security", {}).get("chain_genesis_hash", "0000000000000000000000000000000000000000000000000000000000000000")
         self.store = SQLiteOfflineStore(db_path, genesis_hash=genesis)

@@ -1,10 +1,7 @@
 # ==============================================================================
 # AI-DIDSS: AI-Based Fake Identity & Document Screening System
-# Production Runtime & Deployment Requirements (GitHub & Streamlit Cloud)
+# Production Runtime & Deployment Requirements (FastAPI Backend / Vercel)
 # ==============================================================================
-
-# Streamlit UI & Web Dashboard (Main Deployment Entrypoint: streamlit_app.py)
-streamlit>=1.35.0
 
 # Web Framework & API Backend (Module 8)
 fastapi>=0.104.0

@@ -22,19 +22,26 @@ try:
 except Exception:
     pass
 
+import gc
+
 _EASYOCR_READER = None
 
 def get_easyocr_reader():
-    """Lazy-load and cache the EasyOCR Reader instance (singleton)."""
+    """Lazy-load and cache the EasyOCR Reader instance with minimal RAM footprint."""
     global _EASYOCR_READER
     if _EASYOCR_READER is None:
         try:
-            import easyocr
             import torch
-            # Optimize CPU threads for fast inference
+            # Strictly limit CPU threads to 1 for memory-constrained cloud environments (Streamlit Cloud 1GB limit)
             if hasattr(torch, 'set_num_threads'):
-                torch.set_num_threads(max(1, min(4, os.cpu_count() or 2)))
+                try:
+                    torch.set_num_threads(1)
+                    torch.set_num_interop_threads(1)
+                except Exception:
+                    pass
+            import easyocr
             _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False)
+            gc.collect()
         except Exception as e:
             print(f"[OCR Engine] EasyOCR initialization warning: {e}", file=sys.stderr)
             _EASYOCR_READER = False
@@ -85,27 +92,43 @@ class DocumentOCRBackend(BaseOCREngine):
         if h < 120:
             scale = 140.0 / float(max(1, h))
             rgb_mrz = cv2.resize(rgb_mrz, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        elif w > 1024:
+            scale = 1024.0 / float(w)
+            rgb_mrz = cv2.resize(rgb_mrz, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 
         try:
-            detections = reader.readtext(
-                rgb_mrz,
-                allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<",
-                detail=1,
-                paragraph=False,
-                contrast_ths=0.1,
-                adjust_contrast=0.5
-            )
-            # Sort vertically by Y coordinate, then X
-            detections.sort(key=lambda d: (d[0][0][1], d[0][0][0]))
-            
-            lines = []
-            for bbox, text, conf in detections:
-                t = text.strip().upper().replace(" ", "<")
-                if t and len(t) >= 10:
-                    lines.append(t)
-            return lines
+            import torch
+            with torch.inference_mode():
+                detections = reader.readtext(
+                    rgb_mrz,
+                    allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<",
+                    detail=1,
+                    paragraph=False,
+                    contrast_ths=0.1,
+                    adjust_contrast=0.5
+                )
         except Exception:
-            return []
+            try:
+                detections = reader.readtext(
+                    rgb_mrz,
+                    allowlist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<",
+                    detail=1,
+                    paragraph=False,
+                    contrast_ths=0.1,
+                    adjust_contrast=0.5
+                )
+            except Exception:
+                detections = []
+
+        # Sort vertically by Y coordinate, then X
+        detections.sort(key=lambda d: (d[0][0][1], d[0][0][0]))
+        
+        lines = []
+        for bbox, text, conf in detections:
+            t = text.strip().upper().replace(" ", "<")
+            if t and len(t) >= 10:
+                lines.append(t)
+        return lines
 
     def recognize(self, image_np: np.ndarray, mrz_crop: Optional[np.ndarray] = None) -> dict:
         """Executes full document neural OCR, extracts bounding boxes, and fuses MRZ crop."""
@@ -144,19 +167,42 @@ class DocumentOCRBackend(BaseOCREngine):
             }
 
         rgb_img = self._prepare_rgb(image_np)
-        h, w = rgb_img.shape[:2]
+        orig_h, orig_w = rgb_img.shape[:2]
+
+        # Downsample large images to max dimension 1024 to save 75% RAM and 4x speedup
+        scale_x, scale_y = 1.0, 1.0
+        max_dim = max(orig_h, orig_w)
+        if max_dim > 1024:
+            resize_factor = 1024.0 / float(max_dim)
+            new_w = max(1, int(orig_w * resize_factor))
+            new_h = max(1, int(orig_h * resize_factor))
+            scale_x = orig_w / float(new_w)
+            scale_y = orig_h / float(new_h)
+            ocr_img = cv2.resize(rgb_img, (new_w, new_h), interpolation=cv2.INTER_AREA)
+        else:
+            ocr_img = rgb_img
 
         try:
-            # 1. Full Image Detection
-            detections = reader.readtext(
-                rgb_img,
-                detail=1,
-                paragraph=False,
-                contrast_ths=0.1,
-                adjust_contrast=0.5
-            )
-        except Exception as e:
-            detections = []
+            import torch
+            with torch.inference_mode():
+                detections = reader.readtext(
+                    ocr_img,
+                    detail=1,
+                    paragraph=False,
+                    contrast_ths=0.1,
+                    adjust_contrast=0.5
+                )
+        except Exception:
+            try:
+                detections = reader.readtext(
+                    ocr_img,
+                    detail=1,
+                    paragraph=False,
+                    contrast_ths=0.1,
+                    adjust_contrast=0.5
+                )
+            except Exception as e:
+                detections = []
 
         # Sort detections by Y then X
         detections.sort(key=lambda item: (item[0][0][1], item[0][0][0]))
@@ -171,8 +217,9 @@ class DocumentOCRBackend(BaseOCREngine):
                 lines.append(t)
                 conf_val = float(conf)
                 confidences.append(conf_val)
-                xs = [pt[0] for pt in bbox]
-                ys = [pt[1] for pt in bbox]
+                # Rescale bounding box back to original coordinates
+                xs = [pt[0] * scale_x for pt in bbox]
+                ys = [pt[1] * scale_y for pt in bbox]
                 words_metadata.append({
                     "text": t,
                     "confidence": round(conf_val, 2),
@@ -185,7 +232,7 @@ class DocumentOCRBackend(BaseOCREngine):
             mrz_detected_lines = self.recognize_mrz_zone(mrz_crop)
         else:
             # Automatic MRZ band crop (bottom 28%)
-            mrz_band_y = int(h * 0.72)
+            mrz_band_y = int(orig_h * 0.72)
             auto_mrz_crop = image_np[mrz_band_y:, :]
             mrz_detected_lines = self.recognize_mrz_zone(auto_mrz_crop)
 
@@ -198,6 +245,9 @@ class DocumentOCRBackend(BaseOCREngine):
 
         raw_text = "\n".join(lines).strip()
         avg_conf = float(np.mean(confidences)) if confidences else 0.0
+
+        # Collect garbage to free tensor buffers
+        gc.collect()
 
         return {
             "raw_text": raw_text,

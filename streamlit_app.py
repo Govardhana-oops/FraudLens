@@ -24,12 +24,27 @@ ROOT_DIR = Path(__file__).resolve().parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-# Import the real Module 7 integration orchestrator
-try:
-    from module7_integration_engine.src.interface import screening_orchestrator
-except ImportError as e:
-    st.error(f"Critical System Error: Failed to import Module 7 Integration Engine: {e}")
-    st.stop()
+# Dynamically initialize and cache the real Module 7 integration orchestrator (Singleton)
+@st.cache_resource(show_spinner="Bootstrapping AI-DIDSS Engine...")
+def get_screening_orchestrator():
+    import gc
+    try:
+        import torch
+        if hasattr(torch, 'set_num_threads'):
+            try:
+                torch.set_num_threads(1)
+                torch.set_num_interop_threads(1)
+            except Exception:
+                pass
+    except Exception:
+        pass
+    try:
+        from module7_integration_engine.src.interface import screening_orchestrator
+        gc.collect()
+        return screening_orchestrator
+    except ImportError as e:
+        st.error(f"Critical System Error: Failed to import Module 7 Integration Engine: {e}")
+        st.stop()
 
 
 # -----------------------------------------------------------------------------
@@ -1076,7 +1091,8 @@ if run_screening:
             t_start = time.perf_counter()
             try:
                 # Direct in-process execution of the real Module 7 orchestrator
-                res_dossier = screening_orchestrator.process_screening(
+                orchestrator = get_screening_orchestrator()
+                res_dossier = orchestrator.process_screening(
                     document_image=doc_bytes,
                     live_face_image=live_bytes,
                     officer_id=officer_id,
@@ -1084,6 +1100,8 @@ if run_screening:
                 )
                 st.session_state.dossier = res_dossier
                 st.session_state.screening_latency = (time.perf_counter() - t_start) * 1000.0
+                import gc
+                gc.collect()
                 st.rerun()
             except Exception as e:
                 st.error(f"Fatal Pipeline Error: {str(e)}")
