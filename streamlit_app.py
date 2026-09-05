@@ -760,6 +760,7 @@ sample_choice = st.sidebar.selectbox(
     "Load Authorized Synthetic Sample",
     options=[
         "Custom Document Upload",
+        "Live Camera Document Capture",
         "Synthetic Passport (Valid TD3)",
         "Synthetic National ID (Valid TD1)",
         "Synthetic Driver License (Valid)",
@@ -778,12 +779,27 @@ sample_file_map = {
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 👤 Live Biometric Probe")
-live_probe_file = st.sidebar.file_uploader(
-    "Upload Live Probe / Selfie Image",
-    type=["png", "jpg", "jpeg"],
-    key="live_probe_file_uploader",
-    help="Optional live probe capture for 1:1 biometric facial verification."
+probe_mode = st.sidebar.radio(
+    "Probe Acquisition Mode",
+    ["Upload Photo", "Live Camera Selfie"],
+    horizontal=True,
+    key="probe_mode_select"
 )
+
+live_probe_file = None
+if probe_mode == "Upload Photo":
+    live_probe_file = st.sidebar.file_uploader(
+        "Upload Live Probe / Selfie Image",
+        type=["png", "jpg", "jpeg"],
+        key="live_probe_file_uploader",
+        help="Optional live probe capture for 1:1 biometric facial verification."
+    )
+else:
+    live_probe_file = st.sidebar.camera_input(
+        "Take Live Biometric Selfie",
+        key="live_probe_camera_input",
+        help="Capture real-time face image with webcam."
+    )
 
 st.sidebar.markdown("---")
 st.sidebar.caption(
@@ -815,6 +831,16 @@ if sample_choice == "Custom Document Upload":
         doc_bytes = custom_file.read()
         doc_b64 = bytes_to_base64(doc_bytes)
         doc_type_badge = "DOCUMENT LOADED"
+elif sample_choice == "Live Camera Document Capture":
+    cam_doc = st.sidebar.camera_input(
+        "Capture Document Scan",
+        key="doc_camera_input_sidebar",
+        help="Capture document directly from camera."
+    )
+    if cam_doc is not None:
+        doc_bytes = cam_doc.read()
+        doc_b64 = bytes_to_base64(doc_bytes)
+        doc_type_badge = "CAMERA CAPTURE"
 elif sample_choice == "Blank Canvas Test Image":
     blank_arr = np.ones((300, 400, 3), dtype=np.uint8) * 255
     pil_blank = Image.fromarray(blank_arr)

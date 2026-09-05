@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-DIDSS | Border Inspection & Document Screening Console</title>
-    <meta name="description" content="AI-Based Fake Identity & Travel Document Screening System Officer Console">
+    <meta name="description" content="AI-Based Fake Identity & Travel Document Screening System Officer Console with Live Camera ID Scanner & Biometric Face Liveness">
     <meta name="api-base-url" content="">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,14 +18,14 @@
         <header class="app-header">
             <div class="brand-group">
                 <div class="logo-shield">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-icon" aria-label="Shield Security Icon">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         <path d="m9 12 2 2 4-4"/>
                     </svg>
                 </div>
                 <div class="brand-text">
                     <h1 class="brand-title">AI-DIDSS</h1>
-                    <span class="brand-subtitle">Border Inspection & Screening Console</span>
+                    <span class="brand-subtitle">Border Inspection & Document Screening Console</span>
                 </div>
             </div>
 
@@ -42,7 +42,7 @@
                     <span class="status-indicator online"></span>
                     <span class="pill-val" id="network-status">ONLINE</span>
                 </div>
-                <button id="sync-btn" class="btn btn-secondary">
+                <button id="sync-btn" class="btn btn-secondary" aria-label="Synchronize Watchlist">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                         <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
                     </svg>
@@ -53,7 +53,7 @@
 
         <!-- Main Dashboard Content -->
         <main class="dashboard-grid">
-            <!-- Left Column: Document Scanner & Viewfinder -->
+            <!-- Left Column: Document Optical Scanner -->
             <section class="card glass-card" id="document-section">
                 <div class="card-header">
                     <h2 class="card-title">
@@ -67,18 +67,119 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="dropzone" id="doc-dropzone">
+                    <!-- Mode Switcher Tabs -->
+                    <div class="mode-tab-group" role="tablist">
+                        <button class="mode-tab active" id="tab-doc-camera" type="button" role="tab" aria-selected="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Live Camera
+                        </button>
+                        <button class="mode-tab" id="tab-doc-upload" type="button" role="tab" aria-selected="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            Upload File
+                        </button>
+                    </div>
+
+                    <!-- Document Type & Side Bar -->
+                    <div class="doc-controls-bar">
+                        <div class="control-field">
+                            <label class="control-label" for="doc-type-select">DOCUMENT TYPE</label>
+                            <select id="doc-type-select" class="select-input">
+                                <option value="PASSPORT">Passport (ICAO TD3)</option>
+                                <option value="NATIONAL_ID">National ID (TD1)</option>
+                                <option value="DRIVERS_LICENSE">Driver's License (TD1)</option>
+                                <option value="RESIDENCE_PERMIT">Residence Permit</option>
+                            </select>
+                        </div>
+                        <div class="control-field">
+                            <label class="control-label">SIDE</label>
+                            <div class="side-toggle-group">
+                                <button type="button" class="side-btn active" id="btn-side-front">Front</button>
+                                <button type="button" class="side-btn" id="btn-side-back">Back</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Camera Viewport Section -->
+                    <div class="camera-viewport-container" id="doc-camera-container">
+                        <div class="camera-viewport doc-viewport">
+                            <video id="doc-video" autoplay playsinline muted></video>
+                            <canvas id="doc-canvas" hidden></canvas>
+
+                            <!-- Document Bounding Frame with Precision Corners -->
+                            <div class="doc-bounding-frame" id="doc-bounding-frame">
+                                <div class="doc-bracket doc-bracket-tl"></div>
+                                <div class="doc-bracket doc-bracket-tr"></div>
+                                <div class="doc-bracket doc-bracket-bl"></div>
+                                <div class="doc-bracket doc-bracket-br"></div>
+                                <div class="doc-scanline" id="doc-scanline"></div>
+                                <div class="doc-aspect-guide" id="doc-aspect-guide">ICAO TD3 PASSPORT ZONE</div>
+                            </div>
+
+                            <!-- Live Guidance HUD Badge -->
+                            <div class="guidance-hud-pill" id="doc-guidance-badge">
+                                <span class="hud-pulse"></span>
+                                <span id="doc-guidance-text">ALIGN DOCUMENT INSIDE FRAME</span>
+                            </div>
+
+                            <!-- Live Telemetry Overlays -->
+                            <div class="viewport-telemetry-row">
+                                <span class="vp-telemetry-pill" id="doc-lighting-indicator">LIGHT: --</span>
+                                <span class="vp-telemetry-pill" id="doc-stability-indicator">STABLE: --</span>
+                            </div>
+
+                            <!-- Permission / Error Overlay -->
+                            <div class="camera-error-overlay" id="doc-camera-error" hidden>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="error-cam-icon"><path d="m1 1 22 22m-2-2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"/></svg>
+                                <p class="cam-error-title" id="doc-error-title">Camera Permission Needed</p>
+                                <p class="cam-error-desc" id="doc-error-desc">Allow camera access or switch to Upload File mode.</p>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btn-doc-retry-cam">Retry Camera</button>
+                            </div>
+                        </div>
+
+                        <!-- Camera Action Bar -->
+                        <div class="camera-action-bar">
+                            <button type="button" class="btn btn-icon-only" id="btn-doc-switch-cam" title="Switch Camera" aria-label="Switch Camera">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8m16 4c0 4.418-3.582 8-8 8s-8-3.582-8-8"/><path d="m17 7 3 3 3-3m-14 10-3-3-3 3"/></svg>
+                            </button>
+                            <button type="button" class="btn btn-primary btn-shutter" id="btn-doc-capture" title="Capture Document">
+                                <span class="shutter-inner"></span>
+                                <span class="shutter-text">Capture Document</span>
+                            </button>
+                            <button type="button" class="btn btn-icon-only" id="btn-doc-retake" title="Retake / Restart Camera" aria-label="Retake Document">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            </button>
+                        </div>
+                        <div class="autocapture-row">
+                            <label class="autocapture-toggle">
+                                <input type="checkbox" id="doc-autocapture-toggle" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Auto-Capture when Steady</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- File Dropzone (Upload Mode) -->
+                    <div class="dropzone" id="doc-dropzone" hidden>
                         <input type="file" id="doc-file-input" accept="image/jpeg,image/png" hidden>
                         <div class="dropzone-content" id="doc-dropzone-prompt">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                             </svg>
-                            <p class="dropzone-text">Drag & drop passport scan or click to browse</p>
+                            <p class="dropzone-text">Drag & drop document scan or click to browse</p>
                             <span class="dropzone-sub">Supports High-Res JPEG / PNG (up to 25MB)</span>
                         </div>
-                        <img id="doc-preview-img" class="preview-image" alt="Document Preview" hidden>
                     </div>
 
+                    <!-- Frozen Captured / Loaded Document Preview -->
+                    <div class="doc-captured-preview-container" id="doc-preview-wrap" hidden>
+                        <img id="doc-preview-img" class="preview-image" alt="Document Preview">
+                        <div class="preview-overlay-bar">
+                            <span class="preview-tag" id="doc-preview-tag">CAPTURED FRAME READY</span>
+                            <button type="button" class="btn btn-secondary btn-xs" id="btn-doc-recapture">Recapture</button>
+                        </div>
+                    </div>
+
+                    <!-- Extracted Fields Grid -->
                     <div class="extracted-fields-grid" id="fields-container">
                         <div class="field-item">
                             <span class="field-label">Document Number</span>
@@ -102,17 +203,19 @@
                         </div>
                     </div>
 
+                    <!-- MRZ Stream Display -->
                     <div class="mrz-box">
                         <div class="mrz-header">
                             <span>ICAO DOC 9303 MRZ STREAM</span>
                             <span class="mrz-badge" id="mrz-status">STANDBY</span>
                         </div>
-                        <pre class="mrz-text" id="mrz-display">P<UTO<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n0000000000UTO0000000M0000000<<<<<<<<<<<<<<<0</pre>
+                        <pre class="mrz-text" id="mrz-display">P&lt;UTO&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+0000000000UTO0000000M0000000&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0</pre>
                     </div>
                 </div>
             </section>
 
-            <!-- Center Column: Biometric Facial Verification -->
+            <!-- Center Column: Biometric Facial Verification & Live Liveness -->
             <section class="card glass-card" id="biometric-section">
                 <div class="card-header">
                     <h2 class="card-title">
@@ -120,13 +223,27 @@
                             <circle cx="12" cy="8" r="5"/>
                             <path d="M20 21a8 8 0 1 0-16 0"/>
                         </svg>
-                        2. Biometric Face Verification
+                        2. Biometric Face & Liveness
                     </h2>
                     <span class="badge" id="bio-status-badge">AWAITING PROBE</span>
                 </div>
 
                 <div class="card-body">
+                    <!-- Mode Switcher Tabs -->
+                    <div class="mode-tab-group" role="tablist">
+                        <button class="mode-tab active" id="tab-face-liveness" type="button" role="tab" aria-selected="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                            Live Selfie / Liveness
+                        </button>
+                        <button class="mode-tab" id="tab-face-upload" type="button" role="tab" aria-selected="false">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            Upload Photo
+                        </button>
+                    </div>
+
+                    <!-- Biometric Compare Grid -->
                     <div class="biometric-compare-grid">
+                        <!-- Left: Document Portrait Extracted -->
                         <div class="bio-frame">
                             <span class="bio-frame-label">EXTRACTED PORTRAIT</span>
                             <div class="face-crop-box">
@@ -134,22 +251,75 @@
                             </div>
                         </div>
 
+                        <!-- Right: Live Probe / Liveness Viewport -->
                         <div class="bio-frame">
-                            <span class="bio-frame-label">LIVE CAMERA PROBE</span>
-                            <div class="face-crop-box" id="live-face-box">
+                            <span class="bio-frame-label">LIVE PROBE / LIVENESS</span>
+                            
+                            <!-- Live Camera Viewport with Oval Guide -->
+                            <div class="camera-viewport selfie-viewport" id="selfie-camera-container">
+                                <video id="selfie-video" autoplay playsinline muted></video>
+                                <canvas id="selfie-canvas" hidden></canvas>
+
+                                <!-- Jumio-Inspired Biometric Oval Guide with Concentric Pulse -->
+                                <div class="biometric-oval-guide aligning" id="biometric-oval-guide">
+                                    <div class="oval-pulse-ring"></div>
+                                    <div class="oval-radar-sweep"></div>
+                                    <div class="oval-border-ring"></div>
+                                </div>
+
+                                <!-- Active Liveness Interactive Challenge Banner -->
+                                <div class="liveness-challenge-banner" id="liveness-challenge-banner">
+                                    <span class="challenge-step-badge" id="liveness-step-badge">STEP 1 / 3</span>
+                                    <span class="challenge-prompt-text" id="liveness-step-prompt">CENTER YOUR FACE IN THE OVAL</span>
+                                    <div class="challenge-progress-track">
+                                        <div class="challenge-progress-fill" id="liveness-progress-fill" style="width: 25%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Telemetry HUD -->
+                                <div class="selfie-telemetry-overlay">
+                                    <span class="selfie-telemetry-pill" id="selfie-lighting-badge">LIGHT: --</span>
+                                    <span class="selfie-telemetry-pill" id="selfie-sharpness-badge">SHARP: --</span>
+                                </div>
+
+                                <!-- Permission / Error Overlay -->
+                                <div class="camera-error-overlay" id="selfie-camera-error" hidden>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="error-cam-icon"><path d="m1 1 22 22m-2-2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"/></svg>
+                                    <p class="cam-error-title" id="selfie-error-title">Camera Permission Needed</p>
+                                    <p class="cam-error-desc" id="selfie-error-desc">Allow selfie camera access or switch to Upload Photo mode.</p>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btn-selfie-retry-cam">Retry Camera</button>
+                                </div>
+                            </div>
+
+                            <!-- Upload Box (Fallback Mode) -->
+                            <div class="face-crop-box" id="live-face-box" hidden>
                                 <input type="file" id="live-file-input" accept="image/*" hidden>
                                 <div id="live-upload-prompt" class="live-prompt">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="camera-icon">
                                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                                         <circle cx="12" cy="13" r="4"/>
                                     </svg>
-                                    <span>Capture / Upload</span>
+                                    <span>Browse / Upload</span>
                                 </div>
                                 <img id="live-face-crop" class="face-crop-img" alt="Live Probe" hidden>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Selfie Action Toolbar -->
+                    <div class="selfie-action-toolbar" id="selfie-action-bar">
+                        <button type="button" class="btn btn-icon-only" id="btn-selfie-switch-cam" title="Switch Camera" aria-label="Switch Camera">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8m16 4c0 4.418-3.582 8-8 8s-8-3.582-8-8"/><path d="m17 7 3 3 3-3m-14 10-3-3-3 3"/></svg>
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="btn-selfie-capture">
+                            Manual Capture Probe
+                        </button>
+                        <button type="button" class="btn btn-icon-only" id="btn-selfie-retake" title="Retake Selfie" aria-label="Retake Selfie">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- 1:1 Similarity Meter -->
                     <div class="match-meter-container">
                         <div class="match-meter-header">
                             <span>1:1 Facial Similarity</span>
@@ -160,14 +330,16 @@
                         </div>
                     </div>
 
+                    <!-- Presentation Attack Detection (PAD) & Liveness Status Box -->
                     <div class="pad-anti-spoof-box">
-                        <span class="pad-label">PRESENTATION ATTACK DETECTION (PAD)</span>
+                        <span class="pad-label">PRESENTATION ATTACK DETECTION (PAD) & ACTIVE LIVENESS</span>
                         <div class="pad-status-row">
-                            <span id="pad-status-text">Sensor Ready</span>
-                            <span class="pad-badge" id="pad-badge">LIVENESS OK</span>
+                            <span id="pad-status-text">Active Liveness Sensor Ready</span>
+                            <span class="pad-badge" id="pad-badge">ACTIVE LIVENESS READY</span>
                         </div>
                     </div>
 
+                    <!-- Multi-Modal Screening Submission Button -->
                     <button id="run-screen-btn" class="btn btn-primary btn-block">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
                             <circle cx="11" cy="11" r="8"/>
@@ -242,7 +414,7 @@
                     <!-- Actionable Guidance -->
                     <div class="guidance-box">
                         <span class="guidance-label">OFFICER INSTRUCTIONS</span>
-                        <p class="guidance-text" id="guidance-text">Insert document into optical feeder to begin inspection flow.</p>
+                        <p class="guidance-text" id="guidance-text">Capture document via live camera or upload image to begin inspection flow.</p>
                     </div>
 
                     <!-- Manual Override & Escalation -->

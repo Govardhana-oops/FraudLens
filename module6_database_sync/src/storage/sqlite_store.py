@@ -24,10 +24,30 @@ class SQLiteOfflineStore:
         self._load_memory_index()
 
     def _get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path, timeout=5.0)
-        conn.execute("PRAGMA journal_mode=WAL;")
-        conn.execute("PRAGMA synchronous=NORMAL;")
-        return conn
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=5.0)
+            conn.execute("PRAGMA journal_mode=WAL;")
+            conn.execute("PRAGMA synchronous=NORMAL;")
+            return conn
+        except sqlite3.DatabaseError as e:
+            if "malformed" in str(e).lower() or "disk image" in str(e).lower():
+                # Recover from corrupt database file by removing corrupt file
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                for ext in ["", "-wal", "-shm"]:
+                    fpath = f"{self.db_path}{ext}"
+                    if os.path.exists(fpath):
+                        try:
+                            os.remove(fpath)
+                        except Exception:
+                            pass
+                conn = sqlite3.connect(self.db_path, timeout=5.0)
+                conn.execute("PRAGMA journal_mode=WAL;")
+                conn.execute("PRAGMA synchronous=NORMAL;")
+                return conn
+            raise
 
     def _init_db(self):
         """Initializes database schema and indexes."""

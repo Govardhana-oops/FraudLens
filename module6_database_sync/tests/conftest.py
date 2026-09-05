@@ -3,12 +3,18 @@ import tempfile
 import os
 from pathlib import Path
 import pytest
-from src.interface import DatabaseSyncService
-
-# Add module root to sys.path
+# Add module root and prototype root to sys.path
 module_root = str(Path(__file__).parent.parent)
+proto_root = str(Path(__file__).parent.parent.parent)
 if module_root not in sys.path:
     sys.path.insert(0, module_root)
+if proto_root not in sys.path:
+    sys.path.insert(0, proto_root)
+
+try:
+    from src.interface import DatabaseSyncService
+except (ImportError, ModuleNotFoundError):
+    from module6_database_sync.src.interface import DatabaseSyncService
 
 @pytest.fixture
 def test_sync_service():
