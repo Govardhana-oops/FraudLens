@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fraudlens-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ALLOWED_ORIGINS
+        value: https://fraud-lens-7xjy.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:5174
