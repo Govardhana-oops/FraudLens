@@ -50,6 +50,11 @@ interface AppContextType {
   executeBiometricVerification: (liveFaceFile: File) => Promise<FaceComparisonResult>;
   resetBiometricResult: () => void;
 
+  operatingMode: "ONLINE" | "OFFLINE";
+  setOperatingMode: (mode: "ONLINE" | "OFFLINE") => void;
+  pendingSyncCount: number;
+  syncedRecordsCount: number;
+
   executeScreening: (
     documentFile: File,
     liveFaceFile: File | null,
@@ -68,6 +73,8 @@ interface AppContextType {
 const STORAGE_RECORDS_KEY = "fraudlens_screening_records_v2";
 const STORAGE_AUDIT_KEY = "fraudlens_audit_logs_v2";
 const STORAGE_SETTINGS_KEY = "fraudlens_console_settings_v2";
+const STORAGE_MODE_KEY = "fraudlens_operating_mode_v2";
+const STORAGE_SYNCED_IDS_KEY = "fraudlens_synced_ids_v2";
 
 const DEFAULT_SETTINGS: ConsoleSettings = {
   officerId: "CP-0082",
@@ -92,6 +99,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return [];
     }
   });
+
+  const [operatingMode, setOperatingModeState] = useState<"ONLINE" | "OFFLINE">(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_MODE_KEY);
+      return saved === "OFFLINE" ? "OFFLINE" : "ONLINE";
+    } catch {
+      return "ONLINE";
+    }
+  });
+
+  const [syncedRecordIds, setSyncedRecordIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_SYNCED_IDS_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const setOperatingMode = useCallback((mode: "ONLINE" | "OFFLINE") => {
+    setOperatingModeState(mode);
+    try {
+      localStorage.setItem(STORAGE_MODE_KEY, mode);
+    } catch (e) {
+      console.error("Failed to save operating mode", e);
+    }
+  }, []);
 
   const [currentResult, setCurrentResult] = useState<UnifiedScreeningDossier | null>(null);
 
@@ -365,10 +399,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const clearAllData = useCallback(() => {
     setRecords([]);
     setAuditLogs([]);
+    setSyncedRecordIds([]);
     setCurrentResult(null);
     clearReferenceDocument();
     localStorage.removeItem(STORAGE_RECORDS_KEY);
     localStorage.removeItem(STORAGE_AUDIT_KEY);
+    localStorage.removeItem(STORAGE_SYNCED_IDS_KEY);
   }, [clearReferenceDocument]);
 
   const updateSettings = useCallback((newSettings: ConsoleSettings) => {
@@ -399,16 +435,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const pendingSyncCount = useMemo(() => {
+    return records.filter((r) => !syncedRecordIds.includes(r.screening_id)).length;
+  }, [records, syncedRecordIds]);
+
+  const syncedRecordsCount = useMemo(() => {
+    return records.filter((r) => syncedRecordIds.includes(r.screening_id)).length;
+  }, [records, syncedRecordIds]);
+
   const triggerSync = useCallback(async (): Promise<SyncStatusReport> => {
     setIsSyncing(true);
     try {
+      if (operatingMode === "OFFLINE") {
+        // Safe offline simulated persistence handler
+        await new Promise((r) => setTimeout(r, 400));
+        return {
+          status: "OFFLINE_QUEUED",
+          synced_records: 0,
+          last_sync_timestamp: lastSyncedAt || new Date().toISOString(),
+          watchlist_version: "LOCAL_OFFLINE_CACHE",
+        };
+      }
+
       const report = await api.triggerSync(records);
+      const allIds = records.map((r) => r.screening_id);
+      setSyncedRecordIds(allIds);
+      try {
+        localStorage.setItem(STORAGE_SYNCED_IDS_KEY, JSON.stringify(allIds));
+      } catch (e) {
+        console.error("Failed to persist synced record IDs", e);
+      }
       setLastSyncedAt(new Date().toISOString());
       return report;
     } finally {
       setIsSyncing(false);
     }
-  }, [records]);
+  }, [records, operatingMode, lastSyncedAt]);
 
   const refreshData = useCallback(async () => {
     await checkHealth();
@@ -427,6 +489,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isScreening,
         isSyncing,
         lastSyncedAt,
+        operatingMode,
+        setOperatingMode,
+        pendingSyncCount,
+        syncedRecordsCount,
         referenceDocumentFile,
         referenceDocPreviewUrl,
         referenceFaceUrl,

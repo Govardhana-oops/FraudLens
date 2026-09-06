@@ -10,7 +10,7 @@ import {
 import { useApp } from "@/context/AppContext";
 
 export function TopBar() {
-  const { settings, isLiveConnected, records } = useApp();
+  const { settings, isLiveConnected, records, operatingMode } = useApp();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTime, setCurrentTime] = useState("");
@@ -71,6 +71,8 @@ export function TopBar() {
       r.status === "REVIEW_REQUIRED"
   );
 
+  const isOfflineMode = operatingMode === "OFFLINE";
+
   return (
     <header className="h-16 bg-[#030712]/95 border-b border-cyan-950/70 px-6 flex items-center justify-between shrink-0 z-40 backdrop-blur-md">
       {/* Left Branding */}
@@ -111,16 +113,40 @@ export function TopBar() {
 
       {/* Right Telemetry & Officer Info */}
       <div className="flex items-center gap-4">
-        {/* ONLINE Status Indicator Pill */}
-        <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#05111E] border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.18)]">
+        {/* Operating Status Indicator Pill */}
+        <div
+          className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border transition-all ${
+            isOfflineMode
+              ? "bg-[#140e06] border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.18)]"
+              : "bg-[#05111E] border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.18)]"
+          }`}
+        >
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_#10B981]"></span>
+            <span
+              className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                isOfflineMode ? "bg-amber-400" : "bg-emerald-400"
+              }`}
+            ></span>
+            <span
+              className={`relative inline-flex rounded-full h-2 w-2 ${
+                isOfflineMode
+                  ? "bg-amber-500 shadow-[0_0_6px_#F59E0B]"
+                  : "bg-emerald-500 shadow-[0_0_6px_#10B981]"
+              }`}
+            ></span>
           </span>
-          <span className="text-[11px] font-mono font-bold tracking-wider text-emerald-400">
-            {isLiveConnected ? "ONLINE" : "STANDBY"}
+          <span
+            className={`text-[11px] font-mono font-bold tracking-wider ${
+              isOfflineMode
+                ? "text-amber-400"
+                : isLiveConnected
+                ? "text-emerald-400"
+                : "text-cyan-400"
+            }`}
+          >
+            {isOfflineMode ? "OFFLINE" : isLiveConnected ? "ONLINE" : "STANDBY"}
           </span>
-          <div className="h-3.5 w-px bg-emerald-800/60" />
+          <div className={`h-3.5 w-px ${isOfflineMode ? "bg-amber-800/60" : "bg-emerald-800/60"}`} />
           <div className="text-right leading-none">
             <span className="text-[11px] font-mono font-bold text-slate-200 block">
               {currentTime || "08:11 PM"}
