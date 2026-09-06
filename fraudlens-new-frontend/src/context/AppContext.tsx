@@ -54,7 +54,7 @@ const DEFAULT_SETTINGS: ConsoleSettings = {
   ocrConfidenceThreshold: 0.7,
   tamperingSensitivity: 0.35,
   faceMatchThreshold: 0.75,
-  apiBaseUrl: "http://localhost:8000",
+  apiBaseUrl: api.getBaseUrl(),
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -84,7 +84,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<ConsoleSettings>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_SETTINGS_KEY);
-      return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // If loaded on cloud but settings were saved as localhost, upgrade to current base URL
+        if (
+          typeof window !== "undefined" &&
+          window.location.hostname !== "localhost" &&
+          window.location.hostname !== "127.0.0.1" &&
+          parsed.apiBaseUrl === "http://localhost:8000"
+        ) {
+          parsed.apiBaseUrl = api.getBaseUrl();
+        }
+        return { ...DEFAULT_SETTINGS, ...parsed };
+      }
+      return DEFAULT_SETTINGS;
     } catch {
       return DEFAULT_SETTINGS;
     }
