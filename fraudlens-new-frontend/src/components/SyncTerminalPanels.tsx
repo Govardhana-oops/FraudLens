@@ -23,12 +23,13 @@ export function SyncTerminalPanels({
   const isOnline = operatingMode === "ONLINE";
   const isConnected = isOnline && isLiveConnected;
 
-  const terminalName = settings.checkpointName
-    ? settings.checkpointName.split("-")[0].trim()
-    : "Terminal B";
-  const terminalId = settings.officerId
-    ? `TERMINAL-${terminalName.toUpperCase().replace(/\s+/g, "")}-${settings.officerId}`
-    : "TERMINAL-B-0082";
+  const checkpointPrefix = settings.checkpointName
+    ? settings.checkpointName.split("-")[0].trim().toUpperCase().replace(/[^A-Z0-9]/g, "-")
+    : settings.checkpointId
+    ? settings.checkpointId.toUpperCase()
+    : "TERMINAL-B";
+  const officerSuffix = settings.officerId ? settings.officerId.toUpperCase() : "CP-0082";
+  const terminalId = `${checkpointPrefix}-${officerSuffix}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -98,7 +99,7 @@ export function SyncTerminalPanels({
                   : "bg-slateText-500"
               }`}
             />
-            <span>{isConnected ? "Connected" : isOnline ? "Standby" : "Offline"}</span>
+            <span>{isConnected ? "Connected" : isOnline ? "Unavailable" : "Offline"}</span>
           </span>
         </div>
 
@@ -130,7 +131,7 @@ export function SyncTerminalPanels({
                 {isConnected
                   ? "Connected"
                   : isOnline
-                  ? "Gateway Standby"
+                  ? "Unavailable (Gateway Unreachable)"
                   : "Disconnected (Offline Mode)"}
               </span>
             </span>
@@ -138,13 +139,17 @@ export function SyncTerminalPanels({
 
           <div className="p-3 rounded-xl bg-canvas-900 border border-canvas-700/80 flex items-center justify-between">
             <span className="text-slateText-400">Security:</span>
-            <span className="text-slateText-100 font-bold">AES-256 Encrypted</span>
+            <span className="text-slateText-100 font-bold">TLS 1.3 / HTTPS Encrypted</span>
           </div>
 
           <div className="p-3 rounded-xl bg-canvas-900 border border-canvas-700/80 flex items-center justify-between">
             <span className="text-slateText-400">Sync Mode:</span>
             <span className="text-slateText-200">
-              {isOnline ? "Real-time (Online)" : `Offline Queue (${pendingCount} pending)`}
+              {isConnected
+                ? "Real-time (Online)"
+                : isOnline
+                ? `Online Standby (${pendingCount} queued)`
+                : `Offline Queue (${pendingCount} pending)`}
             </span>
           </div>
         </div>

@@ -50,6 +50,12 @@ export function SyncActionBanner({
     borderClass = "border-accent-amber/60 bg-accent-amber/5 shadow-[0_0_30px_rgba(245,158,11,0.12)]";
     iconClass = "bg-accent-amber/20 text-accent-amber border-accent-amber/40";
     Icon = HardDrive;
+  } else if (!isLiveConnected) {
+    bannerTitle = "Central Gateway Connection Unavailable";
+    bannerDesc = `${pendingCount} record(s) buffered safely in local database. Central HQ is currently unreachable; records will sync once connection returns.`;
+    borderClass = "border-accent-amber/60 bg-accent-amber/5 shadow-[0_0_30px_rgba(245,158,11,0.12)]";
+    iconClass = "bg-accent-amber/20 text-accent-amber border-accent-amber/40";
+    Icon = AlertTriangle;
   } else if (pendingCount > 0) {
     bannerTitle = "Synchronization Pending";
     bannerDesc = `${pendingCount} local record(s) awaiting differential synchronization to Central HQ.`;

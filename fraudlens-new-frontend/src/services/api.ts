@@ -377,7 +377,13 @@ class ApiService {
         throw new Error(`Sync request failed with status ${res.status}`);
       }
 
-      return await res.json();
+      const raw = await res.json();
+      return {
+        status: raw.sync_status || raw.status || "SUCCESS",
+        synced_records: raw.records_pushed !== undefined ? raw.records_pushed : raw.synced_records !== undefined ? raw.synced_records : deltaRecords.length,
+        last_sync_timestamp: raw.timestamp || raw.last_sync_timestamp || new Date().toISOString(),
+        watchlist_version: raw.details?.watchlist_version || raw.watchlist_version || "REMOTE_LEDGER_V1",
+      };
     } catch (err) {
       console.warn("Differential sync failed:", err);
       throw err;

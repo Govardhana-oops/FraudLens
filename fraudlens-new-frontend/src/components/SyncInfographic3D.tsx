@@ -220,7 +220,11 @@ export function SyncInfographic3D({
                   <XCircle size={14} className="text-slateText-400 shrink-0" />
                 )}
                 <span className={isConnected ? "text-slateText-100 font-bold" : "text-slateText-400"}>
-                  {isConnected ? "Secure Connection" : "Central Disconnected"}
+                  {isConnected
+                    ? "Secure Connection (TLS)"
+                    : isOnline
+                    ? "Gateway Unavailable"
+                    : "Central Disconnected"}
                 </span>
               </div>
 
@@ -237,7 +241,11 @@ export function SyncInfographic3D({
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={14} className="text-accent-emerald shrink-0" />
                 <span className="text-slateText-100 font-bold">
-                  {isOnline ? "Real-time Updates" : "Local Storage Ready"}
+                  {isConnected
+                    ? "Real-time Updates"
+                    : isOnline
+                    ? "Local Standby Buffer"
+                    : "Local Storage Ready"}
                 </span>
               </div>
             </div>

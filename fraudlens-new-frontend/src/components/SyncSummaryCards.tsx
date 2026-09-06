@@ -46,6 +46,10 @@ export function SyncSummaryCards({
     syncStatusLabel = "Offline Queue";
     syncStatusSub = `${pendingCount} records stored locally`;
     syncStatusColor = "amber";
+  } else if (!isLiveConnected) {
+    syncStatusLabel = "Connection Unavailable";
+    syncStatusSub = `${pendingCount} records buffered locally`;
+    syncStatusColor = "amber";
   } else if (pendingCount > 0) {
     syncStatusLabel = "Sync Pending";
     syncStatusSub = `${pendingCount} records awaiting sync`;
@@ -73,14 +77,14 @@ export function SyncSummaryCards({
     {
       id: "connection",
       title: "CONNECTION",
-      value: isConnected ? "Online" : isOnline ? "Connecting..." : "Offline",
+      value: isConnected ? "Online" : isOnline ? "Unavailable" : "Offline",
       subtext: isConnected
-        ? "Secure channel (AES-256)"
+        ? "Secure TLS Channel"
         : isOnline
-        ? "Standby / Local buffer"
+        ? "Gateway unreachable • Local buffer"
         : "Local database active",
       icon: Radio,
-      theme: "purple",
+      theme: isConnected ? "emerald" : isOnline ? "amber" : "purple",
     },
     {
       id: "sync_mode",
