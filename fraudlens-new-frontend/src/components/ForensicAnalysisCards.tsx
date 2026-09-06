@@ -9,21 +9,35 @@ interface ForensicAnalysisCardsProps {
 
 export function ForensicAnalysisCards({ currentResult }: ForensicAnalysisCardsProps) {
   // 1. Tampering status
-  const tamperingScore = currentResult?.tampering_analysis?.tampering_score ?? 0.04;
-  const isTampered = tamperingScore > 0.35 || (currentResult?.status || "").toUpperCase().includes("TAMPER");
-  const tamperingTitle = isTampered ? "Tampering Detected" : "No Tampering Detected";
-  const tamperingSub = isTampered ? "Splice / font disparity detected." : "Document integrity appears genuine.";
+  const tamperingScore = currentResult?.tampering_analysis?.tampering_score ?? 0.0;
+  const isTampered = currentResult ? (tamperingScore > 0.35 || (currentResult?.status || "").toUpperCase().includes("TAMPER")) : false;
+  const tamperingTitle = currentResult
+    ? (isTampered ? "Tampering Detected" : "No Tampering Detected")
+    : "Pending Inspection";
+  const tamperingSub = currentResult
+    ? (isTampered ? "Splice / font disparity detected." : "Document integrity appears genuine.")
+    : "Upload document to run tampering analysis.";
 
   // 2. MRZ status
-  const isMrzValid = !((currentResult?.status || "").toUpperCase().includes("EXPIRED") || (currentResult?.status || "").toUpperCase().includes("INVALID"));
-  const mrzTitle = isMrzValid ? "Valid" : "Review Required";
-  const mrzSub = isMrzValid ? "MRZ checksum verified." : "Checksum or expiry disparity detected.";
+  const isMrzValid = currentResult
+    ? !((currentResult?.status || "").toUpperCase().includes("EXPIRED") || (currentResult?.status || "").toUpperCase().includes("INVALID"))
+    : false;
+  const mrzTitle = currentResult
+    ? (isMrzValid ? "Valid" : "Review Required")
+    : "Pending Validation";
+  const mrzSub = currentResult
+    ? (isMrzValid ? "MRZ checksum verified." : "Checksum or expiry disparity detected.")
+    : "Upload document to validate MRZ.";
 
   // 3. Biometric status
   const hasFace = currentResult?.face_comparison !== null && currentResult?.face_comparison !== undefined;
   const faceMatched = hasFace && currentResult?.face_comparison?.matched;
-  const biometricTitle = faceMatched ? "Face Verified" : "Face Review Required";
-  const biometricSub = faceMatched ? "1:1 Match confirmed (Liveness valid)." : "Manual review recommended.";
+  const biometricTitle = currentResult
+    ? (faceMatched ? "Face Verified" : "Face Review Required")
+    : "Pending Biometrics";
+  const biometricSub = currentResult
+    ? (faceMatched ? "1:1 Match confirmed (Liveness valid)." : "Manual review recommended.")
+    : "Extract document face & verify live traveler.";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">

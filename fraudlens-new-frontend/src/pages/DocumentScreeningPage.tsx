@@ -50,33 +50,6 @@ export function DocumentScreeningPage() {
     { type: "RESIDENCE_PERMIT", label: "Permit" },
   ];
 
-  // Auto-load initial synthetic passport if no file or result is present for instant demo display
-  useEffect(() => {
-    let isMounted = true;
-    async function initInitialDocument() {
-      if (!documentFile && !currentResult) {
-        try {
-          const defaultFile = await generateSyntheticDocumentFile("valid_passport");
-          if (isMounted) {
-            setDocumentFile(defaultFile);
-            const url = URL.createObjectURL(defaultFile);
-            setDocPreviewUrl(url);
-            // Register reference document face in AppContext
-            setReferenceDocument(defaultFile, "PASSPORT");
-            // Automatically execute screening pipeline
-            runScreening(defaultFile);
-          }
-        } catch (e) {
-          console.error("Initial synthetic document generation error:", e);
-        }
-      }
-    }
-    initInitialDocument();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   // Handle File Selection
   const handleFileChange = (file: File | null) => {
     if (file) {
@@ -202,9 +175,9 @@ export function DocumentScreeningPage() {
 
   const fileSizeLabel = documentFile
     ? `${(documentFile.size / (1024 * 1024)).toFixed(1)} MB`
-    : "2.1 MB";
+    : "";
 
-  const fileNameLabel = documentFile ? documentFile.name : "passport.jpg";
+  const fileNameLabel = documentFile ? documentFile.name : "";
 
   return (
     <div className="space-y-4 max-w-[1600px] mx-auto select-none font-sans pb-6">
@@ -381,13 +354,24 @@ export function DocumentScreeningPage() {
             {/* Bottom Status Bar */}
             <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-cyan-950/80 text-xs">
               <div className="flex items-center gap-1.5 min-w-0">
-                <CheckCircle2 size={14} className="text-[#00F5A0] shrink-0" />
-                <span className="text-[11px] font-bold text-[#00F5A0] shrink-0">
-                  Image uploaded successfully
-                </span>
-                <span className="text-[10px] text-[#5A7A9C] truncate">
-                  {fileNameLabel} ({fileSizeLabel})
-                </span>
+                {documentFile ? (
+                  <>
+                    <CheckCircle2 size={14} className="text-[#00F5A0] shrink-0" />
+                    <span className="text-[11px] font-bold text-[#00F5A0] shrink-0">
+                      Image uploaded successfully
+                    </span>
+                    <span className="text-[10px] text-[#5A7A9C] truncate">
+                      {fileNameLabel} ({fileSizeLabel})
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Scan size={14} className="text-slate-500 shrink-0" />
+                    <span className="text-[11px] font-mono text-slate-500 shrink-0">
+                      No document uploaded
+                    </span>
+                  </>
+                )}
               </div>
 
               <button

@@ -336,8 +336,8 @@ export function LandingPage() {
 
               {/* Bottom Holographic MRZ Lines */}
               <div className="bg-[#020B16]/80 p-2 rounded-lg border border-cyan-900/50 font-mono text-[7px] text-[#00F5A0]/80 leading-tight">
-                <div>P&lt;UTOERIKSSON&lt;&lt;ANNA&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
-                <div>L898902C36UTO7408122F1204159ZE184226B&lt;&lt;&lt;&lt;&lt;</div>
+                <div>P&lt;SPEC&lt;SPECIMEN&lt;&lt;SAMPLE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+                <div>X000000000UTO0001010F0001010&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0</div>
               </div>
 
               {/* Corner Sci-Fi Brackets */}

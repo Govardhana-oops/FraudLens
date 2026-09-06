@@ -31,8 +31,8 @@ export function InteractiveProcessingPipeline({
   ];
 
   const durationSec = currentResult
-    ? ((currentResult.processing_time_ms || 2400) / 1000).toFixed(1)
-    : "4.8";
+    ? ((currentResult.processing_time_ms || 0) / 1000).toFixed(1)
+    : "0.0";
 
   return (
     <div className="p-4 rounded-2xl bg-[#071322]/90 border border-cyan-900/60 shadow-lg backdrop-blur-md">
