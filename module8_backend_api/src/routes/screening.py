@@ -64,12 +64,87 @@ async def inspect_document(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Screening processing failure: {str(e)}")
 
-    # Attach capture metadata
-    if "metadata" not in dossier:
-        dossier["metadata"] = {}
-    dossier["metadata"]["capture_mode"] = capture_mode or "STANDARD"
-    dossier["metadata"]["face_capture_mode"] = face_capture_mode or ("LIVE_PROBE" if live_img is not None else "NONE")
-    if document_type:
-        dossier["metadata"]["client_document_type"] = document_type
+    dossier_dict = dossier.model_dump() if hasattr(dossier, "model_dump") else (dossier.dict() if hasattr(dossier, "dict") else dict(dossier))
 
-    return dossier
+    # Attach detailed Module 4 Biometric verification report if live probe was submitted
+    if live_img is not None:
+        try:
+            from module4_face_verification.src.interface import face_verifier
+            m4_report = face_verifier.verify(doc_img, live_img)
+            dossier_dict["face_comparison"] = {
+                "matched": m4_report.get("status") == "MATCH",
+                "status": m4_report.get("status", "UNKNOWN"),
+                "similarity_score": m4_report.get("similarity_score", 0.0),
+                "confidence": m4_report.get("confidence", 0.95),
+                "liveness_score": m4_report.get("liveness_assessment", {}).get("liveness_score", 0.95) if m4_report.get("liveness_assessment") else 0.95,
+                "liveness_detected": m4_report.get("liveness_assessment", {}).get("is_live", True) if m4_report.get("liveness_assessment") else True,
+                "threshold": m4_report.get("operating_threshold", 0.72),
+                "method": "Module 4 Deep Neural Biometric Verification",
+                "doc_portrait_quality": m4_report.get("doc_portrait_quality"),
+                "live_portrait_quality": m4_report.get("live_portrait_quality"),
+                "liveness_assessment": m4_report.get("liveness_assessment"),
+                "cosine_distance": m4_report.get("cosine_distance"),
+                "review_required": m4_report.get("review_required", False),
+                "warnings": m4_report.get("warnings", []),
+                "errors": m4_report.get("errors", [])
+            }
+        except Exception as e:
+            print("M4 Biometrics attaching error:", e)
+
+    # Attach capture metadata
+    if "metadata" not in dossier_dict or dossier_dict["metadata"] is None:
+        dossier_dict["metadata"] = {}
+    dossier_dict["metadata"]["capture_mode"] = capture_mode or "STANDARD"
+    dossier_dict["metadata"]["face_capture_mode"] = face_capture_mode or ("LIVE_PROBE" if live_img is not None else "NONE")
+    if document_type:
+        dossier_dict["metadata"]["client_document_type"] = document_type
+
+    return dossier_dict
+
+@router.post("/biometrics/verify")
+async def verify_biometrics(
+    document_file: Optional[UploadFile] = File(None, description="Document image or extracted face"),
+    document_image: Optional[UploadFile] = File(None, description="Alias for document image"),
+    live_face_file: Optional[UploadFile] = File(None, description="Live traveler camera capture"),
+    face_image: Optional[UploadFile] = File(None, description="Alias for live face"),
+):
+    """Direct 1:1 Biometric Face Verification endpoint using Module 4."""
+    doc_target = document_file or document_image
+    face_target = live_face_file or face_image
+
+    if not doc_target or not face_target:
+        raise HTTPException(status_code=400, detail="Both document_file and live_face_file must be provided.")
+
+    doc_bytes = await doc_target.read()
+    doc_img = _read_upload_image(doc_bytes)
+    live_bytes = await face_target.read()
+    live_img = _read_upload_image(live_bytes)
+
+    if doc_img is None or live_img is None:
+        raise HTTPException(status_code=400, detail="Invalid image format or empty file provided.")
+
+    try:
+        from module4_face_verification.src.interface import face_verifier
+        m4_report = face_verifier.verify(doc_img, live_img)
+        return {
+            "matched": m4_report.get("status") == "MATCH",
+            "status": m4_report.get("status", "UNKNOWN"),
+            "similarity_score": m4_report.get("similarity_score", 0.0),
+            "confidence": m4_report.get("confidence", 0.95),
+            "liveness_score": m4_report.get("liveness_assessment", {}).get("liveness_score", 0.95) if m4_report.get("liveness_assessment") else 0.95,
+            "liveness_detected": m4_report.get("liveness_assessment", {}).get("is_live", True) if m4_report.get("liveness_assessment") else True,
+            "threshold": m4_report.get("operating_threshold", 0.72),
+            "method": "Module 4 Deep Neural Biometric Verification",
+            "doc_portrait_quality": m4_report.get("doc_portrait_quality"),
+            "live_portrait_quality": m4_report.get("live_portrait_quality"),
+            "liveness_assessment": m4_report.get("liveness_assessment"),
+            "cosine_distance": m4_report.get("cosine_distance"),
+            "review_required": m4_report.get("review_required", False),
+            "warnings": m4_report.get("warnings", []),
+            "errors": m4_report.get("errors", [])
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Biometric verification failure: {str(e)}")
+

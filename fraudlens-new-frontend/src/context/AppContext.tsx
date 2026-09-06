@@ -5,8 +5,10 @@ import type {
   ConsoleSettings,
   DocumentType,
   SyncStatusReport,
+  FaceComparisonResult,
 } from "@/types";
 import { api } from "@/services/api";
+import { extractFaceFromDocument } from "@/utils/faceExtraction";
 
 interface OperationalStats {
   totalScreened: number;
@@ -26,6 +28,27 @@ interface AppContextType {
   isScreening: boolean;
   isSyncing: boolean;
   lastSyncedAt: string | null;
+
+  // Biometric Reference Face State (Carried from Screening -> Live Verification)
+  referenceDocumentFile: File | null;
+  referenceDocPreviewUrl: string | null;
+  referenceFaceUrl: string | null;
+  referenceFaceStatus: "EXTRACTED" | "DETECTING" | "NOT_FOUND" | "NO_DOCUMENT";
+  referenceFaceConfidence: number | null;
+  referenceDocNumber: string | null;
+  referenceHolderName: string | null;
+  referenceDocType: DocumentType;
+  biometricResult: FaceComparisonResult | null;
+  isBiometricVerifying: boolean;
+
+  setReferenceDocument: (
+    file: File,
+    docType?: DocumentType,
+    meta?: { docNumber?: string; name?: string }
+  ) => Promise<void>;
+  clearReferenceDocument: () => void;
+  executeBiometricVerification: (liveFaceFile: File) => Promise<FaceComparisonResult>;
+  resetBiometricResult: () => void;
 
   executeScreening: (
     documentFile: File,
@@ -107,6 +130,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isScreening, setIsScreening] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+
+  // Biometric Reference Face State
+  const [referenceDocumentFile, setReferenceDocumentFile] = useState<File | null>(null);
+  const [referenceDocPreviewUrl, setReferenceDocPreviewUrl] = useState<string | null>(null);
+  const [referenceFaceUrl, setReferenceFaceUrl] = useState<string | null>(null);
+  const [referenceFaceStatus, setReferenceFaceStatus] = useState<"EXTRACTED" | "DETECTING" | "NOT_FOUND" | "NO_DOCUMENT">("NO_DOCUMENT");
+  const [referenceFaceConfidence, setReferenceFaceConfidence] = useState<number | null>(null);
+  const [referenceDocNumber, setReferenceDocNumber] = useState<string | null>(null);
+  const [referenceHolderName, setReferenceHolderName] = useState<string | null>(null);
+  const [referenceDocType, setReferenceDocType] = useState<DocumentType>("PASSPORT");
+  const [biometricResult, setBiometricResult] = useState<FaceComparisonResult | null>(null);
+  const [isBiometricVerifying, setIsBiometricVerifying] = useState<boolean>(false);
 
   // Persist records
   useEffect(() => {
@@ -198,6 +233,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setCurrentResult(dossier);
         setRecords((prev) => [dossier, ...prev.filter((r) => r.screening_id !== dossier.screening_id)]);
 
+        // Update reference biometric state from dossier if needed
+        if (dossier.document_number) {
+          setReferenceDocNumber(dossier.document_number);
+        }
+        const nameField = dossier.extracted_fields.find(
+          (f) =>
+            f.field_name.toLowerCase().includes("name") ||
+            f.field_name.toLowerCase().includes("surname") ||
+            f.field_name.toLowerCase().includes("given")
+        );
+        if (nameField) {
+          setReferenceHolderName(nameField.extracted_value);
+        }
+
         // Append audit entry locally
         const newAuditEntry: AuditLogEntry = {
           sequence_number: auditLogs.length + 1,
@@ -222,6 +271,82 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [settings, auditLogs]
   );
 
+  // Reference Document Biometric Extraction Flow
+  const setReferenceDocument = useCallback(
+    async (
+      file: File,
+      docType: DocumentType = "PASSPORT",
+      meta?: { docNumber?: string; name?: string }
+    ) => {
+      setReferenceDocumentFile(file);
+      setReferenceDocType(docType);
+      if (meta?.docNumber) setReferenceDocNumber(meta.docNumber);
+      if (meta?.name) setReferenceHolderName(meta.name);
+
+      const previewUrl = URL.createObjectURL(file);
+      setReferenceDocPreviewUrl(previewUrl);
+
+      setReferenceFaceStatus("DETECTING");
+      try {
+        const extraction = await extractFaceFromDocument(file);
+        if (extraction.status === "EXTRACTED" && extraction.faceUrl) {
+          setReferenceFaceUrl(extraction.faceUrl);
+          setReferenceFaceStatus("EXTRACTED");
+          setReferenceFaceConfidence(extraction.confidence);
+        } else {
+          setReferenceFaceUrl(null);
+          setReferenceFaceStatus("NOT_FOUND");
+          setReferenceFaceConfidence(null);
+        }
+      } catch (err) {
+        console.error("Reference face extraction failed:", err);
+        setReferenceFaceUrl(null);
+        setReferenceFaceStatus("NOT_FOUND");
+        setReferenceFaceConfidence(null);
+      }
+    },
+    []
+  );
+
+  const clearReferenceDocument = useCallback(() => {
+    setReferenceDocumentFile(null);
+    if (referenceDocPreviewUrl) URL.revokeObjectURL(referenceDocPreviewUrl);
+    setReferenceDocPreviewUrl(null);
+    setReferenceFaceUrl(null);
+    setReferenceFaceStatus("NO_DOCUMENT");
+    setReferenceFaceConfidence(null);
+    setReferenceDocNumber(null);
+    setReferenceHolderName(null);
+    setBiometricResult(null);
+  }, [referenceDocPreviewUrl]);
+
+  const resetBiometricResult = useCallback(() => {
+    setBiometricResult(null);
+  }, []);
+
+  const executeBiometricVerification = useCallback(
+    async (liveFaceFile: File): Promise<FaceComparisonResult> => {
+      setIsBiometricVerifying(true);
+      try {
+        const docTarget = referenceDocumentFile || new File([], "reference_doc.jpg");
+        const dossier = await api.inspectDocument(docTarget, liveFaceFile, referenceDocType);
+
+        let comparison: FaceComparisonResult;
+        if (dossier.face_comparison) {
+          comparison = dossier.face_comparison;
+        } else {
+          comparison = await api.verifyBiometrics(docTarget, liveFaceFile);
+        }
+
+        setBiometricResult(comparison);
+        return comparison;
+      } finally {
+        setIsBiometricVerifying(false);
+      }
+    },
+    [referenceDocumentFile, referenceDocType]
+  );
+
   const addScreeningRecord = useCallback((record: UnifiedScreeningDossier) => {
     setRecords((prev) => [record, ...prev.filter((r) => r.screening_id !== record.screening_id)]);
   }, []);
@@ -241,9 +366,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setRecords([]);
     setAuditLogs([]);
     setCurrentResult(null);
+    clearReferenceDocument();
     localStorage.removeItem(STORAGE_RECORDS_KEY);
     localStorage.removeItem(STORAGE_AUDIT_KEY);
-  }, []);
+  }, [clearReferenceDocument]);
 
   const updateSettings = useCallback((newSettings: ConsoleSettings) => {
     setSettings(newSettings);
@@ -301,6 +427,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         isScreening,
         isSyncing,
         lastSyncedAt,
+        referenceDocumentFile,
+        referenceDocPreviewUrl,
+        referenceFaceUrl,
+        referenceFaceStatus,
+        referenceFaceConfidence,
+        referenceDocNumber,
+        referenceHolderName,
+        referenceDocType,
+        biometricResult,
+        isBiometricVerifying,
+        setReferenceDocument,
+        clearReferenceDocument,
+        executeBiometricVerification,
+        resetBiometricResult,
         executeScreening,
         addScreeningRecord,
         deleteRecord,

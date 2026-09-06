@@ -20,7 +20,15 @@ import { generateSyntheticDocumentFile, type DemoScenario } from "@/utils/sample
 import type { DocumentType } from "@/types";
 
 export function DocumentScreeningPage() {
-  const { currentResult, executeScreening, clearCurrentResult, isScreening, isLiveConnected } = useApp();
+  const {
+    currentResult,
+    executeScreening,
+    clearCurrentResult,
+    isScreening,
+    isLiveConnected,
+    setReferenceDocument,
+    clearReferenceDocument,
+  } = useApp();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -53,6 +61,8 @@ export function DocumentScreeningPage() {
             setDocumentFile(defaultFile);
             const url = URL.createObjectURL(defaultFile);
             setDocPreviewUrl(url);
+            // Register reference document face in AppContext
+            setReferenceDocument(defaultFile, "PASSPORT");
             // Automatically execute screening pipeline
             runScreening(defaultFile);
           }
@@ -73,11 +83,13 @@ export function DocumentScreeningPage() {
       setDocumentFile(file);
       const url = URL.createObjectURL(file);
       setDocPreviewUrl(url);
+      setReferenceDocument(file, selectedDocType);
       runScreening(file);
     } else {
       setDocumentFile(null);
       if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
       setDocPreviewUrl(null);
+      clearReferenceDocument();
       clearCurrentResult();
     }
   };
@@ -117,6 +129,7 @@ export function DocumentScreeningPage() {
     if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
     const url = URL.createObjectURL(synthFile);
     setDocPreviewUrl(url);
+    setReferenceDocument(synthFile, selectedDocType);
     await runScreening(synthFile);
   };
 
