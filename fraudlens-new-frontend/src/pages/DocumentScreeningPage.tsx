@@ -52,6 +52,12 @@ export function DocumentScreeningPage() {
 
   // Handle File Selection
   const handleFileChange = (file: File | null) => {
+    if (docPreviewUrl) {
+      URL.revokeObjectURL(docPreviewUrl);
+    }
+    clearCurrentResult();
+    clearReferenceDocument();
+
     if (file) {
       setDocumentFile(file);
       const url = URL.createObjectURL(file);
@@ -60,10 +66,7 @@ export function DocumentScreeningPage() {
       runScreening(file);
     } else {
       setDocumentFile(null);
-      if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
       setDocPreviewUrl(null);
-      clearReferenceDocument();
-      clearCurrentResult();
     }
   };
 

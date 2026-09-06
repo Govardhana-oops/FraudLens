@@ -416,7 +416,7 @@ class ApiService {
         fieldsList.push({
           field_name: "MRZ Line 1",
           extracted_value: String(raw.mrz.line1),
-          confidence: 0.99,
+          confidence: confidenceScore ?? 1.0,
           engine: "Module 1 (MRZ)",
         });
       }
@@ -424,7 +424,7 @@ class ApiService {
         fieldsList.push({
           field_name: "MRZ Line 2",
           extracted_value: String(raw.mrz.line2),
-          confidence: 0.99,
+          confidence: confidenceScore ?? 1.0,
           engine: "Module 1 (MRZ)",
         });
       }
@@ -436,7 +436,7 @@ class ApiService {
             fieldsList.push({
               field_name: label,
               extracted_value: String(v),
-              confidence: 0.98,
+              confidence: confidenceScore ?? 1.0,
               engine: "Module 2 (MRZ Parser)",
             });
           }
