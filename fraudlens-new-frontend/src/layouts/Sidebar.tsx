@@ -10,12 +10,12 @@ import {
   FileText,
   Activity,
   Settings,
-  Home,
+  Plane,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export function Sidebar() {
-  const { isLiveConnected } = useApp();
+  const { settings } = useApp();
 
   const navItems = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -30,16 +30,9 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-60 bg-[#040A12] border-r border-cyan-950/70 flex flex-col justify-between shrink-0 select-none z-30">
+    <aside className="w-60 bg-[#030810] border-r border-cyan-950/70 flex flex-col justify-between shrink-0 select-none z-30">
       {/* Navigation Links */}
       <div className="py-4">
-        {/* Navigation Category Label */}
-        <div className="px-4 mb-2">
-          <span className="text-[10px] font-mono font-bold tracking-[0.18em] text-[#5A7A9C] uppercase">
-            OPERATIONS
-          </span>
-        </div>
-
         <nav className="px-2 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -49,7 +42,7 @@ export function Sidebar() {
                 to={item.to}
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold border border-[#20E3C2]/60 bg-[#0B2535] text-[#20E3C2] shadow-[0_0_15px_rgba(32,227,194,0.22)] transition-all duration-200"
+                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold border border-[#20E3C2]/60 bg-[#0B2535] text-[#20E3C2] shadow-[0_0_15px_rgba(32,227,194,0.25)] transition-all duration-200"
                     : "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-[#7E9AB8] hover:text-white hover:bg-[#0A1A2B] hover:border-cyan-900/60 border border-transparent transition-all duration-200 group"
                 }
               >
@@ -61,28 +54,32 @@ export function Sidebar() {
         </nav>
       </div>
 
-      {/* Bottom Hub & Landing Portal */}
-      <div className="p-3 border-t border-cyan-950/60 space-y-2">
-        <NavLink
-          to="/"
-          className="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#5A7A9C] hover:text-white hover:bg-[#0A1A2B] transition-colors"
-        >
-          <Home size={15} className="shrink-0 text-cyan-400" />
-          <span className="truncate">Reference Landing Hub</span>
-        </NavLink>
+      {/* Bottom Terminal Widget & Hackathon Footer */}
+      <div className="p-3 border-t border-cyan-950/60 space-y-3">
+        {/* Terminal Location Card Widget */}
+        <div className="p-2.5 rounded-xl bg-[#06121E] border border-cyan-900/60 flex items-center gap-2.5 shadow-sm">
+          <div className="w-10 h-10 rounded-lg bg-cyan-950/80 border border-cyan-800/80 flex items-center justify-center text-cyan-400 shrink-0 overflow-hidden relative">
+            <Plane className="w-5 h-5 text-cyan-400 transform -rotate-45" />
+            <div className="absolute inset-0 bg-gradient-to-t from-cyan-950/80 to-transparent" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-white truncate">
+              {settings.checkpointName?.split("-")[0]?.trim() || "Terminal B"}
+            </div>
+            <div className="text-[10px] font-mono text-[#5A7A9C] truncate">
+              {settings.checkpointName?.split("-")[1]?.trim() || "Primary Inspection"}
+            </div>
+          </div>
+        </div>
 
-        <div className="px-3 py-2 rounded-lg bg-[#06101B] border border-cyan-950 flex items-center justify-between text-[11px] font-mono">
-          <span className="text-[#5A7A9C]">FastAPI Core</span>
-          <span className="flex items-center gap-1.5 font-bold">
-            <span
-              className={`h-2 w-2 rounded-full ${
-                isLiveConnected ? "bg-emerald-400 shadow-[0_0_6px_#10B981] animate-pulse" : "bg-amber-400"
-              }`}
-            />
-            <span className={isLiveConnected ? "text-emerald-400" : "text-amber-400"}>
-              {isLiveConnected ? "CONNECTED" : "OFFLINE"}
-            </span>
-          </span>
+        {/* Hackathon Footer Info */}
+        <div className="px-1 text-[10px] font-mono text-[#4E6A88] space-y-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500/60" />
+            <span>v1.0.0</span>
+          </div>
+          <div>Smart India Hackathon</div>
+          <div className="text-[#3E5670]">AI for a Safer Tomorrow</div>
         </div>
       </div>
     </aside>
