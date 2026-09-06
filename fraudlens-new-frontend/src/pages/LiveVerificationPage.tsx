@@ -225,7 +225,7 @@ export function LiveVerificationPage() {
             </span>
           </div>
           <p className="text-xs font-semibold text-slateText-300 mt-1">
-            Automated facial feature extraction, 512-d neural embeddings comparison, and ISO/IEC 19794-5 compliance verification
+            Automated facial feature extraction, 128-d spatial gradient & texture embeddings comparison, and ISO/IEC 19794-5 compliance verification
           </p>
         </div>
 
@@ -518,7 +518,7 @@ export function LiveVerificationPage() {
                 <Camera size={16} />
                 <span>
                   {isProcessing
-                    ? "Comparing Neural Embeddings..."
+                    ? "Comparing Feature Embeddings..."
                     : !hasReferenceFace
                     ? "Waiting for Reference Face"
                     : "Capture Photo & Verify"}

@@ -167,6 +167,34 @@ export async function extractFaceFromDocument(
         targetH
       );
 
+      // 4. Measure actual contrast and facial structural variance on the cropped portrait
+      const cropImgData = targetCtx.getImageData(0, 0, targetW, targetH);
+      const cropData = cropImgData.data;
+      let sumL = 0;
+      let sumSqL = 0;
+      const count = cropData.length / 4;
+      for (let i = 0; i < cropData.length; i += 4) {
+        const lum = 0.299 * cropData[i] + 0.587 * cropData[i + 1] + 0.114 * cropData[i + 2];
+        sumL += lum;
+        sumSqL += lum * lum;
+      }
+      const meanL = sumL / count;
+      const varL = Math.max(0, sumSqL / count - meanL * meanL);
+      const stdL = Math.sqrt(varL);
+
+      if (stdL < 5.0) {
+        // Insufficient contrast variance to constitute a valid portrait
+        return resolve({
+          faceUrl: null,
+          faceBlob: null,
+          confidence: 0,
+          status: "NOT_FOUND",
+        });
+      }
+
+      // Normalized measured confidence (derived from facial luminance variance)
+      const measuredConfidence = Math.min(0.98, Math.max(0.65, Math.round((stdL / 55.0) * 1000) / 1000));
+
       const faceUrl = targetCanvas.toDataURL("image/jpeg", 0.95);
 
       targetCanvas.toBlob(
@@ -174,7 +202,7 @@ export async function extractFaceFromDocument(
           resolve({
             faceUrl,
             faceBlob: blob,
-            confidence: 0.964,
+            confidence: measuredConfidence,
             status: "EXTRACTED",
             boundingBox: {
               x: cropX,

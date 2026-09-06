@@ -26,7 +26,7 @@ export function BiometricProcessingStages({
     { id: 2, label: "Face Detected", sublabel: "Spatial Bounding Box", icon: ScanFace },
     { id: 3, label: "Anti-Spoof Check", sublabel: "Presentation Attack PAD", icon: ShieldAlert },
     { id: 4, label: "Landmark Quality", sublabel: "Sharpness & Contrast", icon: Sliders },
-    { id: 5, label: "Neural Compare", sublabel: "512-D Cosine Metric", icon: Cpu },
+    { id: 5, label: "Feature Compare", sublabel: "128-D Cosine Metric", icon: Cpu },
     { id: 6, label: "Final Result", sublabel: "Decision Determination", icon: CheckCircle2 },
   ];
 

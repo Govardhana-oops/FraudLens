@@ -96,7 +96,7 @@ export function CentralBiometricHud({
       <div className="relative z-10 flex items-center gap-2 mb-4">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-widest uppercase border bg-canvas-950/80 border-canvas-600 text-slateText-300">
           <Cpu size={13} className="text-accent-sky animate-spin" style={{ animationDuration: "10s" }} />
-          <span>1:1 NEURAL MATCHING ENGINE</span>
+          <span>1:1 BIOMETRIC FEATURE MATCHER</span>
         </span>
       </div>
 
@@ -147,7 +147,7 @@ export function CentralBiometricHud({
             <div className="flex flex-col items-center space-y-2">
               <Scan size={36} className="text-accent-teal animate-bounce" />
               <span className="text-[11px] font-mono font-bold text-accent-teal uppercase tracking-wider animate-pulse">
-                SCANNING EMBEDDINGS
+                EXTRACTING 128-D EMBEDDINGS
               </span>
               <span className="text-[9px] font-mono text-slateText-400">STAGE {activeStage}/6</span>
             </div>

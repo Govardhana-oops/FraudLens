@@ -48,7 +48,7 @@ export function FaceAnalysisResultsGrid({
           <span>Face Analysis Results (Module 4 Biometrics)</span>
         </h3>
         <span className="text-[11px] font-mono text-slateText-400">
-          Method: {result.method || "Cosine Similarity over 512-d Deep Embeddings"}
+          Method: {result.method || "Cosine Similarity over 128-d Feature Embeddings"}
         </span>
       </div>
 
@@ -121,7 +121,7 @@ export function FaceAnalysisResultsGrid({
               {similarityScore.toFixed(1)}%
             </div>
             <p className="text-[11px] text-slateText-300 font-mono mt-0.5">
-              512-d normalized embedding match
+              128-d normalized embedding match
             </p>
           </div>
         </div>

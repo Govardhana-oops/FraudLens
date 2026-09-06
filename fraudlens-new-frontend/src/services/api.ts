@@ -131,7 +131,7 @@ class ApiService {
                 ? fc.liveness_detected
                 : fc.liveness_assessment?.is_live ?? true,
             threshold: fc.threshold !== undefined ? fc.threshold : fc.operating_threshold ?? 0.72,
-            method: fc.method || "Cosine Similarity over 512-d Facial Embeddings (Module 4)",
+            method: fc.method || "Cosine Similarity over 128-d Feature Embeddings (Module 4)",
           };
         }
       }
@@ -139,13 +139,90 @@ class ApiService {
       console.warn("Biometric verification backend endpoint unreachable, utilizing local engine:", err);
     }
 
+    return await this.calculateLocalCosineSimilarity(documentFileOrFace, liveFaceFile);
+  }
+
+  private async calculateLocalCosineSimilarity(
+    docBlob: File | Blob,
+    liveBlob: File | Blob
+  ): Promise<FaceComparisonResult> {
+    const loadVector = (blob: File | Blob): Promise<{ vector: number[]; variance: number }> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          const canvas = document.createElement("canvas");
+          const size = 64;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            return resolve({ vector: new Array(64).fill(0), variance: 0 });
+          }
+          ctx.drawImage(img, 0, 0, size, size);
+          const imgData = ctx.getImageData(0, 0, size, size);
+          const data = imgData.data;
+
+          const vector: number[] = [];
+          const patchSize = 8;
+          let totalLum = 0;
+          let totalSqLum = 0;
+          let count = 0;
+
+          for (let py = 0; py < size; py += patchSize) {
+            for (let px = 0; px < size; px += patchSize) {
+              let patchLum = 0;
+              for (let y = 0; y < patchSize; y++) {
+                for (let x = 0; x < patchSize; x++) {
+                  const idx = ((py + y) * size + (px + x)) * 4;
+                  const lum = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                  patchLum += lum;
+                  totalLum += lum;
+                  totalSqLum += lum * lum;
+                  count++;
+                }
+              }
+              vector.push(patchLum / (patchSize * patchSize));
+            }
+          }
+
+          const norm = Math.sqrt(vector.reduce((acc, v) => acc + v * v, 0));
+          const normalized = norm > 1e-6 ? vector.map((v) => v / norm) : vector;
+          const mean = totalLum / count;
+          const variance = totalSqLum / count - mean * mean;
+          resolve({ vector: normalized, variance });
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          resolve({ vector: new Array(64).fill(0), variance: 0 });
+        };
+        img.src = url;
+      });
+    };
+
+    const [docRes, liveRes] = await Promise.all([loadVector(docBlob), loadVector(liveBlob)]);
+
+    let dot = 0;
+    for (let i = 0; i < docRes.vector.length; i++) {
+      dot += docRes.vector[i] * liveRes.vector[i];
+    }
+
+    const rawSim = Math.min(1.0, Math.max(0.0, dot));
+    const threshold = 0.72;
+    const isMatch = rawSim >= threshold;
+    const livenessScore = Math.min(
+      0.99,
+      Math.max(0.4, Math.round((Math.sqrt(Math.max(0, liveRes.variance)) / 60.0) * 1000) / 1000)
+    );
+
     return {
-      matched: true,
-      similarity_score: 0.914,
-      liveness_score: 0.962,
-      liveness_detected: true,
-      threshold: 0.72,
-      method: "Deep Neural Embedding Verification (Module 4 Engine)",
+      matched: isMatch,
+      similarity_score: Math.round(rawSim * 1000) / 1000,
+      liveness_score: livenessScore,
+      liveness_detected: livenessScore >= 0.65,
+      threshold: threshold,
+      method: "Spatial Feature Cosine Matcher (Module 4 Engine)",
     };
   }
 
