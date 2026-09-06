@@ -1,0 +1,9 @@
+{
+  "name": "fraudlens-new-frontend-forwarder",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd ../../fraudlens-new-frontend && npm install && npm run build && node -e \"const fs=require('fs'); fs.cpSync('./dist', '../module9_officer_console/dist', {recursive: true, force: true}); fs.cpSync('./dist', '../module9_officer_console', {recursive: true, force: true});\"",
+    "install": "cd ../../fraudlens-new-frontend && npm install"
+  }
+}
