@@ -1,7 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import {
-  Shield,
   LayoutDashboard,
   Scan,
   UserCheck,
@@ -11,6 +10,7 @@ import {
   FileText,
   Activity,
   Settings,
+  Home,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
@@ -26,24 +26,21 @@ export function Sidebar() {
     { to: "/sync", label: "Synchronization", icon: RefreshCw },
     { to: "/audit", label: "Audit Logs", icon: FileText },
     { to: "/health", label: "System Health", icon: Activity },
+    { to: "/settings", label: "Settings", icon: Settings },
   ];
 
   return (
-    <aside className="w-64 bg-[#0B0F17] border-r border-slate-800/80 flex flex-col justify-between shrink-0 select-none">
-      {/* Brand Header */}
-      <div>
-        <div className="p-5 flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-950/60 border border-teal-500/40 text-teal-400 shrink-0">
-            <Shield className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold tracking-tight text-white">FraudLens</h1>
-            <p className="text-[11px] text-slate-400">Screening Console</p>
-          </div>
+    <aside className="w-60 bg-[#040A12] border-r border-cyan-950/70 flex flex-col justify-between shrink-0 select-none z-30">
+      {/* Navigation Links */}
+      <div className="py-4">
+        {/* Navigation Category Label */}
+        <div className="px-4 mb-2">
+          <span className="text-[10px] font-mono font-bold tracking-[0.18em] text-[#5A7A9C] uppercase">
+            OPERATIONS
+          </span>
         </div>
 
-        {/* Navigation Items */}
-        <nav className="px-3 py-2 space-y-1">
+        <nav className="px-2 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -52,11 +49,11 @@ export function Sidebar() {
                 to={item.to}
                 className={({ isActive }) =>
                   isActive
-                    ? "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium border border-teal-500/60 bg-teal-950/30 text-teal-400 transition-colors"
-                    : "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-colors"
+                    ? "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold border border-[#20E3C2]/60 bg-[#0B2535] text-[#20E3C2] shadow-[0_0_15px_rgba(32,227,194,0.22)] transition-all duration-200"
+                    : "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-[#7E9AB8] hover:text-white hover:bg-[#0A1A2B] hover:border-cyan-900/60 border border-transparent transition-all duration-200 group"
                 }
               >
-                <Icon size={17} className="shrink-0" />
+                <Icon size={16} className="shrink-0 group-hover:text-[#20E3C2] transition-colors" />
                 <span className="flex-1 truncate">{item.label}</span>
               </NavLink>
             );
@@ -64,26 +61,26 @@ export function Sidebar() {
         </nav>
       </div>
 
-      {/* Footer / Settings Link */}
-      <div className="p-3 border-t border-slate-800/60 space-y-1">
+      {/* Bottom Hub & Landing Portal */}
+      <div className="p-3 border-t border-cyan-950/60 space-y-2">
         <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            isActive
-              ? "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium border border-teal-500/60 bg-teal-950/30 text-teal-400 transition-colors"
-              : "flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 transition-colors"
-          }
+          to="/"
+          className="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#5A7A9C] hover:text-white hover:bg-[#0A1A2B] transition-colors"
         >
-          <Settings size={17} className="shrink-0" />
-          <span>Settings</span>
+          <Home size={15} className="shrink-0 text-cyan-400" />
+          <span className="truncate">Reference Landing Hub</span>
         </NavLink>
 
-        <div className="pt-2 px-3 flex items-center justify-between text-[11px] text-slate-500">
-          <span>Backend status:</span>
-          <span className="flex items-center gap-1.5 font-medium">
-            <span className={`h-2 w-2 rounded-full ${isLiveConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+        <div className="px-3 py-2 rounded-lg bg-[#06101B] border border-cyan-950 flex items-center justify-between text-[11px] font-mono">
+          <span className="text-[#5A7A9C]">FastAPI Core</span>
+          <span className="flex items-center gap-1.5 font-bold">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                isLiveConnected ? "bg-emerald-400 shadow-[0_0_6px_#10B981] animate-pulse" : "bg-amber-400"
+              }`}
+            />
             <span className={isLiveConnected ? "text-emerald-400" : "text-amber-400"}>
-              {isLiveConnected ? "ONLINE" : "OFFLINE"}
+              {isLiveConnected ? "CONNECTED" : "OFFLINE"}
             </span>
           </span>
         </div>
