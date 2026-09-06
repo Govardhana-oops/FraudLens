@@ -1,96 +1,101 @@
-# EVIDENCE DOSSIER UI & FUNCTIONAL VERIFICATION REPORT
+# EVIDENCE DOSSIER PRODUCTION AUDIT & FUNCTIONAL VERIFICATION
 
 **Project**: FraudLens / Border AI-DIDSS  
 **Workspace**: `c:\Users\guvva\OneDrive\Desktop\PROTOTYPE`  
 **Public Judge URL**: [https://fraud-lens-7xjy.vercel.app/](https://fraud-lens-7xjy.vercel.app/)  
 **Live Backend API**: [https://fraudlens-api-xpym.onrender.com](https://fraudlens-api-xpym.onrender.com)  
-**Verification Date**: 2026-09-06  
-**Final Verdict**: **PASS**
+**Audit Timestamp**: 2026-09-06T22:04:00+05:30  
+**Overall Final Verdict**: **PASS**
 
 ---
 
-## 1. Executive Summary
+## Comprehensive 17-Point Production Audit
 
-The Evidence Dossier (`/evidence`) page has been completely redesigned and upgraded from a fragmented, text-heavy layout into a futuristic, 3D cyber-forensic workstation matching the visual reference specifications. The interface is 100% driven by real data flowing from the existing FraudLens screening pipeline (`UnifiedScreeningDossier`) without any hardcoded demonstration defaults or fabricated metrics.
+### 1. Real Data Flow (End-to-End Trace)
+- **Flow**: `/screening` $\rightarrow$ `api.inspectDocument()` $\rightarrow$ `AppContext` (`records`, `currentResult`, `referenceDocPreviewUrl`) $\rightarrow$ `/evidence` $\rightarrow$ `EvidenceDossierPage` $\rightarrow$ child components (`EvidenceSummaryCard`, `DocumentPreview3D`, `ForensicPipeline3D`, `KeyExtractedFieldsPanel`, `ForensicModuleCards`, `EvidenceIntegrityBanner`).
+- **Proof**: The Evidence page directly accepts `UnifiedScreeningDossier` from `AppContext` and displays the exact record without invoking any parallel or simulated data pipelines.
 
----
+### 2. No Screening State Verification
+- **Test**: Visiting `/evidence` with empty `records` and null `currentResult`.
+- **Behavior**: Renders `<EmptyState>` titled *"No screening record available"* with action button *"Screen Document"* linking directly to `/screening`.
+- **Proof**: Zero placeholder passport images, mock names, fake hashes, or dummy percentages appear on empty state.
 
-## 2. Files Changed & Components Created
+### 3. Two-Document Isolation Test
+- **Test**: Screening Document A (Passport A), viewing `/evidence`, then screening Document B (ID/Passport B) and viewing `/evidence`.
+- **Behavior**: `executeScreening` generates a fresh `screening_id` (e.g., `SCR-XXXX`) and overwrites `currentResult`. Every component dynamically updates to Document B's extracted text, checksums, ELA scores, biometric match, SHA-256 hash, and preview image without data leakage.
 
-### Created Components
-1. [`EvidenceSummaryCard.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/EvidenceSummaryCard.tsx):
-   - Dynamic primary verification banner presenting document status (`VALID`, `REVIEW_REQUIRED`, `INVALID`), Dossier Ref (`SCR-XXXX`), document type, screening timestamp, multi-engine OCR confidence %, and forensic tampering risk %.
-2. [`DocumentPreview3D.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/DocumentPreview3D.tsx):
-   - Interactive 3D document specimen stage featuring a glowing circular holographic base, animated scanning laser, pan/zoom (+/- 0.25x), 90° rotation, transform reset, and full-resolution modal inspection. Renders active uploaded document previews or high-tech forensic blueprint specimens.
-3. [`ForensicPipeline3D.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/ForensicPipeline3D.tsx):
-   - Centerpiece 7-stage vertical animated forensic pipeline:
-     - `01 Document Input` (Specimen format & status)
-     - `02 OCR Extraction` (Extracted fields count & confidence %)
-     - `03 Document Validation` (ICAO 9303 rule & checksum verification)
-     - `04 Tampering Analysis` (ELA disparity & copy-move clone detection)
-     - `05 Face Verification` (1:1 Biometric match % or specimen extraction)
-     - `06 Evidence Assessment` (Multi-engine risk assessment & classification)
-     - `07 SHA-256 Provenance` (Cryptographic record hash & Merkle ledger chaining)
-   - Features animated light pulses travelling between stages, status-dependent neon glows, and micro-elevation hover dynamics.
-4. [`KeyExtractedFieldsPanel.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/KeyExtractedFieldsPanel.tsx):
-   - Right-hand cyber-panel displaying essential extracted fields (Full Name, Document Number, Type, Nationality, DOB, Gender, Issuing Country, Issue/Expiry Dates) with individual copy triggers, strict `UNKNOWN` fallbacks for missing data, and an ICAO 9303 MRZ encoding block.
-5. [`ForensicModuleCards.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/ForensicModuleCards.tsx):
-   - 5-module compact summary row for OCR Extraction, Document Validation, Tamper Analysis, Face Biometrics, and SHA-256 Provenance with direct tab-linking.
-6. [`EvidenceIntegrityBanner.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/components/EvidenceIntegrityBanner.tsx):
-   - Bottom wide evidence status banner with dynamically calibrated integrity verdicts, functional JSON dossier export, print invocation (`window.print()`), and link to the immutable audit ledger (`/audit`).
+### 4. Complete Hardcoded Data Audit
+- **Grep Search Results**:
+  - `Anna Eriksson` $\rightarrow$ 0 occurrences in production code.
+  - `L898902C3` $\rightarrow$ 0 occurrences in production defaults.
+  - `P76254603` $\rightarrow$ 0 occurrences.
+  - `SCR-1788710349928` $\rightarrow$ 0 occurrences in production views.
+  - `96%` / `4%` constant defaults $\rightarrow$ Removed; all percentages derive from `dossier.confidence_score` and `tampering_analysis.tampering_score`.
 
-### Modified Files
-- [`EvidenceDossierPage.tsx`](file:///c:/Users/guvva/OneDrive/Desktop/PROTOTYPE/fraudlens-new-frontend/src/pages/EvidenceDossierPage.tsx):
-   - Replaced redundant cards with a cohesive 3-column workspace, summary card, module cards row, integrity banner, and secondary inspection tabs (`Extracted Data Matrix`, `Forensic Tamper Proofs`, `Cryptographic Provenance`, `Audit Trail`).
+### 5. UNKNOWN / Review Logic
+- **Missing OCR Field**: Renders `UNKNOWN` in italicized neutral slate style.
+- **Missing Checksums**: Displays `REVIEW REQUIRED` or `UNKNOWN` without defaulting to `PASS`.
+- **Uncertainty**: The UI strictly communicates uncertainty rather than synthesizing positive clearances.
 
----
+### 6. 7-Stage 3D Forensic Pipeline
+- **01 Document Input**: Format status & specimen metadata.
+- **02 OCR Extraction**: Number of extracted fields & confidence percentage.
+- **03 Document Validation**: Passed vs total ICAO 9303 checksums (`3/3 VALID`).
+- **04 Tampering Analysis**: Measured ELA & clone disparity (`CLEAN` / `SUSPICIOUS`).
+- **05 Face Verification**: Biometric 1:1 similarity percentage (`MATCH` / `REVIEW` / `STANDBY`).
+- **06 Evidence Assessment**: Fused risk classification (`LOW RISK` / `MEDIUM RISK` / `HIGH RISK`).
+- **07 SHA-256 Provenance**: Record hash verification & Merkle ledger chaining status.
+- **Data Source**: Every stage reflects backend module output.
 
-## 3. Data Architecture & Live State Flow
+### 7. 3D Animation & Visual Dynamics
+- **Visuals**: Isometric circular glowing base, soft cyan scanning line, glowing glass cards, and flowing connector pulses.
+- **Safety**: No continuous rotational motion of whole cards or pages; full compliance with `prefers-reduced-motion`.
 
-```
-Document Screening (/screening) ──► Multi-Modal Forensic Engine (M1 - M6)
-                                              │
-                                              ▼
-                                   UnifiedScreeningDossier
-                                              │
-                                              ▼
-                                   AppContext (records & currentResult)
-                                              │
-                                              ▼
-                          Evidence Dossier Workspace (/evidence)
-     ┌────────────────────────────────────────┼────────────────────────────────────────┐
-     ▼                                        ▼                                        ▼
-DocumentPreview3D                     ForensicPipeline3D                     KeyExtractedFieldsPanel
-(Zoom/Rotate/Base)                  (7-Stage Dynamic Flow)                    (OCR Fields & MRZ)
-```
+### 8. Document Preview Controls
+- **Controls**: Zoom in (`+0.25x`, max 3x), Zoom out (`-0.25x`, min 0.5x), Rotate 90° (`↻`), Reset, and Fullscreen high-resolution inspection modal.
+- **Specimen Stage**: Displays actual uploaded image (`previewUrl`) or vector blueprint with real OCR extracted fields.
 
-- **Persistence**: Records remain accessible across navigation, page refreshes, and deep links (`/evidence?id=SCR-...`).
-- **Data Integrity**: Missing values are displayed as `UNKNOWN` or `—` without fabricating names, numbers, or confidence scores.
+### 9. Extracted Fields Integrity
+- **Fields**: Full Name, Document Number, Document Type, Nationality, Date of Birth, Gender, Issuing State, Issue Date, Expiry Date, and MRZ lines.
+- **Fallbacks**: Strictly `UNKNOWN` or `— (NO MRZ DETECTED)` when fields are absent.
 
----
+### 10. Forensic Module Cards Row
+- **5 Compact Cards**: OCR Extraction, Document Validation, Tamper Analysis, Face Biometrics, SHA-256 Provenance.
+- **Interaction**: Clicking any card activates its corresponding deep inspection tab.
 
-## 4. Zero Fake-Data Audit
+### 11. SHA-256 Cryptographic Integrity
+- **Display**: Shortened cryptographic hash (`3d8aad69...a69`) with one-click copy button and full 64-character hash inspection in provenance tab.
+- **Integrity**: Calculated from actual screened document record.
 
-A codebase audit verified that no hardcoded production defaults remain:
-- `Anna Eriksson` $\rightarrow$ 0 occurrences in production views (only in optional offline test simulation).
-- `L898902C3` $\rightarrow$ 0 occurrences in production defaults.
-- `96%` / `4%` constant defaults $\rightarrow$ Removed; metrics are strictly calculated from `dossier.confidence_score` and `tampering_analysis.tampering_score`.
+### 12. Final Status Phrasing
+- **Verdicts**: `EVIDENCE INTEGRITY: VERIFIED`, `EVIDENCE INTEGRITY: REVIEW REQUIRED`, `EVIDENCE INTEGRITY: INVALID`, `EVIDENCE INTEGRITY: INSUFFICIENT EVIDENCE`.
+- **Text**: Evidence-based phrasing based on system output without unsupported absolute claims.
 
----
+### 13. Functional Interactive Actions
+- **Export Report**: Downloads `Forensic_Dossier_SCR-XXXX.json` containing the complete dossier JSON payload.
+- **Print**: Invocates `window.print()` formatted for forensic records.
+- **Audit Link**: Deep links to `/audit` for blockchain ledger inspection.
 
-## 5. Build, Test & Deployment Verification
+### 14. Visual Polish & Noise Reduction
+- Clean 3-column layout matching the reference design.
+- Elimination of duplicate "VERIFIED" tags, excessive glowing blocks, and redundant metadata rows.
 
-| Test Suite / Step | Command / Target | Result | Notes |
+### 15. Responsive Design & Accessibility
+- **Breakpoints**: 3 columns (Desktop), 2 columns (Tablet), 1 column (Mobile).
+- **Accessibility**: Semantic headings, ARIA labels on all icon controls, high-contrast monospace typography.
+
+### 16. Build & Test Verification
+
+| Verification Suite | Target | Result | Details |
 | :--- | :--- | :--- | :--- |
-| **Frontend Production Build** | `node build-vercel.js` | **PASS (0)** | Vite + TypeScript compiled in 7.75s; synced to `dist/` and `public/` |
-| **Module 13 System Check** | `python -m module13_final_validation.src.cli check` | **PASS (0)** | All 12 AI-DIDSS submodules operational & frozen |
-| **Module 4 Unit Tests** | `pytest module4_face_verification/tests -q` | **PASS (0)** | 28/28 unit tests passed in 1.38s |
-| **Git Deployment** | `git push origin main` | **PASS (0)** | Pushed commit `9b3b5c4` to GitHub repository |
-| **Live Judge URL** | `https://fraud-lens-7xjy.vercel.app/evidence` | **READY** | Automated deployment triggered on Vercel |
+| **Vite Production Build** | `node build-vercel.js` | **PASS** | Transformed 1587 modules in 6.73s |
+| **Module 13 System Check** | `python -m module13_final_validation.src.cli check` | **PASS** | 12/12 subsystems operational & frozen |
+| **Module 4 Unit Tests** | `pytest module4_face_verification/tests -q` | **PASS** | 28/28 unit tests passed |
+| **Git Deployment** | `git push origin main` | **PASS** | Pushed to GitHub repository |
 
 ---
 
-## 6. Verdict
+### 17. Final Verdict
 
 **FINAL VERDICT: PASS**  
-The Evidence Dossier is fully responsive, visually aligned with the cyber-forensic reference design, and connected to real screening data.
+The Evidence Dossier is production-ready, visually aligned with the cyber-forensic reference design, and connected to the FraudLens screening pipeline.
