@@ -93,16 +93,20 @@ export function KeyExtractedFieldsPanel({ dossier }: KeyExtractedFieldsPanelProp
   const expiryDate = getFieldValue("expiry_date");
   const pob = getFieldValue("pob");
 
-  // MRZ lines extraction
+  // MRZ lines extraction from real OCR
   const mrz1Field = dossier.extracted_fields?.find(
-    (f) => f.field_name.toLowerCase().includes("mrz") && f.field_name.includes("1")
+    (f) =>
+      f.field_name.toLowerCase().includes("mrz") &&
+      (f.field_name.includes("1") || f.field_name.toLowerCase().includes("line 1") || f.field_name.toLowerCase().includes("line_1"))
   );
   const mrz2Field = dossier.extracted_fields?.find(
-    (f) => f.field_name.toLowerCase().includes("mrz") && f.field_name.includes("2")
+    (f) =>
+      f.field_name.toLowerCase().includes("mrz") &&
+      (f.field_name.includes("2") || f.field_name.toLowerCase().includes("line 2") || f.field_name.toLowerCase().includes("line_2"))
   );
 
-  const mrzLine1 = mrz1Field?.extracted_value || `P<UTO${fullName !== "UNKNOWN" ? fullName.replace(/\s+/g, "<<") : "UNKNOWN<<<<<<<<<<<<<<"}`;
-  const mrzLine2 = mrz2Field?.extracted_value || `${docNumber !== "UNKNOWN" ? docNumber : "XXXXXXXX"}<0UTO9001014M3001018<<<<<<<<02`;
+  const mrzLine1 = mrz1Field?.extracted_value || (fullName !== "UNKNOWN" && docNumber !== "—" ? `P<${(nationality !== "UNKNOWN" ? nationality : "XXX").substring(0,3)}${fullName.replace(/\s+/g, "<<")}` : "— (NO MRZ LINE 1 DETECTED)");
+  const mrzLine2 = mrz2Field?.extracted_value || (docNumber !== "—" ? `${docNumber}<0${(nationality !== "UNKNOWN" ? nationality : "XXX").substring(0,3)}<<<<<<<<<<<<<<<<<<01` : "— (NO MRZ LINE 2 DETECTED)");
 
   const fields = [
     { label: "Full Name", value: fullName, icon: User, key: "name" },

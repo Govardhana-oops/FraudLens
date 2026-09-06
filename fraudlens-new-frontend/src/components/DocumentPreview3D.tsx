@@ -148,8 +148,8 @@ export function DocumentPreview3D({ dossier, previewUrl }: DocumentPreview3DProp
 
         {/* Specimen MRZ Footer */}
         <div className="mt-4 pt-3 border-t border-canvas-700/80 bg-canvas-950/60 p-2 rounded border border-canvas-700 font-mono text-[9px] text-slateText-300 leading-tight tracking-widest break-all">
-          <div>P&lt;UTO{holderName.replace(/\s+/g, "&lt;&lt;")}</div>
-          <div>{docNumber}&lt;0UTO9001014M3001018&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;02</div>
+          <div className="text-accent-teal">{dossier.extracted_fields?.find(f => f.field_name.toLowerCase().includes("mrz") && f.field_name.includes("1"))?.extracted_value || `P<SPECIMEN<<${holderName.replace(/\s+/g, "<<")}`}</div>
+          <div className="text-accent-sky">{dossier.extracted_fields?.find(f => f.field_name.toLowerCase().includes("mrz") && f.field_name.includes("2"))?.extracted_value || `${docNumber}<<<<<<<<<<<<<<<<<<<<<<01`}</div>
         </div>
 
         {/* Scanning laser line overlay */}
