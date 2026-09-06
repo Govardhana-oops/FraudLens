@@ -136,7 +136,7 @@ export function SyncActionBanner({
             </div>
 
             <p className="text-xs font-mono text-slateText-300 leading-relaxed">
-              Records will remain safely stored locally in SQLite WAL storage and synchronize automatically when Online mode is restored.
+              Records will remain safely stored in local offline storage and synchronize automatically when Online mode is restored.
             </p>
 
             <div className="p-3 rounded-xl bg-canvas-950 border border-canvas-800 font-mono text-xs text-slateText-400 flex justify-between">

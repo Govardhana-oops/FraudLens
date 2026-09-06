@@ -27,31 +27,38 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
         return name === target || name.includes(target) || target.includes(name);
       });
       if (found && found.extracted_value && found.extracted_value.trim() !== "") {
-        return found.extracted_value;
+        return found.extracted_value.trim();
       }
     }
     return fallback;
   };
 
-  // Derive all 12 key visual fields
-  const fullName = getField(["full_name", "name", "passenger_name"], "ROHIT SHARMA");
-  const dob = getField(["date_of_birth", "dob", "birth_date"], "15 JAN 1995");
-  const gender = getField(["gender", "sex"], "Male");
-  const nationality = getField(["nationality", "country_code", "nat"], "INDIAN");
-  const docNumber = getField(["passport_number", "document_number", "doc_number", "passport_no"], currentResult?.document_number || "S1234567");
-  const issueDate = getField(["date_of_issue", "issue_date", "doi"], "10 FEB 2020");
-  const expiryDate = getField(["date_of_expiry", "expiry_date", "expiration_date", "doe"], "09 FEB 2030");
-  const pob = getField(["place_of_birth", "pob", "birth_place"], "NEW DELHI");
-  const docType = currentResult?.document_type || getField(["document_type", "type"], "Passport");
-  const issuingCountry = getField(["issuing_country", "country", "state"], "IND");
+  // Derive all 12 key visual fields from real OCR data only
+  const surname = getField(["surname", "last_name"]);
+  const givenNames = getField(["given_names", "given_name", "first_name"]);
+  let fullName = getField(["full_name", "name", "passenger_name", "holder_name"]);
+  if (fullName === "UNKNOWN" && (surname !== "UNKNOWN" || givenNames !== "UNKNOWN")) {
+    fullName = [givenNames !== "UNKNOWN" ? givenNames : "", surname !== "UNKNOWN" ? surname : ""].filter(Boolean).join(" ").trim() || "UNKNOWN";
+  }
 
-  // Format MRZ lines cleanly
-  const mrz1 = getField(["mrz_line_1", "mrz1", "mrz_line1"], "P<IND<SHARMA<<ROHIT<<<<<<<<<<<<<<<<<<<<<<<<<<");
-  const mrz2 = getField(["mrz_line_2", "mrz2", "mrz_line2"], "S1234567<8IND9501156M3002097<<<<<<<<<<<<<<<02");
+  const dob = getField(["date_of_birth", "dob", "birth_date"]);
+  const gender = getField(["gender", "sex"]);
+  const nationality = getField(["nationality", "country_code", "nat", "citizenship"]);
+  const docNumber = getField(["passport_number", "document_number", "doc_number", "passport_no", "id_number"], currentResult?.document_number || "UNKNOWN");
+  const issueDate = getField(["date_of_issue", "issue_date", "doi", "issued_date"]);
+  const expiryDate = getField(["date_of_expiry", "expiry_date", "expiration_date", "doe", "valid_until"]);
+  const pob = getField(["place_of_birth", "pob", "birth_place"]);
+  const docType = currentResult?.document_type || getField(["document_type", "type"]);
+  const issuingCountry = getField(["issuing_country", "issuing_state", "country", "state"]);
 
-  const confidenceScore = currentResult?.confidence_score !== undefined
+  // Format MRZ lines from real OCR extraction only
+  const mrz1 = getField(["mrz_line_1", "mrz1", "mrz_line1", "mrz_1", "line_1"]);
+  const mrz2 = getField(["mrz_line_2", "mrz2", "mrz_line2", "mrz_2", "line_2"]);
+
+  const hasConfidence = currentResult?.confidence_score !== undefined && currentResult?.confidence_score !== null;
+  const confidenceScore = hasConfidence
     ? formatScorePct(currentResult.confidence_score)
-    : "Confidence: 98.7%";
+    : "UNKNOWN";
 
   return (
     <div className="p-5 rounded-2xl bg-[#071322]/90 border border-cyan-900/60 shadow-lg backdrop-blur-md space-y-4">
@@ -64,9 +71,15 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
           </h2>
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-xs font-mono font-bold shadow-[0_0_10px_rgba(16,185,129,0.25)]">
-          <Sparkles size={12} className="text-emerald-400" />
-          <span>{confidenceScore.startsWith("Confidence:") ? confidenceScore : `Confidence: ${confidenceScore}`}</span>
+        <div
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border transition-colors ${
+            hasConfidence
+              ? "bg-emerald-950/80 border-emerald-500/50 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.25)]"
+              : "bg-canvas-900 border-canvas-700 text-slateText-400"
+          }`}
+        >
+          <Sparkles size={12} className={hasConfidence ? "text-emerald-400" : "text-slateText-400"} />
+          <span>{hasConfidence ? `Confidence: ${confidenceScore}` : "Confidence: UNKNOWN"}</span>
         </div>
       </div>
 
@@ -75,97 +88,101 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
         {/* Full Name */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Full Name</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{fullName}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${fullName === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{fullName}</span>
         </div>
 
         {/* Date of Birth */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Date of Birth</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{dob}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${dob === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{dob}</span>
         </div>
 
         {/* Gender */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Gender</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{gender}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${gender === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{gender}</span>
         </div>
 
         {/* Nationality */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Nationality</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{nationality}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${nationality === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{nationality}</span>
         </div>
 
         {/* Passport Number */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Passport Number</span>
-          <span className="text-xs font-mono font-bold text-cyan-300 tracking-wider truncate mt-0.5">{docNumber}</span>
+          <span className={`text-xs font-mono font-bold tracking-wider truncate mt-0.5 ${docNumber === "UNKNOWN" ? "text-slateText-400 italic" : "text-cyan-300"}`}>{docNumber}</span>
         </div>
 
         {/* Date of Issue */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Date of Issue</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{issueDate}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${issueDate === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{issueDate}</span>
         </div>
 
         {/* Date of Expiry */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Date of Expiry</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{expiryDate}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${expiryDate === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{expiryDate}</span>
         </div>
 
         {/* Place of Birth */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Place of Birth</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{pob}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${pob === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{pob}</span>
         </div>
 
         {/* Document Type */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Document Type</span>
-          <span className="text-xs font-bold text-white tracking-wide truncate mt-0.5">{docType}</span>
+          <span className={`text-xs font-bold tracking-wide truncate mt-0.5 ${docType === "UNKNOWN" ? "text-slateText-400 font-mono italic" : "text-white"}`}>{docType}</span>
         </div>
 
         {/* Issuing Country */}
         <div className="p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex flex-col justify-between hover:border-cyan-800 transition-colors">
           <span className="text-[10px] font-mono font-bold text-[#7E9AB8] uppercase">Issuing Country</span>
-          <span className="text-xs font-mono font-bold text-emerald-400 tracking-wide truncate mt-0.5">{issuingCountry}</span>
+          <span className={`text-xs font-mono font-bold tracking-wide truncate mt-0.5 ${issuingCountry === "UNKNOWN" ? "text-slateText-400 italic" : "text-emerald-400"}`}>{issuingCountry}</span>
         </div>
 
         {/* MRZ Line 1 (Spans 2 cols) */}
         <div className="col-span-2 p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex items-center justify-between gap-2 hover:border-cyan-800 transition-colors">
           <div className="min-w-0 flex-1">
             <span className="text-[9.5px] font-mono font-bold text-[#7E9AB8] block uppercase">MRZ (Line 1)</span>
-            <span className="text-[11px] font-mono font-bold text-slate-200 tracking-tight block truncate mt-0.5 select-all">
+            <span className={`text-[11px] font-mono font-bold tracking-tight block truncate mt-0.5 select-all ${mrz1 === "UNKNOWN" ? "text-slateText-400 italic" : "text-slate-200"}`}>
               {mrz1}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => copyToClipboard(mrz1, "mrz1")}
-            title="Copy MRZ Line 1"
-            className="p-1.5 rounded-lg bg-[#071524] hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-cyan-900 shrink-0 transition-colors"
-          >
-            {copiedKey === "mrz1" ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          </button>
+          {mrz1 !== "UNKNOWN" && (
+            <button
+              type="button"
+              onClick={() => copyToClipboard(mrz1, "mrz1")}
+              title="Copy MRZ Line 1"
+              className="p-1.5 rounded-lg bg-[#071524] hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-cyan-900 shrink-0 transition-colors"
+            >
+              {copiedKey === "mrz1" ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+            </button>
+          )}
         </div>
 
         {/* MRZ Line 2 (Spans 2 cols or row) */}
         <div className="col-span-2 md:col-span-4 p-2.5 rounded-xl bg-[#040C16] border border-cyan-950/80 flex items-center justify-between gap-2 hover:border-cyan-800 transition-colors">
           <div className="min-w-0 flex-1">
             <span className="text-[9.5px] font-mono font-bold text-[#7E9AB8] block uppercase">MRZ (Line 2)</span>
-            <span className="text-[11px] font-mono font-bold text-slate-200 tracking-tight block truncate mt-0.5 select-all">
+            <span className={`text-[11px] font-mono font-bold tracking-tight block truncate mt-0.5 select-all ${mrz2 === "UNKNOWN" ? "text-slateText-400 italic" : "text-slate-200"}`}>
               {mrz2}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => copyToClipboard(mrz2, "mrz2")}
-            title="Copy MRZ Line 2"
-            className="p-1.5 rounded-lg bg-[#071524] hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-cyan-900 shrink-0 transition-colors"
-          >
-            {copiedKey === "mrz2" ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          </button>
+          {mrz2 !== "UNKNOWN" && (
+            <button
+              type="button"
+              onClick={() => copyToClipboard(mrz2, "mrz2")}
+              title="Copy MRZ Line 2"
+              className="p-1.5 rounded-lg bg-[#071524] hover:bg-cyan-950 text-slate-400 hover:text-cyan-300 border border-cyan-900 shrink-0 transition-colors"
+            >
+              {copiedKey === "mrz2" ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+            </button>
+          )}
         </div>
       </div>
     </div>

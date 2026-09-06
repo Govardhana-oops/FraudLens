@@ -234,109 +234,60 @@ class ApiService {
     checkpointId: string,
     latencyMs: number
   ): UnifiedScreeningDossier {
-    const fileName = documentFile.name.toLowerCase();
     const timestamp = new Date().toISOString();
     const screeningId = `SCR-${Date.now()}`;
     const recordHash = generateSha256(screeningId + timestamp);
 
-    let status: "VALID" | "REVIEW_REQUIRED" | "EXPIRED" | "TAMPERED" | "INVALID" = "VALID";
-    let docNumber = "P" + Math.abs(documentFile.name.split("").reduce((acc, c) => ((acc << 5) - acc) + c.charCodeAt(0), 0)).toString().slice(0, 8);
-    let confidence = 0.96;
-    let tamperingRisk = 0.04;
-    let givenName = "JOHN ALEXANDER";
-    let surname = "DOE";
-    let expiryDate = "15 JAN 2030";
-
-    if (fileName.includes("expired")) {
-      status = "EXPIRED";
-      confidence = 0.88;
-      expiryDate = "15 JAN 2022";
-    } else if (fileName.includes("tamper")) {
-      status = "TAMPERED";
-      tamperingRisk = 0.68;
-      confidence = 0.72;
-      surname = "GARCIA";
-      givenName = "MARIA";
-    } else if (fileName.includes("uncertainty") || fileName.includes("review") || fileName.includes("face")) {
-      status = "REVIEW_REQUIRED";
-      confidence = 0.79;
-    } else if (fileName.includes("eriksson")) {
-      surname = "ERIKSSON";
-      givenName = "ANNA";
-      docNumber = "L898902C3";
-      expiryDate = "31 DEC 2030";
-      status = "VALID";
-    }
-
     const extractedFields: ExtractedField[] = [
-      { field_name: "Document Type", extracted_value: documentType, confidence: 0.99, engine: "Module 1 (OCR)" },
-      { field_name: "Document Number", extracted_value: docNumber, confidence: confidence, engine: "Module 1 (OCR)" },
-      { field_name: "Surname", extracted_value: surname, confidence: confidence, engine: "Module 1 (OCR)" },
-      { field_name: "Given Names", extracted_value: givenName, confidence: confidence, engine: "Module 1 (OCR)" },
-      { field_name: "Nationality", extracted_value: "UTO", confidence: 0.99, engine: "Module 1 (OCR)" },
-      { field_name: "Date of Expiry", extracted_value: expiryDate, confidence: confidence, engine: "Module 1 (OCR)" },
+      { field_name: "Document Type", extracted_value: documentType, confidence: 1.0, engine: "Client Specification" },
+      { field_name: "Extraction Status", extracted_value: "BACKEND_OFFLINE_MANUAL_REVIEW_REQUIRED", confidence: 0.0, engine: "System Ledger" },
     ];
 
     const validationChecks: ValidationCheck[] = [
       {
-        rule_id: "MRZ_CHECKSUM_VERIFIED",
-        description: "ICAO Doc 9303 MRZ check-digit verification algorithm",
-        result: status === "EXPIRED" || status === "TAMPERED" ? "REVIEW_REQUIRED" : "PASS",
-        severity: "CRITICAL",
-      },
-      {
-        rule_id: "EXPIRY_VALIDITY_WINDOW",
-        description: "Document expiration validity against screening date",
-        result: status === "EXPIRED" ? "INVALID" : "PASS",
+        rule_id: "BACKEND_OCR_CONNECTIVITY",
+        description: "Direct gateway OCR extraction and cryptographic verification",
+        result: "REVIEW_REQUIRED",
         severity: "HIGH",
       },
       {
-        rule_id: "SECURITY_FEATURE_INTEGRITY",
-        description: "Microprint, guilloche background, and substrate forensic validation",
-        result: status === "TAMPERED" ? "INVALID" : "PASS",
-        severity: "HIGH",
+        rule_id: "LOCAL_BUFFER_STORAGE",
+        description: "Document image preserved in local offline queue for server synchronization",
+        result: "PASS",
+        severity: "MEDIUM",
       },
     ];
 
     return {
       screening_id: screeningId,
       timestamp,
-      status,
-      confidence_score: confidence,
+      status: "REVIEW_REQUIRED",
+      confidence_score: 0.0,
       document_type: documentType,
-      document_number: docNumber,
+      document_number: "UNKNOWN",
       record_hash: recordHash,
       officer_id: officerId,
       checkpoint_id: checkpointId,
-      processing_time_ms: Math.max(latencyMs, 240),
+      processing_time_ms: Math.max(latencyMs, 180),
       extracted_fields: extractedFields,
       validation_checks: validationChecks,
       tampering_analysis: {
-        tampering_score: tamperingRisk,
-        tampering_detected: tamperingRisk > 0.35,
-        ela_disparity_score: status === "TAMPERED" ? 0.42 : 0.03,
-        copy_move_detected: status === "TAMPERED",
-        font_anomaly_score: status === "TAMPERED" ? 0.38 : 0.05,
-        anomalies_found: status === "TAMPERED" ? ["Splice boundary detected on portrait crop", "Font weight mismatch on surname field"] : [],
+        tampering_score: 0.0,
+        tampering_detected: false,
+        ela_disparity_score: 0.0,
+        copy_move_detected: false,
+        font_anomaly_score: 0.0,
+        anomalies_found: ["Central automated forensic analysis pending connection"],
       },
-      face_comparison: liveFaceFile
-        ? {
-            matched: true,
-            similarity_score: 0.92,
-            liveness_score: 0.95,
-            liveness_detected: true,
-            threshold: 0.75,
-            method: "FaceNet + Deep Liveness",
-          }
-        : null,
+      face_comparison: null,
       watchlist_result: {
         hit: false,
-        database_checked: "INTERPOL_SLTD_NATIONAL",
+        database_checked: "LOCAL_OFFLINE_CACHE",
         matched_entries: [],
       },
       metadata: {
-        fallback_mode: "CLIENT_RESILIENT",
-        file_size_bytes: documentFile.size,
+        offline_queued: true,
+        source_file_name: documentFile.name,
       },
     };
   }
@@ -438,7 +389,7 @@ class ApiService {
         ? raw.confidence_score
         : raw.confidence !== undefined
         ? raw.confidence
-        : 0.95;
+        : null;
 
     // 4. Transform Extracted Fields
     const fieldsList: ExtractedField[] = [];
@@ -452,9 +403,43 @@ class ApiService {
           fieldsList.push({
             field_name: label,
             extracted_value: v && typeof v === "object" ? String(v.value ?? "") : String(v ?? ""),
-            confidence: v && typeof v === "object" && v.confidence !== undefined ? v.confidence : 0.95,
+            confidence: v && typeof v === "object" && v.confidence !== undefined ? v.confidence : (confidenceScore ?? 1.0),
             engine: v && typeof v === "object" && v.source ? `Module 1 (${v.source})` : "Multi-Engine OCR",
           });
+        }
+      }
+    }
+
+    // Include MRZ lines from Module 1/2 MRZ parser if available
+    if (raw.mrz) {
+      if (raw.mrz.line1) {
+        fieldsList.push({
+          field_name: "MRZ Line 1",
+          extracted_value: String(raw.mrz.line1),
+          confidence: 0.99,
+          engine: "Module 1 (MRZ)",
+        });
+      }
+      if (raw.mrz.line2) {
+        fieldsList.push({
+          field_name: "MRZ Line 2",
+          extracted_value: String(raw.mrz.line2),
+          confidence: 0.99,
+          engine: "Module 1 (MRZ)",
+        });
+      }
+      if (raw.mrz.parsed_fields && typeof raw.mrz.parsed_fields === "object") {
+        for (const [k, v] of Object.entries(raw.mrz.parsed_fields)) {
+          const label = k.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+          const exists = fieldsList.some((f) => f.field_name.toLowerCase() === label.toLowerCase());
+          if (!exists && v) {
+            fieldsList.push({
+              field_name: label,
+              extracted_value: String(v),
+              confidence: 0.98,
+              engine: "Module 2 (MRZ Parser)",
+            });
+          }
         }
       }
     }

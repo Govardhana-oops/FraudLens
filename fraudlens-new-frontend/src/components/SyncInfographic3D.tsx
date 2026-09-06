@@ -221,7 +221,7 @@ export function SyncInfographic3D({
                 )}
                 <span className={isConnected ? "text-slateText-100 font-bold" : "text-slateText-400"}>
                   {isConnected
-                    ? "Secure Connection (TLS)"
+                    ? "HTTPS Secure Connection"
                     : isOnline
                     ? "Gateway Unavailable"
                     : "Central Disconnected"}

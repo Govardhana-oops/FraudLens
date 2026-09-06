@@ -61,7 +61,7 @@ export function SyncTerminalPanels({
             <span className="text-slateText-400">Database Status:</span>
             <span className="flex items-center gap-1.5 text-accent-emerald font-bold">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald" />
-              <span>Active (SQLite WAL)</span>
+              <span>Active (Local Offline Ledger)</span>
             </span>
           </div>
 
@@ -139,7 +139,7 @@ export function SyncTerminalPanels({
 
           <div className="p-3 rounded-xl bg-canvas-900 border border-canvas-700/80 flex items-center justify-between">
             <span className="text-slateText-400">Security:</span>
-            <span className="text-slateText-100 font-bold">TLS 1.3 / HTTPS Encrypted</span>
+            <span className="text-slateText-100 font-bold">HTTPS Secure Connection</span>
           </div>
 
           <div className="p-3 rounded-xl bg-canvas-900 border border-canvas-700/80 flex items-center justify-between">

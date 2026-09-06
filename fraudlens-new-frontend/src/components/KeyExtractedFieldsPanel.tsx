@@ -105,8 +105,8 @@ export function KeyExtractedFieldsPanel({ dossier }: KeyExtractedFieldsPanelProp
       (f.field_name.includes("2") || f.field_name.toLowerCase().includes("line 2") || f.field_name.toLowerCase().includes("line_2"))
   );
 
-  const mrzLine1 = mrz1Field?.extracted_value || (fullName !== "UNKNOWN" && docNumber !== "—" ? `P<${(nationality !== "UNKNOWN" ? nationality : "XXX").substring(0,3)}${fullName.replace(/\s+/g, "<<")}` : "— (NO MRZ LINE 1 DETECTED)");
-  const mrzLine2 = mrz2Field?.extracted_value || (docNumber !== "—" ? `${docNumber}<0${(nationality !== "UNKNOWN" ? nationality : "XXX").substring(0,3)}<<<<<<<<<<<<<<<<<<01` : "— (NO MRZ LINE 2 DETECTED)");
+  const mrzLine1 = mrz1Field?.extracted_value || "— (NO MRZ LINE 1 DETECTED)";
+  const mrzLine2 = mrz2Field?.extracted_value || "— (NO MRZ LINE 2 DETECTED)";
 
   const fields = [
     { label: "Full Name", value: fullName, icon: User, key: "name" },

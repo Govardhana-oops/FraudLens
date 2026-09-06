@@ -79,7 +79,7 @@ export function SyncSummaryCards({
       title: "CONNECTION",
       value: isConnected ? "Online" : isOnline ? "Unavailable" : "Offline",
       subtext: isConnected
-        ? "Secure TLS Channel"
+        ? "Secure HTTPS Channel"
         : isOnline
         ? "Gateway unreachable • Local buffer"
         : "Local database active",

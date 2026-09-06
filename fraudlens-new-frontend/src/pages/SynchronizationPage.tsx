@@ -71,7 +71,7 @@ export function SynchronizationPage() {
       if (operatingMode === "OFFLINE") {
         setSyncFeedback({
           type: "info",
-          message: "Offline mode active. Records are safely stored locally in SQLite WAL.",
+          message: "Offline mode active. Records are safely stored in local offline storage.",
         });
       } else {
         setSyncFeedback({
@@ -228,7 +228,7 @@ export function SynchronizationPage() {
             </div>
 
             <p className="text-xs text-slateText-300 leading-relaxed font-sans">
-              Active synchronization will pause. Local processing will continue safely in SQLite storage.
+              Active synchronization will pause. Local processing will continue safely in local offline storage.
             </p>
 
             <div className="flex justify-end gap-3 pt-2 text-xs">
