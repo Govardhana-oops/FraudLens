@@ -12,7 +12,8 @@ python -m module13_final_validation.src.cli check
 Write-Host "`nStarting FastAPI Backend API Server on http://localhost:8000..." -ForegroundColor Yellow
 $backendJob = Start-Process -FilePath "uvicorn" -ArgumentList "module8_backend_api.src.main:app --host 0.0.0.0 --port 8000" -PassThru
 
-# 3. Serve Officer Web Console
-Write-Host "`nServing Inspection Officer Web Console on http://localhost:3000..." -ForegroundColor Green
-Write-Host "Open your browser to: http://localhost:3000" -ForegroundColor White
-python -m http.server 3000 --directory module9_officer_console
+# 3. Serve FraudLens Officer Web Console
+Write-Host "`nServing Inspection Officer Web Console on http://localhost:5174..." -ForegroundColor Green
+Write-Host "Open your browser to: http://localhost:5174" -ForegroundColor White
+Set-Location -Path "$PSScriptRoot\fraudlens-new-frontend"
+npm run dev -- --port 5174

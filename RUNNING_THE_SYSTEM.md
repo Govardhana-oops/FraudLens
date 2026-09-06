@@ -21,7 +21,7 @@ Welcome to the **AI-Based Fake Identity & Travel Document Screening System (AI-D
 
 The startup script will automatically open **two separate command windows**:
 1. **`AI-DIDSS Backend API [Port 8000]`** (FastAPI REST service)
-2. **`AI-DIDSS Web Console [Port 3000]`** (Officer workstation web server)
+2. **`FraudLens Web Console [Port 5174]`** (Officer workstation web server powered by Vite + React 18)
 
 > [!NOTE]
 > Keep both of these windows open while using the system.
@@ -32,14 +32,14 @@ The startup script will automatically open **two separate command windows**:
 
 Your default web browser should open automatically. If it does not, open your browser (Chrome, Edge, Firefox, or Safari) and go to:
 
-* **Officer Web Console (UI):** [http://localhost:3000](http://localhost:3000)
+* **FraudLens Web Console (UI):** [http://localhost:5174](http://localhost:5174)
 * **Backend API Docs (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
 ## STEP 4: How to Test with a Sample Document
 
-1. On the **Officer Web Console** ([http://localhost:3000](http://localhost:3000)):
+1. On the **FraudLens Web Console** ([http://localhost:5174](http://localhost:5174)):
 2. Under **"1. Document Optical Scanner"**, click the drag-and-drop box or drop a sample passport image.
    * *Sample image location:* You can use any test image from `module1_ocr/data/raw/` or `module1_ocr/data/test/`.
 3. (Optional) Under **"2. Biometric Face Verification"**, click the live probe box to upload a selfie photo.

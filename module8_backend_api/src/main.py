@@ -56,7 +56,8 @@ def create_app() -> FastAPI:
     app.include_router(audit.router, prefix="/api/v1")
 
     # 4. Static Files Mount (Officer Console Web UI)
-    console_dir = Path(_proto_root) / "module9_officer_console"
+    new_frontend_dist = Path(_proto_root) / "fraudlens-new-frontend" / "dist"
+    console_dir = new_frontend_dist if new_frontend_dist.exists() else (Path(_proto_root) / "module9_officer_console")
     if console_dir.exists():
         from fastapi.staticfiles import StaticFiles
         app.mount("/console", StaticFiles(directory=str(console_dir), html=True), name="console")
