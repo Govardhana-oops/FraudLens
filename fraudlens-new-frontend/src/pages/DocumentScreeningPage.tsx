@@ -1,81 +1,166 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  FileCheck2,
-  Scan,
+  UploadCloud,
+  Camera,
+  Wifi,
+  WifiOff,
+  RotateCcw,
   Shield,
-  AlertTriangle,
   FolderLock,
   Download,
-  RotateCcw,
-  ExternalLink,
-  Copy,
-  Check,
-  Sparkles,
-  Camera,
-  Layers,
+  Scan,
+  X,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { DocumentDropzone } from "@/components/DocumentDropzone";
-import { PipelineProgress } from "@/components/PipelineProgress";
-import { ConfidenceRing } from "@/components/ConfidenceRing";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ExtractedFieldsGrid } from "@/components/ExtractedFieldsGrid";
 import { ValidationChecksList } from "@/components/ValidationChecksList";
 import { ForensicAnalysisCard } from "@/components/ForensicAnalysisCard";
 import { BiometricComparison } from "@/components/BiometricComparison";
-import { EmptyState } from "@/components/EmptyState";
-import { formatDate, truncateMiddle } from "@/utils/formatters";
+import { PipelineProgress } from "@/components/PipelineProgress";
+import { generateSyntheticDocumentFile, type DemoScenario } from "@/utils/sampleDocs";
+import { formatDate, formatScorePct } from "@/utils/formatters";
 import type { DocumentType, UnifiedScreeningDossier } from "@/types";
 
 export function DocumentScreeningPage() {
-  const { currentResult, executeScreening, clearCurrentResult, isScreening, settings } = useApp();
+  const { currentResult, executeScreening, clearCurrentResult, isScreening, isLiveConnected } = useApp();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const [documentFile, setDocumentFile] = useState<File | null>(null);
-  const [liveFaceFile, setLiveFaceFile] = useState<File | null>(null);
-  const [docType, setDocType] = useState<DocumentType>("PASSPORT");
-  const [copiedHash, setCopiedHash] = useState(false);
+  const [docPreviewUrl, setDocPreviewUrl] = useState<string | null>(null);
+  const [selectedScenario, setSelectedScenario] = useState<DemoScenario>("valid_passport");
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType>("PASSPORT");
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const [pipelineStep, setPipelineStep] = useState(0);
+
+  const demoScenarios: { id: DemoScenario; label: string }[] = [
+    { id: "valid_passport", label: "Valid Passport" },
+    { id: "expired_document", label: "Expired Document" },
+    { id: "ocr_uncertainty", label: "OCR Uncertainty" },
+    { id: "tampering_review", label: "Tampering Review" },
+    { id: "face_review", label: "Face Review Required" },
+  ];
 
   const docTypes: { type: DocumentType; label: string }[] = [
     { type: "PASSPORT", label: "Passport" },
     { type: "VISA", label: "Visa" },
     { type: "NATIONAL_ID", label: "National ID" },
-    { type: "RESIDENCE_PERMIT", label: "Residence Permit" },
-    { type: "DRIVER_LICENSE", label: "Driver License" },
-    { type: "AUTO_DETECT", label: "Auto-Detect" },
+    { type: "DRIVER_LICENSE", label: "Driving Licence" },
+    { type: "RESIDENCE_PERMIT", label: "Permit" },
   ];
 
-  const handleStartScreening = async () => {
-    if (!documentFile) return;
+  // Handle File Selection
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      setDocumentFile(file);
+      const url = URL.createObjectURL(file);
+      setDocPreviewUrl(url);
+      runScreening(file);
+    } else {
+      setDocumentFile(null);
+      if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
+      setDocPreviewUrl(null);
+    }
+  };
 
-    // Simulate stepping for the progress bar visual while async API runs
+  // Run Screening Pipeline
+  const runScreening = async (fileToScreen: File) => {
     setPipelineStep(1);
     const stepInterval = setInterval(() => {
       setPipelineStep((prev) => (prev < 4 ? prev + 1 : prev));
-    }, 400);
+    }, 350);
 
     try {
-      await executeScreening(documentFile, liveFaceFile, docType);
+      await executeScreening(fileToScreen, null, selectedDocType);
       setPipelineStep(5);
     } catch (err) {
-      console.error("Screening error:", err);
+      console.error("Screening execution error:", err);
     } finally {
       clearInterval(stepInterval);
     }
   };
 
+  // Handle Demo Scenario Click
+  const handleSelectScenario = async (scenarioId: DemoScenario) => {
+    setSelectedScenario(scenarioId);
+    clearCurrentResult();
+    const synthFile = await generateSyntheticDocumentFile(scenarioId);
+    setDocumentFile(synthFile);
+    const url = URL.createObjectURL(synthFile);
+    setDocPreviewUrl(url);
+    await runScreening(synthFile);
+  };
+
+  // Handle Reset / New Inspection
   const handleReset = () => {
     setDocumentFile(null);
-    setLiveFaceFile(null);
+    if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
+    setDocPreviewUrl(null);
     clearCurrentResult();
     setPipelineStep(0);
   };
 
-  const handleCopyHash = (hash: string) => {
-    navigator.clipboard.writeText(hash);
-    setCopiedHash(true);
-    setTimeout(() => setCopiedHash(false), 2000);
+  // Webcam Capture Handlers
+  const startCamera = async () => {
+    setIsCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Webcam access error:", err);
+      alert("Unable to access camera. Please check permissions or upload a file.");
+      setIsCameraOpen(false);
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = videoRef.current.videoWidth || 640;
+    canvas.height = videoRef.current.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], "camera_capture.png", { type: "image/png" });
+          stopCamera();
+          handleFileChange(file);
+        }
+      }, "image/png");
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((t) => t.stop());
+    }
+    setIsCameraOpen(false);
+  };
+
+  // Drag and Drop Handlers
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const onDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(e.dataTransfer.files[0]);
+    }
   };
 
   const handleDownloadJSON = (result: UnifiedScreeningDossier) => {
@@ -89,240 +174,311 @@ export function DocumentScreeningPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleFileChange(e.target.files[0]);
+          }
+        }}
+      />
+
+      {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slateText-50 tracking-tight">Document Screening Terminal</h1>
-            <span className="rounded bg-brand-teal/20 px-2 py-0.5 text-xs font-mono font-bold text-brand-teal border border-brand-teal/40">
-              MODULE 1-7 ENSEMBLE
-            </span>
-          </div>
-          <p className="text-sm font-semibold text-slateText-300">
-            Multi-Engine OCR extraction, ICAO 9303 checksum validation, deep forensics, and biometric pairing
+          <h1 className="text-2xl font-bold text-white tracking-tight">Document Screening</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
+            Upload an identity document for multi-layer verification.
           </p>
         </div>
 
-        {currentResult && (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleReset}
-              className="btn-secondary flex items-center gap-2 text-xs font-bold uppercase tracking-wider"
-            >
-              <RotateCcw size={14} />
-              <span>New Inspection</span>
-            </button>
-
-            <Link
-              to={`/evidence?id=${currentResult.screening_id}`}
-              className="btn-primary flex items-center gap-2 text-xs font-bold uppercase tracking-wider"
-            >
-              <FolderLock size={14} />
-              <span>Full Dossier</span>
-            </Link>
+        {/* Status Pill Indicator */}
+        <div className="flex items-center gap-1.5 p-1 rounded-full border border-slate-800 bg-slate-900/60 self-start sm:self-auto">
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+              isLiveConnected ? "bg-teal-950/80 text-teal-400 border border-teal-500/40" : "text-slate-500"
+            }`}
+          >
+            <Wifi size={13} className={isLiveConnected ? "text-teal-400 animate-pulse" : "text-slate-500"} />
+            <span>ONLINE</span>
           </div>
-        )}
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+              !isLiveConnected ? "bg-amber-950/80 text-amber-400 border border-amber-500/40" : "text-slate-500"
+            }`}
+          >
+            <WifiOff size={13} />
+            <span>OFFLINE</span>
+          </div>
+        </div>
       </div>
 
-      {/* Input / Upload Section (When not showing results or when uploading) */}
+      {/* Input / Dropzone Area (Shown when no result) */}
       {!currentResult && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Document Dropzone */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="panel-3d p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slateText-200">
-                  Select Document Standard
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {docTypes.map((dt) => (
-                    <button
-                      key={dt.type}
-                      type="button"
-                      onClick={() => setDocType(dt.type)}
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                        docType === dt.type
-                          ? "bg-brand-teal text-canvas-950 shadow-glow-teal font-black"
-                          : "bg-canvas-850 text-slateText-300 border border-canvas-600 hover:border-canvas-500 hover:text-slateText-100"
-                      }`}
-                    >
-                      {dt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slateText-300 mb-2">
-                  Document Image Feed (ID / Passport / Visa)
-                </label>
-                <DocumentDropzone
-                  onFileSelected={setDocumentFile}
-                  selectedFile={documentFile}
-                  label="Drop passport or identity document here, or browse"
-                />
-              </div>
-            </div>
-
-            {/* Optional Companion Live Face Feed */}
-            <div className="panel-3d p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Camera className="h-4 w-4 text-brand-cyan" />
-                  <label className="text-xs font-bold uppercase tracking-wider text-slateText-200">
-                    Optional Companion Live Face (1:1 Biometrics)
-                  </label>
-                </div>
-                <span className="text-[11px] font-mono text-slateText-300">OPTIONAL</span>
-              </div>
-              <p className="text-xs text-slateText-300 font-medium mb-3">
-                Upload a live passenger selfie or capture from the inspection webcam to cross-verify against the credential photo.
-              </p>
-              <DocumentDropzone
-                onFileSelected={setLiveFaceFile}
-                selectedFile={liveFaceFile}
-                label="Drop live traveler face image here, or capture"
-              />
+        <div className="space-y-5">
+          {/* Demo Scenario Box */}
+          <div className="p-3 rounded-xl border border-slate-800/80 bg-slate-900/40 flex items-center gap-3 flex-wrap">
+            <span className="text-xs font-medium text-slate-400 shrink-0">Demo scenario:</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              {demoScenarios.map((sc) => (
+                <button
+                  key={sc.id}
+                  type="button"
+                  onClick={() => handleSelectScenario(sc.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    selectedScenario === sc.id && documentFile
+                      ? "border border-teal-500 bg-teal-950/50 text-teal-400 shadow-[0_0_12px_rgba(20,184,166,0.25)]"
+                      : "border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 hover:text-white"
+                  }`}
+                >
+                  {sc.label}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Screening Trigger & Inspector Card */}
-          <div className="panel-3d p-6 flex flex-col justify-between space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-slateText-100 flex items-center gap-2">
-                <Shield size={16} className="text-brand-teal" />
-                <span>Screening Configuration</span>
-              </h2>
-
-              <div className="space-y-3">
-                <div className="p-3 rounded-lg bg-canvas-850 border border-canvas-600">
-                  <div className="text-[11px] font-bold text-slateText-400">OFFICER ID</div>
-                  <div className="text-xs font-mono font-bold text-slateText-100">{settings.officerId}</div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-canvas-850 border border-canvas-600">
-                  <div className="text-[11px] font-bold text-slateText-400">CHECKPOINT NODE</div>
-                  <div className="text-xs font-bold text-slateText-100">{settings.checkpointName} ({settings.checkpointId})</div>
-                </div>
-
-                <div className="p-3 rounded-lg bg-canvas-850 border border-canvas-600">
-                  <div className="text-[11px] font-bold text-slateText-400">ACTIVE ENGINES</div>
-                  <div className="text-xs font-bold text-accent-emerald flex items-center gap-1.5 mt-0.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent-emerald animate-pulse" />
-                    <span>Multi-Engine OCR • ELA • Deep Tampering • 1:1 Face</span>
-                  </div>
-                </div>
-              </div>
+          {/* Document Type Selector Row */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-sm font-medium text-slate-400 shrink-0">Document type:</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              {docTypes.map((dt) => (
+                <button
+                  key={dt.type}
+                  type="button"
+                  onClick={() => setSelectedDocType(dt.type)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    selectedDocType === dt.type
+                      ? "border border-teal-500 bg-teal-950/50 text-teal-400 shadow-[0_0_12px_rgba(20,184,166,0.25)]"
+                      : "border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 hover:text-white"
+                  }`}
+                >
+                  {dt.label}
+                </button>
+              ))}
             </div>
+          </div>
 
-            <div className="space-y-3">
-              {isScreening && <PipelineProgress currentStep={pipelineStep} />}
+          {/* Screening Progress Indicator */}
+          {isScreening && (
+            <div className="p-6 rounded-2xl border border-teal-500/40 bg-slate-900/80 shadow-2xl">
+              <PipelineProgress currentStep={pipelineStep} />
+            </div>
+          )}
 
+          {/* Main Large Dropzone (Exact Match to Screenshot) */}
+          {!isScreening && (
+            <div
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+              className={`border-2 border-dashed rounded-2xl p-16 flex flex-col items-center justify-center text-center relative transition-all ${
+                isDragOver
+                  ? "border-teal-400 bg-teal-950/20 shadow-[0_0_24px_rgba(20,184,166,0.2)]"
+                  : "border-slate-800/90 bg-[#090D14]/80 hover:border-slate-700"
+              } bg-[linear-gradient(to_right,#1e293b18_1px,transparent_1px),linear-gradient(to_bottom,#1e293b18_1px,transparent_1px)] bg-[size:24px_24px]`}
+            >
+              {/* Cloud Icon */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="cursor-pointer flex flex-col items-center"
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900/80 border border-slate-800 text-teal-400 mb-4 hover:scale-105 transition-transform">
+                  <UploadCloud className="h-8 w-8 text-teal-400" />
+                </div>
+                <p className="text-sm text-slate-200">
+                  Drag & drop a document, or{" "}
+                  <span className="text-teal-400 underline font-medium hover:text-teal-300">
+                    browse files
+                  </span>
+                </p>
+                <p className="text-xs text-slate-500 mt-1.5">
+                  JPG, PNG or PDF • single document per screening
+                </p>
+              </div>
+
+              {/* Capture Image Button */}
               <button
                 type="button"
-                disabled={!documentFile || isScreening}
-                onClick={handleStartScreening}
-                className="btn-primary w-full py-3.5 text-sm uppercase tracking-wider font-black flex items-center justify-center gap-2 shadow-glow-teal disabled:opacity-50 disabled:pointer-events-none"
+                onClick={startCamera}
+                className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium rounded-lg border border-slate-700 bg-slate-800/60 text-slate-200 hover:bg-slate-700/60 hover:text-white transition-colors"
               >
-                <Scan size={18} />
-                <span>{isScreening ? "Processing Document Pipeline..." : "Execute Screening"}</span>
+                <Camera size={14} className="text-teal-400" />
+                <span>Capture image</span>
               </button>
+            </div>
+          )}
+        </div>
+      )}
 
-              <p className="text-[11px] text-center text-slateText-400 font-medium">
-                High-assurance verification via Module 7 pipeline ensemble
-              </p>
+      {/* Camera Live Capture Modal */}
+      {isCameraOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Camera size={16} className="text-teal-400" />
+                <span>Camera Inspection Feed</span>
+              </h3>
+              <button
+                onClick={stopCamera}
+                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="relative rounded-xl overflow-hidden bg-black border border-slate-800 aspect-video flex items-center justify-center">
+              <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+              <div className="absolute inset-8 border border-teal-400/40 rounded-lg pointer-events-none" />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={stopCamera}
+                className="px-4 py-2 rounded-lg text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={capturePhoto}
+                className="px-4 py-2 rounded-lg text-xs font-bold text-slate-950 bg-teal-400 hover:bg-teal-300 flex items-center gap-1.5"
+              >
+                <Camera size={14} />
+                <span>Capture & Inspect</span>
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Comprehensive Result Panels (When result exists) */}
+      {/* Screening Results View (Rendered when currentResult exists) */}
       {currentResult && (
         <div className="space-y-6">
-          {/* Result Overview Banner */}
-          <div className="panel-3d p-6 border-brand-teal/40 bg-gradient-to-r from-canvas-900 via-canvas-850 to-canvas-900">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
-                <StatusBadge status={currentResult.status} size="lg" />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-black text-slateText-50">
-                      Screening Dossier: {currentResult.document_type || "PASSPORT"}
-                    </h2>
-                    <span className="rounded bg-canvas-850 px-2 py-0.5 text-xs font-mono font-bold text-slateText-200 border border-canvas-600">
-                      {currentResult.document_number || "EXTRACTED"}
-                    </span>
+          {/* Action & Status Top Bar */}
+          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <StatusBadge status={currentResult.status} size="lg" />
+              <div>
+                <h2 className="text-lg font-bold text-white">
+                  {currentResult.document_type?.toUpperCase() || "DOCUMENT"}{" "}
+                  {currentResult.document_number ? `• ${currentResult.document_number}` : ""}
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Screening ID: <span className="font-mono text-slate-300">{currentResult.screening_id}</span> • Processed at {formatDate(currentResult.timestamp)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="px-3.5 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 flex items-center gap-2 transition-colors"
+              >
+                <RotateCcw size={14} />
+                <span>New Inspection</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDownloadJSON(currentResult)}
+                className="px-3.5 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 flex items-center gap-2 transition-colors"
+              >
+                <Download size={14} />
+                <span>Export JSON</span>
+              </button>
+
+              <Link
+                to={`/evidence?id=${currentResult.screening_id}`}
+                className="px-4 py-2 rounded-lg bg-teal-400 hover:bg-teal-300 text-slate-950 text-xs font-bold flex items-center gap-2 shadow-[0_0_12px_rgba(20,184,166,0.3)] transition-colors"
+              >
+                <FolderLock size={14} />
+                <span>Full Evidence Dossier</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Main Inspection Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Column: Document Image & High-Level Metrics */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Document Image Card */}
+              <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/40 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Inspected Credential Image
+                </h3>
+                {docPreviewUrl ? (
+                  <div className="relative rounded-lg overflow-hidden border border-slate-800 bg-black aspect-[3/2] flex items-center justify-center">
+                    <img src={docPreviewUrl} alt="Document" className="w-full h-full object-contain" />
                   </div>
-                  <p className="text-xs font-medium text-slateText-300 mt-1">
-                    Processed at {formatDate(currentResult.timestamp)} • Latency: {currentResult.processing_time_ms || 0}ms • Officer: {currentResult.officer_id || settings.officerId}
-                  </p>
+                ) : (
+                  <div className="rounded-lg border border-slate-800 bg-slate-950/60 aspect-[3/2] flex items-center justify-center text-xs text-slate-500">
+                    No image preview available
+                  </div>
+                )}
+              </div>
+
+              {/* Confidence Breakdown Card */}
+              <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/40 space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Multi-Modal Confidence Matrix
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-center">
+                    <div className="text-[11px] text-slate-400 mb-1">OCR Clarity</div>
+                    <div className="text-base font-mono font-bold text-teal-400">
+                      {formatScorePct(currentResult.confidence_score || 0.95)}
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-center">
+                    <div className="text-[11px] text-slate-400 mb-1">Authenticity</div>
+                    <div className="text-base font-mono font-bold text-emerald-400">
+                      {formatScorePct(1.0 - (currentResult.tampering_analysis?.tampering_score || 0))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 self-center lg:self-auto">
-                <ConfidenceRing
-                  score={currentResult.confidence_score || 0}
-                  size={64}
-                  label="Confidence"
-                />
-                <ConfidenceRing
-                  score={1 - (currentResult.tampering_analysis?.tampering_score || 0)}
-                  size={64}
-                  label="Integrity"
-                  color={
-                    (currentResult.tampering_analysis?.tampering_score || 0) > 0.4
-                      ? "#F43F5E"
-                      : "#10B981"
-                  }
-                />
-              </div>
+              {/* Biometric Comparison Card (if face verified) */}
+              {currentResult.face_comparison && (
+                <div className="p-5 rounded-xl border border-slate-800 bg-slate-900/40">
+                  <BiometricComparison comparison={currentResult.face_comparison} />
+                </div>
+              )}
             </div>
 
-            {/* Cryptographic SHA-256 Provenance Strip */}
-            <div className="mt-5 pt-4 border-t border-canvas-600 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 text-slateText-300 font-mono">
-                <span className="font-bold text-brand-teal">RECORD SHA-256:</span>
-                <span className="text-slateText-200">{truncateMiddle(currentResult.record_hash, 24)}</span>
-                <button
-                  onClick={() => handleCopyHash(currentResult.record_hash)}
-                  className="p-1 hover:text-brand-teal text-slateText-400 transition-colors"
-                  title="Copy full hash"
-                >
-                  {copiedHash ? <Check size={14} className="text-accent-emerald" /> : <Copy size={14} />}
-                </button>
+            {/* Right Column: Extracted Fields & Validation Checks */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Extracted Fields */}
+              <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/40 space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                  <Scan size={15} className="text-teal-400" />
+                  <span>Extracted Credential Fields (OCR & MRZ)</span>
+                </h3>
+                <ExtractedFieldsGrid fields={currentResult.extracted_fields} />
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleDownloadJSON(currentResult)}
-                  className="btn-secondary text-[11px] py-1 px-2.5 uppercase tracking-wider flex items-center gap-1.5"
-                >
-                  <Download size={12} />
-                  <span>Export JSON</span>
-                </button>
-
-                <Link
-                  to={`/evidence?id=${currentResult.screening_id}`}
-                  className="btn-primary text-[11px] py-1 px-2.5 uppercase tracking-wider flex items-center gap-1.5"
-                >
-                  <span>3D Evidence Graph</span>
-                  <ExternalLink size={12} />
-                </Link>
+              {/* Validation & Security Rules */}
+              <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/40 space-y-4">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                  <Shield size={15} className="text-teal-400" />
+                  <span>Rule Engine & Cross-Modal Integrity Checks</span>
+                </h3>
+                <ValidationChecksList checks={currentResult.validation_checks} />
               </div>
+
+              {/* Forensic Analysis Card */}
+              {currentResult.tampering_analysis && (
+                <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/40">
+                  <ForensicAnalysisCard analysis={currentResult.tampering_analysis} />
+                </div>
+              )}
             </div>
-          </div>
-
-          {/* Grid of Extracted Fields & Validation Checks */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ExtractedFieldsGrid fields={currentResult.extracted_fields} />
-            <ValidationChecksList checks={currentResult.validation_checks} />
-          </div>
-
-          {/* Forensic Tampering & Biometrics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ForensicAnalysisCard analysis={currentResult.tampering_analysis} />
-            <BiometricComparison comparison={currentResult.face_comparison} />
           </div>
         </div>
       )}
