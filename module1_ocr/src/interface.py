@@ -29,10 +29,10 @@ from .ocr.engine import OCREngine
 from .extraction.pipeline import DocumentUnderstandingPipeline
 
 class DocumentOCR:
-    def __init__(self, min_confidence: float = 0.50):
+    def __init__(self, min_confidence: float = 0.50, engine: Optional[str] = None):
         self.preprocessing_pipeline = PreprocessingPipeline(mode="standard")
         self.roi_extractor = DocumentROIExtractor(target_dpi_scale=1.5)
-        self.ocr_engine = OCREngine()
+        self.ocr_engine = OCREngine(confidence_threshold=0.40, engine=engine)
         self.understanding_pipeline = DocumentUnderstandingPipeline(min_confidence=min_confidence)
         self.model_version = "LayoutAware-MultiScale-OCR-v2.0"
         self.module_version = "1.0.0"
@@ -75,9 +75,15 @@ class DocumentOCR:
         except Exception as e:
             return None, f"Image loading error: {str(e)}"
 
-    def process(self, image_input: Union[str, Path, bytes, np.ndarray], metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def process(
+        self,
+        image_input: Union[str, Path, bytes, np.ndarray],
+        metadata: Optional[Dict[str, Any]] = None,
+        engine: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Executes the complete OCR and document understanding pipeline."""
         metadata = metadata or {}
+        req_engine = engine or metadata.get("ocr_engine")
         
         # 1. Validate and load image
         img_bgr, err = self._load_image(image_input)
@@ -124,13 +130,18 @@ class DocumentOCR:
 
             # 3. Multi-Scale ROI Extraction & Neural OCR
             zones = self.roi_extractor.extract_zones(proc_img)
-            ocr_res = self.ocr_engine.extract_text(zones["full_document"], mrz_crop=zones.get("mrz_high_dpi"))
+            ocr_res = self.ocr_engine.extract_text(
+                zones["full_document"],
+                mrz_crop=zones.get("mrz_high_dpi"),
+                engine=req_engine
+            )
 
             # 4. Document Understanding Pipeline
             proc_meta = {
                 "module": "module1_ocr",
                 "module_version": self.module_version,
                 "model_version": self.model_version,
+                "engine_used": ocr_res.get("engine", "default"),
                 "quality_assessment": quality,
                 "preprocessing_mode": "roi_multiscale_neural",
                 "user_metadata": metadata

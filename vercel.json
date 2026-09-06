@@ -1,26 +1,13 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "buildCommand": "npm --prefix fraudlens-new-frontend run build",
+  "outputDirectory": "fraudlens-new-frontend/dist",
+  "installCommand": "npm --prefix fraudlens-new-frontend install",
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/module9_officer_console/index.html"
-    },
-    {
-      "source": "/index.css",
-      "destination": "/module9_officer_console/index.css"
-    },
-    {
-      "source": "/app.js",
-      "destination": "/module9_officer_console/app.js"
-    },
-    {
-      "source": "/console",
-      "destination": "/module9_officer_console/index.html"
-    },
-    {
-      "source": "/console/(.*)",
-      "destination": "/module9_officer_console/$1"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }

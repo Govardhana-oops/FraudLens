@@ -1,3 +1,9 @@
+# Node / Frontend dependencies & builds
+node_modules/
+dist/
+*.tsbuildinfo
+.eslintcache
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -10,7 +16,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -52,12 +57,19 @@ pytest-cache-files-*/
 # Environments & Secrets
 .env
 .env.*
+!.env.example
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# SQLite lock / WAL temporary files
+*.sqlite3-shm
+*.sqlite3-wal
+*.db-shm
+*.db-wal
 
 # IDE & OS files
 .vscode/
@@ -77,7 +89,6 @@ tmp/
 *.log
 
 # Sensitive Identity Documents & PII Protection
-# (Synthetic benchmark images in module1_ocr/data/cleaned are preserved for demo/testing)
 real_documents/
 biometrics_raw/
 *.pem
