@@ -1,9 +1,9 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "buildCommand": "npm --prefix fraudlens-new-frontend run build",
+  "buildCommand": "cd fraudlens-new-frontend && npm install && npm run build",
   "outputDirectory": "fraudlens-new-frontend/dist",
-  "installCommand": "npm --prefix fraudlens-new-frontend install",
+  "installCommand": "cd fraudlens-new-frontend && npm install",
   "rewrites": [
     {
       "source": "/(.*)",

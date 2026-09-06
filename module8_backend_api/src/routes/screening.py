@@ -52,12 +52,17 @@ async def inspect_document(
         live_bytes = await face_target.read()
         live_img = _read_upload_image(live_bytes)
 
-    dossier = screening_orchestrator.process_screening(
-        document_image=doc_img,
-        live_face_image=live_img,
-        officer_id=officer_id or "CP-0082",
-        checkpoint_id=checkpoint_id or "GATE-04"
-    )
+    try:
+        dossier = screening_orchestrator.process_screening(
+            document_image=doc_img,
+            live_face_image=live_img,
+            officer_id=officer_id or "CP-0082",
+            checkpoint_id=checkpoint_id or "GATE-04"
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Screening processing failure: {str(e)}")
 
     # Attach capture metadata
     if "metadata" not in dossier:
