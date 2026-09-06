@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd fraudlens-new-frontend && npm install && npm run build && node -e \"const fs=require('fs'); fs.cpSync('./dist', '../dist', {recursive: true, force: true}); fs.cpSync('./dist', '../module9_officer_console/dist', {recursive: true, force: true}); fs.cpSync('./dist', '../module9_officer_console', {recursive: true, force: true});\"",
-  "outputDirectory": "fraudlens-new-frontend/dist",
-  "installCommand": "cd fraudlens-new-frontend && npm install",
+  "buildCommand": "node build-vercel.js",
+  "installCommand": "node install-vercel.js",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
