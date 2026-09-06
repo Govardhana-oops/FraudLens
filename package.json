@@ -1,0 +1,9 @@
+{
+  "name": "fraudlens-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix fraudlens-new-frontend run build",
+    "install": "npm --prefix fraudlens-new-frontend install"
+  }
+}
