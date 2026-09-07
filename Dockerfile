@@ -9,6 +9,7 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000 \
+    OCR_ENGINE=auto \
     TORCH_HOME=/tmp/.cache/torch \
     EASYOCR_MODULE_PATH=/tmp/.EasyOCR
 

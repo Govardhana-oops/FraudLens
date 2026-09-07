@@ -89,15 +89,15 @@ class OCREngine:
                 return self.tesseract_adapter
             return self.default_backend
         elif target == "auto":
-            # Pick highest priority functional neural engine
-            if self.default_backend.is_available():
+            # Pick highest priority functional engine (prioritize lightweight C++ tesseract if installed)
+            if self.tesseract_adapter.is_available():
+                return self.tesseract_adapter
+            elif self.default_backend.is_available():
                 return self.default_backend
             elif self.easyocr_adapter.is_available():
                 return self.easyocr_adapter
             elif self.paddleocr_adapter.is_available():
                 return self.paddleocr_adapter
-            elif self.tesseract_adapter.is_available():
-                return self.tesseract_adapter
             return self.default_backend
         else:
             return self.default_backend

@@ -9,3 +9,5 @@ services:
         value: 8000
       - key: ALLOWED_ORIGINS
         value: https://fraud-lens-7xjy.vercel.app,http://localhost:3000,http://localhost:5173,http://localhost:5174
+      - key: OCR_ENGINE
+        value: auto
