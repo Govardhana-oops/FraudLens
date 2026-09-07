@@ -74,6 +74,15 @@ export interface UnifiedScreeningDossier {
   tampering_analysis: TamperingAnalysis;
   face_comparison: FaceComparisonResult | null;
   watchlist_result: WatchlistResult | null;
+  mrz?: {
+    line1?: string;
+    line2?: string;
+    line3?: string;
+    lines?: string[];
+    raw_text?: string;
+    parsed_fields?: Record<string, any>;
+  };
+  demo_mode?: boolean;
   metadata?: Record<string, unknown>;
 }
 
