@@ -23,11 +23,16 @@ def get_easyocr_reader():
                 except Exception:
                     pass
             import easyocr
-            _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False)
+            _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False, quantize=True)
             gc.collect()
         except Exception as e:
-            print(f"[OCR Engine] EasyOCR initialization warning: {e}", file=sys.stderr)
-            _EASYOCR_READER = False
+            try:
+                import easyocr
+                _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False)
+                gc.collect()
+            except Exception as e2:
+                print(f"[OCR Engine] EasyOCR initialization warning: {e2}", file=sys.stderr)
+                _EASYOCR_READER = False
     return _EASYOCR_READER if _EASYOCR_READER is not False else None
 
 
@@ -73,11 +78,11 @@ class DefaultDocumentOCRBackend(BaseOCREngine):
 
         rgb_mrz = self._prepare_rgb(mrz_crop)
         h, w = rgb_mrz.shape[:2]
-        if h < 120:
-            scale = 140.0 / float(max(1, h))
+        if h < 100:
+            scale = 120.0 / float(max(1, h))
             rgb_mrz = cv2.resize(rgb_mrz, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-        elif w > 1024:
-            scale = 1024.0 / float(w)
+        elif w > 720:
+            scale = 720.0 / float(w)
             rgb_mrz = cv2.resize(rgb_mrz, (0, 0), fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 
         try:
@@ -153,8 +158,8 @@ class DefaultDocumentOCRBackend(BaseOCREngine):
 
         scale_x, scale_y = 1.0, 1.0
         max_dim = max(orig_h, orig_w)
-        if max_dim > 800:
-            resize_factor = 800.0 / float(max_dim)
+        if max_dim > 720:
+            resize_factor = 720.0 / float(max_dim)
             new_w = max(1, int(orig_w * resize_factor))
             new_h = max(1, int(orig_h * resize_factor))
             scale_x = orig_w / float(new_w)
