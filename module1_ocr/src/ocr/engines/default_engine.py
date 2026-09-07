@@ -153,8 +153,8 @@ class DefaultDocumentOCRBackend(BaseOCREngine):
 
         scale_x, scale_y = 1.0, 1.0
         max_dim = max(orig_h, orig_w)
-        if max_dim > 1024:
-            resize_factor = 1024.0 / float(max_dim)
+        if max_dim > 800:
+            resize_factor = 800.0 / float(max_dim)
             new_w = max(1, int(orig_w * resize_factor))
             new_h = max(1, int(orig_h * resize_factor))
             scale_x = orig_w / float(new_w)
@@ -205,18 +205,21 @@ class DefaultDocumentOCRBackend(BaseOCREngine):
                     "bbox": [int(min(xs)), int(min(ys)), int(max(xs)), int(max(ys))]
                 })
 
-        mrz_detected_lines = []
-        if mrz_crop is not None and mrz_crop.size > 0:
-            mrz_detected_lines = self.recognize_mrz_zone(mrz_crop)
-        else:
-            mrz_band_y = int(orig_h * 0.72)
-            auto_mrz_crop = image_np[mrz_band_y:, :]
-            mrz_detected_lines = self.recognize_mrz_zone(auto_mrz_crop)
+        # Check if MRZ line already detected in primary OCR pass
+        has_mrz_line = any(l.startswith("P<") or l.startswith("I<") or l.startswith("V<") or ("<<" in l and len(l) > 15) for l in lines)
+        if not has_mrz_line:
+            mrz_detected_lines = []
+            if mrz_crop is not None and mrz_crop.size > 0:
+                mrz_detected_lines = self.recognize_mrz_zone(mrz_crop)
+            else:
+                mrz_band_y = int(orig_h * 0.72)
+                auto_mrz_crop = image_np[mrz_band_y:, :]
+                mrz_detected_lines = self.recognize_mrz_zone(auto_mrz_crop)
 
-        for ml in mrz_detected_lines:
-            ml_clean = ml.replace("<", "")[:12]
-            if ml_clean and not any(ml_clean in line.replace("<", "") for line in lines):
-                lines.append(ml)
+            for ml in mrz_detected_lines:
+                ml_clean = ml.replace("<", "")[:12]
+                if ml_clean and not any(ml_clean in line.replace("<", "") for line in lines):
+                    lines.append(ml)
 
         raw_text = "\n".join(lines).strip()
         avg_conf = float(np.mean(confidences)) if confidences else 0.0
