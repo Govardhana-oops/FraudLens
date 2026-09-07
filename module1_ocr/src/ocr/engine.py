@@ -74,6 +74,8 @@ class OCREngine:
         target = (engine_name or self.selected_engine_type or "default").lower().strip()
 
         if target in ["default", "existing", "multiscale", "default_multiscale_neural"]:
+            if self.easyocr_adapter.is_available():
+                return self.easyocr_adapter
             return self.default_backend
         elif target in ["easyocr", "easyocr_adapter"]:
             if self.easyocr_adapter.is_available():

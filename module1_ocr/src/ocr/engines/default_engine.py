@@ -15,7 +15,7 @@ def get_easyocr_reader():
     if _EASYOCR_READER is None:
         try:
             import torch
-            # Strictly limit CPU threads to 1 for memory-constrained cloud environments (Streamlit Cloud 1GB limit)
+            # Set CPU threads to 1 for memory-constrained cloud environments
             if hasattr(torch, 'set_num_threads'):
                 try:
                     torch.set_num_threads(1)
@@ -23,7 +23,7 @@ def get_easyocr_reader():
                 except Exception:
                     pass
             import easyocr
-            _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False, quantize=True)
+            _EASYOCR_READER = easyocr.Reader(['en'], gpu=False, verbose=False, quantize=False)
             gc.collect()
         except Exception as e:
             try:
