@@ -34,6 +34,7 @@ def create_app() -> FastAPI:
     else:
         # Default allowed origins for production judge URL and local dev
         origins = [
+            "https://fraud-lens-7xjv.vercel.app",
             "https://fraud-lens-7xjy.vercel.app",
             "http://localhost:5173",
             "http://localhost:5174",
@@ -45,6 +46,7 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
+        allow_origin_regex=r"https://.*\.vercel\.app",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"]
