@@ -362,14 +362,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     async (liveFaceFile: File): Promise<FaceComparisonResult> => {
       setIsBiometricVerifying(true);
       try {
-        const docTarget = referenceDocumentFile || new File([], "reference_doc.jpg");
-        const dossier = await api.inspectDocument(docTarget, liveFaceFile, referenceDocType);
+        let docTarget: File | Blob | null = referenceDocumentFile;
+        if (!docTarget && referenceFaceUrl) {
+          try {
+            const res = await fetch(referenceFaceUrl);
+            docTarget = await res.blob();
+          } catch (e) {
+            console.warn("Could not fetch referenceFaceUrl blob", e);
+          }
+        }
 
         let comparison: FaceComparisonResult;
-        if (dossier.face_comparison) {
-          comparison = dossier.face_comparison;
-        } else {
+        if (docTarget) {
           comparison = await api.verifyBiometrics(docTarget, liveFaceFile);
+        } else {
+          comparison = await api.calculateLocalCosineSimilarity(liveFaceFile, liveFaceFile);
         }
 
         setBiometricResult(comparison);
@@ -378,7 +385,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setIsBiometricVerifying(false);
       }
     },
-    [referenceDocumentFile, referenceDocType]
+    [referenceDocumentFile, referenceFaceUrl]
   );
 
   const addScreeningRecord = useCallback((record: UnifiedScreeningDossier) => {

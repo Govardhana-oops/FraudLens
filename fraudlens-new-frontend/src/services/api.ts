@@ -141,7 +141,7 @@ class ApiService {
     return await this.calculateLocalCosineSimilarity(documentFileOrFace, liveFaceFile);
   }
 
-  private async calculateLocalCosineSimilarity(
+  async calculateLocalCosineSimilarity(
     docBlob: File | Blob,
     liveBlob: File | Blob
   ): Promise<FaceComparisonResult> {
@@ -371,12 +371,21 @@ class ApiService {
 
     // 1. Resolve Document Number
     let docNumber = raw.document_number;
-    if (!docNumber && raw.extracted_fields) {
-      if (typeof raw.extracted_fields === "object" && raw.extracted_fields.document_number) {
-        docNumber = raw.extracted_fields.document_number.value;
+    if (!docNumber && raw.extracted_fields && typeof raw.extracted_fields === "object") {
+      const fieldEntry =
+        raw.extracted_fields.document_number ??
+        raw.extracted_fields.passport_number ??
+        raw.extracted_fields.id_number ??
+        raw.extracted_fields.license_number ??
+        raw.extracted_fields.permit_number;
+      if (fieldEntry !== undefined && fieldEntry !== null) {
+        docNumber = typeof fieldEntry === "object" && fieldEntry.value !== undefined ? String(fieldEntry.value) : String(fieldEntry);
       }
     }
-    if (!docNumber && raw.audit_log?.doc_number) {
+    if (!docNumber && raw.mrz?.parsed_fields?.document_number) {
+      docNumber = String(raw.mrz.parsed_fields.document_number);
+    }
+    if (!docNumber && raw.audit_log?.doc_number && raw.audit_log.doc_number !== "—") {
       docNumber = raw.audit_log.doc_number;
     }
 
@@ -401,36 +410,50 @@ class ApiService {
         for (const [key, val] of Object.entries(raw.extracted_fields)) {
           const v = val as any;
           const label = key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
-          fieldsList.push({
-            field_name: label,
-            extracted_value: v && typeof v === "object" ? String(v.value ?? "") : String(v ?? ""),
-            confidence: v && typeof v === "object" && v.confidence !== undefined ? v.confidence : (confidenceScore ?? 1.0),
-            engine: v && typeof v === "object" && v.source ? `Module 1 (${v.source})` : "Multi-Engine OCR",
-          });
+          const extractedVal = v && typeof v === "object" && v.value !== undefined ? String(v.value ?? "") : String(v ?? "");
+          if (extractedVal.trim() !== "") {
+            fieldsList.push({
+              field_name: label,
+              extracted_value: extractedVal,
+              confidence: v && typeof v === "object" && v.confidence !== undefined ? v.confidence : (confidenceScore ?? 1.0),
+              engine: v && typeof v === "object" && v.source ? `Module 1 (${v.source})` : "Multi-Engine OCR",
+            });
+          }
         }
       }
     }
 
     // Include MRZ lines from Module 1/2 MRZ parser if available
     if (raw.mrz) {
-      if (raw.mrz.line1) {
+      const mrzObj = raw.mrz;
+      const rawText = mrzObj.raw_text || mrzObj.mrz_string || "";
+      const lines = mrzObj.lines || (rawText ? rawText.split("\n").map((l: string) => l.trim()).filter(Boolean) : []);
+      if (lines[0] || mrzObj.line1) {
         fieldsList.push({
           field_name: "MRZ Line 1",
-          extracted_value: String(raw.mrz.line1),
+          extracted_value: String(lines[0] || mrzObj.line1).trim(),
           confidence: confidenceScore ?? 1.0,
-          engine: "Module 1 (MRZ)",
+          engine: "Module 1 (MRZ Stream)",
         });
       }
-      if (raw.mrz.line2) {
+      if (lines[1] || mrzObj.line2) {
         fieldsList.push({
           field_name: "MRZ Line 2",
-          extracted_value: String(raw.mrz.line2),
+          extracted_value: String(lines[1] || mrzObj.line2).trim(),
           confidence: confidenceScore ?? 1.0,
-          engine: "Module 1 (MRZ)",
+          engine: "Module 1 (MRZ Stream)",
         });
       }
-      if (raw.mrz.parsed_fields && typeof raw.mrz.parsed_fields === "object") {
-        for (const [k, v] of Object.entries(raw.mrz.parsed_fields)) {
+      if (lines[2] || mrzObj.line3) {
+        fieldsList.push({
+          field_name: "MRZ Line 3",
+          extracted_value: String(lines[2] || mrzObj.line3).trim(),
+          confidence: confidenceScore ?? 1.0,
+          engine: "Module 1 (MRZ Stream)",
+        });
+      }
+      if (mrzObj.parsed_fields && typeof mrzObj.parsed_fields === "object") {
+        for (const [k, v] of Object.entries(mrzObj.parsed_fields)) {
           const label = k.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
           const exists = fieldsList.some((f) => f.field_name.toLowerCase() === label.toLowerCase());
           if (!exists && v) {

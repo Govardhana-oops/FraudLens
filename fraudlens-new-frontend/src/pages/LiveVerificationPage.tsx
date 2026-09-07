@@ -39,6 +39,7 @@ export function LiveVerificationPage() {
     referenceDocType,
     biometricResult,
     isBiometricVerifying,
+    setReferenceDocument,
     executeBiometricVerification,
     resetBiometricResult,
   } = useApp();
@@ -190,6 +191,15 @@ export function LiveVerificationPage() {
     startCamera();
   };
 
+  const docInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleDocUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setReferenceDocument(file, referenceDocType);
+    }
+  };
+
   // Derive resolved metadata for Source A
   const resolvedDocNumber =
     referenceDocNumber ||
@@ -265,7 +275,7 @@ export function LiveVerificationPage() {
               </span>
             </div>
             <p className="text-[11px] text-slateText-300 font-mono mt-2 leading-relaxed">
-              Automatically extracted from the document uploaded during screening.
+              Extracted from screening session or uploaded directly as reference.
             </p>
           </div>
 
@@ -293,7 +303,7 @@ export function LiveVerificationPage() {
                 {/* Source Tag Badge */}
                 <div className="absolute top-3 left-3 px-2 py-0.5 rounded bg-canvas-950/90 border border-accent-teal/60 text-[10px] font-mono font-bold text-accent-teal flex items-center gap-1.5 shadow-md">
                   <span className="w-1.5 h-1.5 rounded-full bg-accent-teal animate-ping" />
-                  <span>DOCUMENT SCREENING</span>
+                  <span>DOCUMENT REFERENCE</span>
                 </div>
 
                 {/* Confidence Tag */}
@@ -310,26 +320,41 @@ export function LiveVerificationPage() {
                   Extracting Reference Face...
                 </span>
                 <p className="text-[11px] text-slateText-400">
-                  Scanning passport portrait area from screening session
+                  Scanning passport portrait area from uploaded document
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center space-y-3 p-6 text-center">
-                <div className="p-3 rounded-full bg-accent-rose/10 border border-accent-rose/30 text-accent-rose">
-                  <UserCheck size={28} />
+                <div className="p-3 rounded-full bg-accent-teal/10 border border-accent-teal/30 text-accent-teal">
+                  <ScanFace size={28} />
                 </div>
-                <div className="text-xs font-mono font-bold text-accent-rose uppercase tracking-wider">
-                  FACE NOT AVAILABLE
+                <div className="text-xs font-mono font-bold text-accent-teal uppercase tracking-wider">
+                  UPLOAD REFERENCE DOCUMENT
                 </div>
-                <p className="text-[11px] text-slateText-400 max-w-[220px] leading-relaxed">
-                  Reference face could not be reliably extracted from the uploaded document.
+                <p className="text-[11px] text-slateText-300 max-w-[220px] leading-relaxed">
+                  Upload an identity document or portrait photo to compare against the live traveler camera.
                 </p>
+                <input
+                  ref={docInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleDocUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => docInputRef.current?.click()}
+                  className="btn-primary text-xs font-mono font-bold uppercase tracking-wider mt-1 flex items-center gap-1.5 shadow-glowTeal"
+                >
+                  <FolderLock size={12} />
+                  <span>Choose File</span>
+                </button>
                 <Link
                   to="/screening"
-                  className="btn-secondary text-xs font-mono font-bold uppercase tracking-wider mt-2 flex items-center gap-1.5"
+                  className="text-[10px] text-accent-sky font-mono hover:underline flex items-center gap-1 mt-1"
                 >
-                  <ExternalLink size={12} />
-                  <span>Open Document Screening</span>
+                  <ExternalLink size={10} />
+                  <span>Or select in Document Screening</span>
                 </Link>
               </div>
             )}
@@ -361,6 +386,25 @@ export function LiveVerificationPage() {
                 {hasReferenceFace ? "DETECTED" : "UNAVAILABLE"}
               </span>
             </div>
+            {hasReferenceFace && (
+              <div className="flex items-center justify-between pt-1 border-t border-canvas-800">
+                <input
+                  ref={docInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleDocUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => docInputRef.current?.click()}
+                  className="text-[11px] font-mono text-accent-teal hover:underline flex items-center gap-1"
+                >
+                  <RefreshCw size={11} />
+                  <span>Change Reference Document</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -512,15 +556,13 @@ export function LiveVerificationPage() {
               <button
                 type="button"
                 onClick={handleCapturePhoto}
-                disabled={!cameraActive || isProcessing || !hasReferenceFace}
+                disabled={!cameraActive || isProcessing}
                 className="btn-primary w-full py-3 text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(45,212,191,0.35)] disabled:opacity-50 disabled:pointer-events-none"
               >
                 <Camera size={16} />
                 <span>
                   {isProcessing
                     ? "Comparing Feature Embeddings..."
-                    : !hasReferenceFace
-                    ? "Waiting for Reference Face"
                     : "Capture Photo & Verify"}
                 </span>
               </button>
