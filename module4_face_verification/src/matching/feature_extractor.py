@@ -13,51 +13,50 @@ class FaceFeatureExtractor:
         self.embedding_dim = config.get("feature_extractor", {}).get("embedding_dimensions", 128)
 
     def extract(self, face_crop: np.ndarray) -> np.ndarray:
-        """Extracts a 128D unit-normalized feature vector from an aligned face crop."""
+        """Extracts a normalized, highly discriminative 128D facial representation (64D High-Freq DCT + 64D Relative Spatial Profile)."""
         if face_crop is None or face_crop.size == 0:
             return np.zeros((self.embedding_dim,), dtype=np.float32)
 
-        # 1. Standardize face crop dimensions
-        aligned = cv2.resize(face_crop, (self.target_size, self.target_size), interpolation=cv2.INTER_AREA)
-
-        # 2. Multi-scale gradient orientations (HOG spatial grids)
-        # 4x4 spatial blocks -> 16 regions * 6 orientation bins = 96 dimensions
-        gx = cv2.Sobel(aligned.astype(np.float32), cv2.CV_32F, 1, 0, ksize=3)
-        gy = cv2.Sobel(aligned.astype(np.float32), cv2.CV_32F, 0, 1, ksize=3)
-        mag, angle = cv2.cartToPolar(gx, gy, angleInDegrees=True)
-
-        block_size = self.target_size // 4
-        histograms = []
-
-        for by in range(4):
-            for bx in range(4):
-                block_mag = mag[by*block_size:(by+1)*block_size, bx*block_size:(bx+1)*block_size]
-                block_ang = angle[by*block_size:(by+1)*block_size, bx*block_size:(bx+1)*block_size]
-
-                # 6 orientation bins
-                hist, _ = np.histogram(block_ang, bins=6, range=(0, 360), weights=block_mag)
-                histograms.extend(hist)
-
-        # 3. Spatial luminance & morphology profile (32 dimensions)
-        # 4 horizontal strips * 4 vertical strips mean + std = 32 dimensions
-        strip_h = self.target_size // 4
-        strip_w = self.target_size // 4
-        spatial_profile = []
-        for sy in range(4):
-            for sx in range(4):
-                patch = aligned[sy*strip_h:(sy+1)*strip_h, sx*strip_w:(sx+1)*strip_w]
-                spatial_profile.append(float(np.mean(patch)))
-                spatial_profile.append(float(np.std(patch)))
-
-        # 4. Combine into 128D embedding vector
-        all_features = list(histograms) + list(spatial_profile)
-        feat_vector = np.array(all_features[:self.embedding_dim], dtype=np.float32)
-
-        # 5. L2 Unit Normalization
-        norm = np.linalg.norm(feat_vector)
-        if norm > 1e-6:
-            feat_vector = feat_vector / norm
+        # 1. Standardize face crop dimensions and convert to equalized grayscale
+        aligned = cv2.resize(face_crop, (128, 128), interpolation=cv2.INTER_AREA)
+        if len(aligned.shape) == 3:
+            gray = cv2.cvtColor(aligned, cv2.COLOR_RGB2GRAY)
         else:
-            feat_vector = np.zeros_like(feat_vector)
+            gray = aligned
 
-        return feat_vector
+        # Histogram equalization for illumination and contrast invariance
+        eq = cv2.equalizeHist(gray).astype(np.float32)
+
+        # 2. High-frequency 2D DCT (skip lowest 4 frequency bands capturing generic oval contours)
+        dct = cv2.dct(eq)
+        coords = []
+        for s in range(3, 24):
+            for y in range(s + 1):
+                x = s - y
+                if x < 128 and y < 128:
+                    coords.append((y, x))
+        dct_v = np.array([float(dct[y, x]) for y, x in coords[:64]], dtype=np.float32)
+        dct_v = (dct_v - float(np.mean(dct_v))) / (float(np.linalg.norm(dct_v)) + 1e-5)
+
+        # 3. 8x8 Spatial relative luminance differences
+        patches = []
+        bs = 16
+        g_mean = float(np.mean(eq))
+        g_std = float(np.std(eq)) + 1e-5
+        for py in range(8):
+            for px in range(8):
+                p = eq[py*bs:(py+1)*bs, px*bs:(px+1)*bs]
+                patches.append((float(np.mean(p)) - g_mean) / g_std)
+        sp_v = np.array(patches, dtype=np.float32)
+        sp_v = (sp_v - float(np.mean(sp_v))) / (float(np.linalg.norm(sp_v)) + 1e-5)
+
+        # 4. Fuse into 128D embedding vector
+        fused = np.concatenate([dct_v, sp_v])
+        fused = fused - float(np.mean(fused))
+        fused_norm = float(np.linalg.norm(fused))
+        if fused_norm > 1e-6:
+            fused = fused / fused_norm
+        else:
+            fused = np.zeros((self.embedding_dim,), dtype=np.float32)
+
+        return fused.astype(np.float32)

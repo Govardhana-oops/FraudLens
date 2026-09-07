@@ -71,20 +71,27 @@ async def inspect_document(
         try:
             from module4_face_verification.src.interface import face_verifier
             m4_report = face_verifier.verify(doc_img, live_img)
+            status_val = m4_report.get("status")
+            status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
+            liveness = m4_report.get("liveness_assessment")
+            liveness_dict = liveness if isinstance(liveness, dict) else (liveness.model_dump() if hasattr(liveness, "model_dump") else (liveness.dict() if hasattr(liveness, "dict") else None))
+            liveness_score = float(liveness_dict.get("liveness_score", 0.0)) if liveness_dict else 0.0
+            is_live = bool(liveness_dict.get("is_live", False)) if liveness_dict else False
+
             dossier_dict["face_comparison"] = {
-                "matched": m4_report.get("status") == "MATCH",
-                "status": m4_report.get("status", "UNKNOWN"),
-                "similarity_score": m4_report.get("similarity_score", 0.0),
-                "confidence": m4_report.get("confidence", 0.95),
-                "liveness_score": m4_report.get("liveness_assessment", {}).get("liveness_score", 0.95) if m4_report.get("liveness_assessment") else 0.95,
-                "liveness_detected": m4_report.get("liveness_assessment", {}).get("is_live", True) if m4_report.get("liveness_assessment") else True,
-                "threshold": m4_report.get("operating_threshold", 0.72),
-                "method": "Module 4 Deep Neural Biometric Verification",
+                "matched": status_str == "MATCH",
+                "status": status_str,
+                "similarity_score": float(m4_report.get("similarity_score", 0.0)),
+                "confidence": float(m4_report.get("confidence", 0.0)),
+                "liveness_score": liveness_score,
+                "liveness_detected": is_live,
+                "threshold": float(m4_report.get("operating_threshold", 0.72)),
+                "method": "Module 4 Biometric Verification",
                 "doc_portrait_quality": m4_report.get("doc_portrait_quality"),
                 "live_portrait_quality": m4_report.get("live_portrait_quality"),
-                "liveness_assessment": m4_report.get("liveness_assessment"),
-                "cosine_distance": m4_report.get("cosine_distance"),
-                "review_required": m4_report.get("review_required", False),
+                "liveness_assessment": liveness_dict,
+                "cosine_distance": float(m4_report.get("cosine_distance", 1.0)) if m4_report.get("cosine_distance") is not None else 1.0,
+                "review_required": bool(m4_report.get("review_required", True)),
                 "warnings": m4_report.get("warnings", []),
                 "errors": m4_report.get("errors", [])
             }
@@ -126,20 +133,27 @@ async def verify_biometrics(
     try:
         from module4_face_verification.src.interface import face_verifier
         m4_report = face_verifier.verify(doc_img, live_img)
+        status_val = m4_report.get("status")
+        status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
+        liveness = m4_report.get("liveness_assessment")
+        liveness_dict = liveness if isinstance(liveness, dict) else (liveness.model_dump() if hasattr(liveness, "model_dump") else (liveness.dict() if hasattr(liveness, "dict") else None))
+        liveness_score = float(liveness_dict.get("liveness_score", 0.0)) if liveness_dict else 0.0
+        is_live = bool(liveness_dict.get("is_live", False)) if liveness_dict else False
+
         return {
-            "matched": m4_report.get("status") == "MATCH",
-            "status": m4_report.get("status", "UNKNOWN"),
-            "similarity_score": m4_report.get("similarity_score", 0.0),
-            "confidence": m4_report.get("confidence", 0.95),
-            "liveness_score": m4_report.get("liveness_assessment", {}).get("liveness_score", 0.95) if m4_report.get("liveness_assessment") else 0.95,
-            "liveness_detected": m4_report.get("liveness_assessment", {}).get("is_live", True) if m4_report.get("liveness_assessment") else True,
-            "threshold": m4_report.get("operating_threshold", 0.72),
-            "method": "Module 4 Deep Neural Biometric Verification",
+            "matched": status_str == "MATCH",
+            "status": status_str,
+            "similarity_score": float(m4_report.get("similarity_score", 0.0)),
+            "confidence": float(m4_report.get("confidence", 0.0)),
+            "liveness_score": liveness_score,
+            "liveness_detected": is_live,
+            "threshold": float(m4_report.get("operating_threshold", 0.72)),
+            "method": "Module 4 Biometric Verification",
             "doc_portrait_quality": m4_report.get("doc_portrait_quality"),
             "live_portrait_quality": m4_report.get("live_portrait_quality"),
-            "liveness_assessment": m4_report.get("liveness_assessment"),
-            "cosine_distance": m4_report.get("cosine_distance"),
-            "review_required": m4_report.get("review_required", False),
+            "liveness_assessment": liveness_dict,
+            "cosine_distance": float(m4_report.get("cosine_distance", 1.0)) if m4_report.get("cosine_distance") is not None else 1.0,
+            "review_required": bool(m4_report.get("review_required", True)),
             "warnings": m4_report.get("warnings", []),
             "errors": m4_report.get("errors", [])
         }

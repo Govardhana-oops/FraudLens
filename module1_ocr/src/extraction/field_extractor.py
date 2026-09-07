@@ -89,12 +89,12 @@ class FieldExtractor:
             fields["document_type"] = ExtractedField(value="DRIVER_LICENSE", confidence=0.99)
             dl_num = self.extract_regex_field(r"(?:DL\s*NO|LICENSE\s*NO)[:\s]+(DL-[A-Z0-9]+|[A-Z0-9]{8,12})", raw_text)
             if dl_num:
-                fields["license_number"] = ExtractedField(value=dl_num, confidence=0.92)
+                fields["license_number"] = ExtractedField(value=dl_num, confidence=0.90)
             
             name = self.extract_regex_field(r"(?:NAME)[:\s]+([^\n\r]+)", raw_text)
             if name:
                 cleaned_name = name.replace(",", " ").strip()
-                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_name), confidence=0.90)
+                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_name), confidence=0.88)
                 
             addr = self.extract_regex_field(r"(?:ADDR|ADDRESS)[:\s]+([^\n\r]+)", raw_text)
             if addr:
@@ -121,7 +121,7 @@ class FieldExtractor:
             bearer = self.extract_regex_field(r"(?:BEARER)[:\s]+([^\n\r]+)", raw_text)
             if bearer:
                 cleaned_bearer = bearer.replace(",", " ").strip()
-                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_bearer), confidence=0.92)
+                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_bearer), confidence=0.88)
                 
             p_num = self.extract_regex_field(r"(?:PASSPORT\s*NO)[:\s]+([A-Z0-9]{8,10})", raw_text)
             if p_num:
@@ -140,18 +140,18 @@ class FieldExtractor:
                     cleaned_name = f"{parts[1]} {parts[0]}"
                 else:
                     cleaned_name = name.replace(",", " ").strip()
-                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_name), confidence=0.90)
+                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_name), confidence=0.88)
 
         elif doc_type == "permit":
             fields["document_type"] = ExtractedField(value="RESIDENCE_PERMIT", confidence=0.99)
             p_num = self.extract_regex_field(r"(?:PERMIT\s*NO)[:\s]+(RP-[A-Z0-9]+|[A-Z0-9]{8,12})", raw_text)
             if p_num:
-                fields["permit_number"] = ExtractedField(value=p_num, confidence=0.92)
+                fields["permit_number"] = ExtractedField(value=p_num, confidence=0.90)
             
             holder = self.extract_regex_field(r"(?:HOLDER)[:\s]+([^\n\r]+)", raw_text)
             if holder:
                 cleaned_holder = holder.replace(",", " ").strip()
-                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_holder), confidence=0.90)
+                fields["full_name"] = ExtractedField(value=re.sub(r"\s+", " ", cleaned_holder), confidence=0.88)
                 
             cat = self.extract_regex_field(r"(?:CATEGORY)[:\s]+([^\n\r]+)", raw_text)
             if cat:

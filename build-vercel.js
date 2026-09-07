@@ -51,8 +51,11 @@ try {
     try {
       const parent = path.dirname(target);
       if (fs.existsSync(parent) && target !== distDir) {
+        if (fs.existsSync(target)) {
+          fs.rmSync(target, { recursive: true, force: true });
+        }
         fs.cpSync(distDir, target, { recursive: true, force: true });
-        console.log('Synced dist ->', target);
+        console.log('Clean synced dist ->', target);
       }
     } catch (err) {
       console.warn('Could not sync to:', target, err.message);

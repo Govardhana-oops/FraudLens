@@ -102,7 +102,7 @@ class LayoutAwareFieldExtractor:
                     if is_date:
                         m_d = re.search(date_regex, val)
                         if m_d:
-                            return m_d.group(1), 0.92
+                            return m_d.group(1), 0.94
                     elif val and not any(re.match(p, val, re.IGNORECASE) for p in label_patterns):
                         # Filter out known header tokens
                         if not any(token in val.upper() for token in ["PASSPORT", "PASSEPORT", "DRIVER", "NATIONAL"]):
@@ -116,11 +116,11 @@ class LayoutAwareFieldExtractor:
                             if is_date:
                                 m_d = re.search(date_regex, cand)
                                 if m_d:
-                                    return m_d.group(1), 0.92
+                                    return m_d.group(1), 0.93
                             else:
                                 common_labels = ["SURNAME", "GIVEN", "NAME", "DATE", "SEX", "NATIONALITY", "PASSPORT", "DOB", "EXPIRY", "EXP", "ISS", "TYPE", "CODE"]
                                 if cand and not any(cand.upper().startswith(cl) for cl in common_labels):
-                                    return cand, 0.92
+                                    return cand, 0.89
 
         return None
 
@@ -169,12 +169,15 @@ class LayoutAwareFieldExtractor:
                 
             if s_name:
                 s_clean = re.sub(r"[^A-Za-z\s\-]", "", s_name).strip().upper()
-                fields["surname"] = ExtractedField(value=s_clean, raw_value=s_name, confidence=0.92, source="visual_ocr" if s_res else "mrz", status="EXTRACTED")
+                s_conf = s_res[1] if s_res else (mrz_fields.get("surname").confidence if "surname" in mrz_fields else 0.88)
+                fields["surname"] = ExtractedField(value=s_clean, raw_value=s_name, confidence=s_conf, source="visual_ocr" if s_res else "mrz", status="EXTRACTED")
             if g_name:
                 g_clean = re.sub(r"[^A-Za-z\s\-]", "", g_name).strip().upper()
-                fields["given_names"] = ExtractedField(value=g_clean, raw_value=g_name, confidence=0.92, source="visual_ocr" if g_res else "mrz", status="EXTRACTED")
+                g_conf = g_res[1] if g_res else (mrz_fields.get("given_names").confidence if "given_names" in mrz_fields else 0.88)
+                fields["given_names"] = ExtractedField(value=g_clean, raw_value=g_name, confidence=g_conf, source="visual_ocr" if g_res else "mrz", status="EXTRACTED")
             if s_name and g_name:
-                fields["full_name"] = ExtractedField(value=f"{fields.get('given_names', ExtractedField(value=g_name)).value} {fields.get('surname', ExtractedField(value=s_name)).value}", confidence=0.92, source="derived", status="EXTRACTED")
+                mean_name_conf = round((fields["surname"].confidence + fields["given_names"].confidence) / 2.0, 3)
+                fields["full_name"] = ExtractedField(value=f"{fields.get('given_names', ExtractedField(value=g_name)).value} {fields.get('surname', ExtractedField(value=s_name)).value}", confidence=mean_name_conf, source="derived", status="EXTRACTED")
 
             # Nationality & Issuing Country
             nat_res = self.find_field_value([r"NATIONALITY\s*[\/\']?\s*NATIONALITE", r"NATIONALITY", r"CODE"], lines)
@@ -185,8 +188,9 @@ class LayoutAwareFieldExtractor:
                 # Check for 3-letter code in parentheses or isolated word
                 m_code = re.search(r"\b([A-Z]{3})\b", nat)
                 nat_clean = m_code.group(1) if m_code else nat.strip().upper()
-                fields["nationality"] = ExtractedField(value=nat_clean, raw_value=nat, confidence=0.95, source="visual_ocr" if nat_res else "mrz", status="EXTRACTED")
-                fields["issuing_country"] = ExtractedField(value=nat_clean, raw_value=nat, confidence=0.95, source="visual_ocr" if nat_res else "mrz", status="EXTRACTED")
+                nat_conf = nat_res[1] if nat_res else (mrz_fields.get("nationality").confidence if "nationality" in mrz_fields else 0.90)
+                fields["nationality"] = ExtractedField(value=nat_clean, raw_value=nat, confidence=nat_conf, source="visual_ocr" if nat_res else "mrz", status="EXTRACTED")
+                fields["issuing_country"] = ExtractedField(value=nat_clean, raw_value=nat, confidence=nat_conf, source="visual_ocr" if nat_res else "mrz", status="EXTRACTED")
 
             # Date of Birth
             dob_res = self.find_field_value([r"DATE\s*OF\s*BIRTH", r"DOB", r"DATE\s*NAISSANCE"], lines, is_date=True)
@@ -195,7 +199,8 @@ class LayoutAwareFieldExtractor:
                 dob = self.normalize_date(mrz_fields["date_of_birth"].value)
             if dob:
                 norm_dob = self.normalize_date(dob)
-                fields["date_of_birth"] = ExtractedField(value=norm_dob, raw_value=dob, confidence=0.92, source="visual_ocr" if dob_res else "mrz", status="EXTRACTED")
+                dob_conf = dob_res[1] if dob_res else (mrz_fields.get("date_of_birth").confidence if "date_of_birth" in mrz_fields else 0.88)
+                fields["date_of_birth"] = ExtractedField(value=norm_dob, raw_value=dob, confidence=dob_conf, source="visual_ocr" if dob_res else "mrz", status="EXTRACTED")
 
             # Date of Expiry
             exp_res = self.find_field_value([r"DATE\s*OF\s*EXPIRY", r"EXPIRY", r"EXPIRATION"], lines, is_date=True)
@@ -204,12 +209,13 @@ class LayoutAwareFieldExtractor:
                 exp = self.normalize_date(mrz_fields["date_of_expiry"].value)
             if exp:
                 norm_exp = self.normalize_date(exp)
-                fields["date_of_expiry"] = ExtractedField(value=norm_exp, raw_value=exp, confidence=0.92, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
+                exp_conf = exp_res[1] if exp_res else (mrz_fields.get("date_of_expiry").confidence if "date_of_expiry" in mrz_fields else 0.88)
+                fields["date_of_expiry"] = ExtractedField(value=norm_exp, raw_value=exp, confidence=exp_conf, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
 
             # Date of Issue
             iss_res = self.find_field_value([r"DATE\s*OF\s*ISSUE", r"ISSUE\s*DATE", r"EMISSION"], lines, is_date=True)
             if iss_res:
-                fields["date_of_issue"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["date_of_issue"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=iss_res[1], source="visual_ocr", status="EXTRACTED")
 
             # Gender / Sex
             sex_res = self.find_field_value([r"SEX", r"GENDER", r"SEXE"], lines)
@@ -219,7 +225,8 @@ class LayoutAwareFieldExtractor:
             if gender:
                 m_g = re.search(r"\b([MFU])\b", gender.upper())
                 g_val = m_g.group(1) if m_g else "U"
-                fields["gender"] = ExtractedField(value=g_val, raw_value=gender, confidence=0.95, source="visual_ocr" if sex_res else "mrz", status="EXTRACTED")
+                sex_conf = sex_res[1] if sex_res else (mrz_fields.get("gender").confidence if "gender" in mrz_fields else 0.90)
+                fields["gender"] = ExtractedField(value=g_val, raw_value=gender, confidence=sex_conf, source="visual_ocr" if sex_res else "mrz", status="EXTRACTED")
 
             # Include MRZ lines
             if "mrz_line1" in mrz_fields:
@@ -234,32 +241,32 @@ class LayoutAwareFieldExtractor:
             if dl_res:
                 m_dl = re.search(r"(DL-[A-Z0-9]+|[A-Z0-9]{8,12})", dl_res[0].replace(" ", ""))
                 dl_val = m_dl.group(1) if m_dl else dl_res[0]
-                fields["license_number"] = ExtractedField(value=dl_val, raw_value=dl_res[0], confidence=0.95, source="visual_ocr", status="EXTRACTED")
+                fields["license_number"] = ExtractedField(value=dl_val, raw_value=dl_res[0], confidence=dl_res[1], source="visual_ocr", status="EXTRACTED")
                 
             name_res = self.find_field_value([r"NAME"], lines)
             if name_res:
                 c_name = re.sub(r"\s+", " ", name_res[0].replace(",", " ")).strip().upper()
-                fields["full_name"] = ExtractedField(value=c_name, raw_value=name_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["full_name"] = ExtractedField(value=c_name, raw_value=name_res[0], confidence=name_res[1], source="visual_ocr", status="EXTRACTED")
                 
             addr_res = self.find_field_value([r"ADDR", r"ADDRESS"], lines)
             if addr_res:
-                fields["address"] = ExtractedField(value=addr_res[0].strip().upper(), raw_value=addr_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["address"] = ExtractedField(value=addr_res[0].strip().upper(), raw_value=addr_res[0], confidence=addr_res[1], source="visual_ocr", status="EXTRACTED")
                 
             dob_res = self.find_field_value([r"DOB", r"DATE\s*OF\s*BIRTH"], lines, is_date=True)
             if dob_res:
-                fields["date_of_birth"] = ExtractedField(value=self.normalize_date(dob_res[0]), raw_value=dob_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["date_of_birth"] = ExtractedField(value=self.normalize_date(dob_res[0]), raw_value=dob_res[0], confidence=dob_res[1], source="visual_ocr", status="EXTRACTED")
                 
             iss_res = self.find_field_value([r"ISS", r"ISSUE"], lines, is_date=True)
             if iss_res:
-                fields["issue_date"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["issue_date"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=iss_res[1], source="visual_ocr", status="EXTRACTED")
                 
             exp_res = self.find_field_value([r"EXP", r"EXPIRY"], lines, is_date=True)
             if exp_res:
-                fields["expiry_date"] = ExtractedField(value=self.normalize_date(exp_res[0]), raw_value=exp_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["expiry_date"] = ExtractedField(value=self.normalize_date(exp_res[0]), raw_value=exp_res[0], confidence=exp_res[1], source="visual_ocr", status="EXTRACTED")
                 
             cls_res = self.find_field_value([r"CLASS"], lines)
             if cls_res:
-                fields["vehicle_class"] = ExtractedField(value=cls_res[0].strip().upper(), raw_value=cls_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["vehicle_class"] = ExtractedField(value=cls_res[0].strip().upper(), raw_value=cls_res[0], confidence=cls_res[1], source="visual_ocr", status="EXTRACTED")
 
         elif doc_type == "visa":
             fields["document_type"] = ExtractedField(value="VISA", raw_value="VISA", confidence=0.99, source="visual_ocr", status="EXTRACTED")
@@ -271,7 +278,8 @@ class LayoutAwareFieldExtractor:
             if v_num:
                 m_v = re.search(r"([A-Z0-9]{8,10})", v_num.replace(" ", ""))
                 val = m_v.group(1) if m_v else v_num
-                fields["visa_number"] = ExtractedField(value=val, raw_value=v_num, confidence=0.95, source="visual_ocr" if v_res else "mrz", status="EXTRACTED")
+                v_conf = v_res[1] if v_res else (mrz_fields.get("visa_number").confidence if "visa_number" in mrz_fields else 0.90)
+                fields["visa_number"] = ExtractedField(value=val, raw_value=v_num, confidence=v_conf, source="visual_ocr" if v_res else "mrz", status="EXTRACTED")
                 
             b_res = self.find_field_value([r"BEARER", r"NAME"], lines)
             b_name = b_res[0] if b_res else None
@@ -279,28 +287,30 @@ class LayoutAwareFieldExtractor:
                 b_name = mrz_fields["full_name"].value
             if b_name:
                 cleaned_b = re.sub(r"\s+", " ", b_name.replace(",", " ")).strip().upper()
-                fields["full_name"] = ExtractedField(value=cleaned_b, raw_value=b_name, confidence=0.92, source="visual_ocr" if b_res else "mrz", status="EXTRACTED")
+                b_conf = b_res[1] if b_res else (mrz_fields.get("full_name").confidence if "full_name" in mrz_fields else 0.88)
+                fields["full_name"] = ExtractedField(value=cleaned_b, raw_value=b_name, confidence=b_conf, source="visual_ocr" if b_res else "mrz", status="EXTRACTED")
                 
             p_res = self.find_field_value([r"PASSPORT\s*NO", r"PASSFORT\s*NO"], lines)
             if p_res:
                 m_p = re.search(r"([A-Z0-9]{8,10})", p_res[0].replace(" ", ""))
                 val = m_p.group(1) if m_p else p_res[0]
-                fields["passport_number"] = ExtractedField(value=val, raw_value=p_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["passport_number"] = ExtractedField(value=val, raw_value=p_res[0], confidence=p_res[1], source="visual_ocr", status="EXTRACTED")
                 
             iss_res = self.find_field_value([r"VALID\s*FROM"], lines, is_date=True)
             if iss_res:
-                fields["issue_date"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["issue_date"] = ExtractedField(value=self.normalize_date(iss_res[0]), raw_value=iss_res[0], confidence=iss_res[1], source="visual_ocr", status="EXTRACTED")
                 
             exp_res = self.find_field_value([r"VALID\s*UNTIL"], lines, is_date=True)
             exp = exp_res[0] if exp_res else None
             if not exp and "date_of_expiry" in mrz_fields:
                 exp = self.normalize_date(mrz_fields["date_of_expiry"].value)
             if exp:
-                fields["expiry_date"] = ExtractedField(value=self.normalize_date(exp), raw_value=exp, confidence=0.92, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
+                exp_conf = exp_res[1] if exp_res else (mrz_fields.get("date_of_expiry").confidence if "date_of_expiry" in mrz_fields else 0.88)
+                fields["expiry_date"] = ExtractedField(value=self.normalize_date(exp), raw_value=exp, confidence=exp_conf, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
                 
             ent_res = self.find_field_value([r"ENTRIES"], lines)
             if ent_res:
-                fields["entries"] = ExtractedField(value=ent_res[0].strip().upper(), raw_value=ent_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["entries"] = ExtractedField(value=ent_res[0].strip().upper(), raw_value=ent_res[0], confidence=ent_res[1], source="visual_ocr", status="EXTRACTED")
                 
             if "mrz_line1" in mrz_fields:
                 fields["mrz_line1"] = mrz_fields["mrz_line1"]
@@ -317,7 +327,8 @@ class LayoutAwareFieldExtractor:
             if id_num:
                 m_id = re.search(r"(ID-[A-Z0-9]+|[A-Z0-9]{8,12})", id_num.replace(" ", ""))
                 val = m_id.group(1) if m_id else id_num
-                fields["id_number"] = ExtractedField(value=val, raw_value=id_num, confidence=0.95, source="visual_ocr" if id_res else "mrz", status="EXTRACTED")
+                id_conf = id_res[1] if id_res else (mrz_fields.get("id_number").confidence if "id_number" in mrz_fields else 0.90)
+                fields["id_number"] = ExtractedField(value=val, raw_value=id_num, confidence=id_conf, source="visual_ocr" if id_res else "mrz", status="EXTRACTED")
                 
             name_res = self.find_field_value([r"NAME"], lines)
             name = name_res[0] if name_res else None
@@ -325,14 +336,16 @@ class LayoutAwareFieldExtractor:
                 name = mrz_fields["full_name"].value
             if name:
                 cleaned_name = re.sub(r"\s+", " ", name.replace(",", " ")).strip().upper()
-                fields["full_name"] = ExtractedField(value=cleaned_name, raw_value=name, confidence=0.92, source="visual_ocr" if name_res else "mrz", status="EXTRACTED")
+                n_conf = name_res[1] if name_res else (mrz_fields.get("full_name").confidence if "full_name" in mrz_fields else 0.88)
+                fields["full_name"] = ExtractedField(value=cleaned_name, raw_value=name, confidence=n_conf, source="visual_ocr" if name_res else "mrz", status="EXTRACTED")
                 
             dob_res = self.find_field_value([r"DOB", r"DATE\s*OF\s*BIRTH"], lines, is_date=True)
             dob = dob_res[0] if dob_res else None
             if not dob and "date_of_birth" in mrz_fields:
                 dob = self.normalize_date(mrz_fields["date_of_birth"].value)
             if dob:
-                fields["date_of_birth"] = ExtractedField(value=self.normalize_date(dob), raw_value=dob, confidence=0.92, source="visual_ocr" if dob_res else "mrz", status="EXTRACTED")
+                d_conf = dob_res[1] if dob_res else (mrz_fields.get("date_of_birth").confidence if "date_of_birth" in mrz_fields else 0.88)
+                fields["date_of_birth"] = ExtractedField(value=self.normalize_date(dob), raw_value=dob, confidence=d_conf, source="visual_ocr" if dob_res else "mrz", status="EXTRACTED")
                 
             cit_res = self.find_field_value([r"CITIZENSHIP", r"NATIONALITY"], lines)
             cit = cit_res[0] if cit_res else None
@@ -341,14 +354,16 @@ class LayoutAwareFieldExtractor:
             if cit:
                 m_cit = re.search(r"([A-Z]{3})", cit.upper())
                 val = m_cit.group(1) if m_cit else cit.strip().upper()
-                fields["nationality"] = ExtractedField(value=val, raw_value=cit, confidence=0.95, source="visual_ocr" if cit_res else "mrz", status="EXTRACTED")
+                c_conf = cit_res[1] if cit_res else (mrz_fields.get("nationality").confidence if "nationality" in mrz_fields else 0.90)
+                fields["nationality"] = ExtractedField(value=val, raw_value=cit, confidence=c_conf, source="visual_ocr" if cit_res else "mrz", status="EXTRACTED")
                 
             exp_res = self.find_field_value([r"EXPIRY", r"EXP"], lines, is_date=True)
             exp = exp_res[0] if exp_res else None
             if not exp and "date_of_expiry" in mrz_fields:
                 exp = self.normalize_date(mrz_fields["date_of_expiry"].value)
             if exp:
-                fields["date_of_expiry"] = ExtractedField(value=self.normalize_date(exp), raw_value=exp, confidence=0.92, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
+                e_conf = exp_res[1] if exp_res else (mrz_fields.get("date_of_expiry").confidence if "date_of_expiry" in mrz_fields else 0.88)
+                fields["date_of_expiry"] = ExtractedField(value=self.normalize_date(exp), raw_value=exp, confidence=e_conf, source="visual_ocr" if exp_res else "mrz", status="EXTRACTED")
                 
             if "mrz_line1" in mrz_fields:
                 fields["mrz_line1"] = mrz_fields["mrz_line1"]
@@ -364,24 +379,24 @@ class LayoutAwareFieldExtractor:
             if p_res:
                 m_p = re.search(r"(RP-[A-Z0-9]+|[A-Z0-9]{8,12})", p_res[0].replace(" ", ""))
                 val = m_p.group(1) if m_p else p_res[0]
-                fields["permit_number"] = ExtractedField(value=val, raw_value=p_res[0], confidence=0.95, source="visual_ocr", status="EXTRACTED")
+                fields["permit_number"] = ExtractedField(value=val, raw_value=p_res[0], confidence=p_res[1], source="visual_ocr", status="EXTRACTED")
                 
             h_res = self.find_field_value([r"HOLDER", r"NAME"], lines)
             if h_res:
                 cleaned_h = re.sub(r"\s+", " ", h_res[0].replace(",", " ")).strip().upper()
-                fields["full_name"] = ExtractedField(value=cleaned_h, raw_value=h_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["full_name"] = ExtractedField(value=cleaned_h, raw_value=h_res[0], confidence=h_res[1], source="visual_ocr", status="EXTRACTED")
                 
             cat_res = self.find_field_value([r"CATEGORY"], lines)
             if cat_res:
-                fields["permit_category"] = ExtractedField(value=cat_res[0].strip().upper(), raw_value=cat_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["permit_category"] = ExtractedField(value=cat_res[0].strip().upper(), raw_value=cat_res[0], confidence=cat_res[1], source="visual_ocr", status="EXTRACTED")
                 
             exp_res = self.find_field_value([r"VALID\s*UNTIL", r"EXPIRY"], lines, is_date=True)
             if exp_res:
-                fields["valid_until"] = ExtractedField(value=self.normalize_date(exp_res[0]), raw_value=exp_res[0], confidence=0.92, source="visual_ocr", status="EXTRACTED")
+                fields["valid_until"] = ExtractedField(value=self.normalize_date(exp_res[0]), raw_value=exp_res[0], confidence=exp_res[1], source="visual_ocr", status="EXTRACTED")
                 
             sp_res = self.find_field_value([r"EMPLOYER", r"SPONSOR"], lines)
             if sp_res:
-                fields["sponsor"] = ExtractedField(value=sp_res[0].strip().upper(), raw_value=sp_res[0], confidence=0.90, source="visual_ocr", status="EXTRACTED")
+                fields["sponsor"] = ExtractedField(value=sp_res[0].strip().upper(), raw_value=sp_res[0], confidence=sp_res[1], source="visual_ocr", status="EXTRACTED")
 
         # 4. Overall Status Determination
         num_fields = len(fields)

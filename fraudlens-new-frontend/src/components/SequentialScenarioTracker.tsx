@@ -7,7 +7,7 @@ interface SequentialScenarioTrackerProps {
   currentResult: UnifiedScreeningDossier | null;
   isScreening: boolean;
   activeAnimationStep: number; // 0 (idle), 1..5 (animating), 6 (finished)
-  selectedScenario: DemoScenario;
+  selectedScenario: DemoScenario | null;
   onSelectScenario: (scenario: DemoScenario) => void;
 }
 

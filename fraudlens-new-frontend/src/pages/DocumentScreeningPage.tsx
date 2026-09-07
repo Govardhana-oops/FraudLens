@@ -16,7 +16,7 @@ import { InteractiveProcessingPipeline } from "@/components/InteractiveProcessin
 import { OcrExtractionDetailsCard } from "@/components/OcrExtractionDetailsCard";
 import { ForensicAnalysisCards } from "@/components/ForensicAnalysisCards";
 import { FinalScreeningBanner } from "@/components/FinalScreeningBanner";
-import { generateSyntheticDocumentFile, type DemoScenario } from "@/utils/sampleDocs";
+import { type DemoScenario } from "@/utils/sampleDocs";
 import type { DocumentType } from "@/types";
 
 export function DocumentScreeningPage() {
@@ -35,7 +35,7 @@ export function DocumentScreeningPage() {
 
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [docPreviewUrl, setDocPreviewUrl] = useState<string | null>(null);
-  const [selectedScenario, setSelectedScenario] = useState<DemoScenario>("valid_passport");
+  const [selectedScenario, setSelectedScenario] = useState<DemoScenario | null>(null);
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>("PASSPORT");
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -96,17 +96,12 @@ export function DocumentScreeningPage() {
     }
   };
 
-  // Handle Demo Scenario Click
-  const handleSelectScenario = async (scenarioId: DemoScenario) => {
+  // Handle Demo Scenario Filter / Select
+  const handleSelectScenario = (scenarioId: DemoScenario) => {
     setSelectedScenario(scenarioId);
-    clearCurrentResult();
-    const synthFile = await generateSyntheticDocumentFile(scenarioId);
-    setDocumentFile(synthFile);
-    if (docPreviewUrl) URL.revokeObjectURL(docPreviewUrl);
-    const url = URL.createObjectURL(synthFile);
-    setDocPreviewUrl(url);
-    setReferenceDocument(synthFile, selectedDocType);
-    await runScreening(synthFile);
+    if (!documentFile && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   // Handle Replace / Reset

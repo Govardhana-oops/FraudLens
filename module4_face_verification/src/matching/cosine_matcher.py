@@ -21,8 +21,7 @@ class CosineFaceMatcher:
         cosine_sim = float(np.clip(dot_prod, -1.0, 1.0))
         cosine_dist = 1.0 - cosine_sim
 
-        # Calibrate similarity into bounded probability [0.0, 1.0]
-        # Same face yields cosine_sim >= 0.93; different faces yield cosine_sim <= 0.85
-        calibrated_score = float(np.clip((cosine_sim - 0.75) / 0.23, 0.0, 1.0))
+        # Directly map bounded cosine similarity [0.0, 1.0] without artificial offsets
+        calibrated_score = float(np.clip(cosine_sim, 0.0, 1.0))
 
         return round(calibrated_score, 4), round(cosine_dist, 4)

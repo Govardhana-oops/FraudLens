@@ -15,7 +15,7 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8000"
-    : "https://fraudlens-api-xpym.onrender.com");
+    : "");
 
 class ApiService {
   private baseUrl: string;
@@ -110,33 +110,32 @@ class ApiService {
     formData.append("live_face_file", liveFaceFile, "live_probe.jpg");
 
     try {
-      const res = await fetch(`${this.baseUrl}/api/v1/screening/inspect`, {
+      const res = await fetch(`${this.baseUrl}/api/v1/biometrics/verify`, {
         method: "POST",
         body: formData,
       });
 
       if (res.ok) {
         const data = await res.json();
-        if (data.face_comparison) {
-          const fc = data.face_comparison;
-          return {
-            matched: fc.matched !== undefined ? fc.matched : fc.status === "MATCH",
-            similarity_score: fc.similarity_score !== undefined ? fc.similarity_score : 0.88,
-            liveness_score:
-              fc.liveness_score !== undefined
-                ? fc.liveness_score
-                : fc.liveness_assessment?.liveness_score ?? 0.95,
-            liveness_detected:
-              fc.liveness_detected !== undefined
-                ? fc.liveness_detected
-                : fc.liveness_assessment?.is_live ?? true,
-            threshold: fc.threshold !== undefined ? fc.threshold : fc.operating_threshold ?? 0.72,
-            method: fc.method || "Cosine Similarity over 128-d Feature Embeddings (Module 4)",
-          };
-        }
+        const fc = data.face_comparison || data;
+        const statusStr = fc.status || (fc.matched ? "MATCH" : "NO_MATCH");
+        return {
+          matched: statusStr === "MATCH" || fc.matched === true,
+          similarity_score: typeof fc.similarity_score === "number" ? fc.similarity_score : 0.0,
+          liveness_score:
+            typeof fc.liveness_score === "number"
+              ? fc.liveness_score
+              : (fc.liveness_assessment?.liveness_score ?? 0.0),
+          liveness_detected:
+            typeof fc.liveness_detected === "boolean"
+              ? fc.liveness_detected
+              : (fc.liveness_assessment?.is_live ?? false),
+          threshold: typeof fc.threshold === "number" ? fc.threshold : (fc.operating_threshold ?? 0.72),
+          method: fc.method || "Module 4 Biometric Verification",
+        };
       }
     } catch (err) {
-      console.warn("Biometric verification backend endpoint unreachable, utilizing local engine:", err);
+      console.warn("Biometric verification backend endpoint unreachable, utilizing zero-mean local engine:", err);
     }
 
     return await this.calculateLocalCosineSimilarity(documentFileOrFace, liveFaceFile);
@@ -164,7 +163,7 @@ class ApiService {
           const imgData = ctx.getImageData(0, 0, size, size);
           const data = imgData.data;
 
-          const vector: number[] = [];
+          const rawValues: number[] = [];
           const patchSize = 8;
           let totalLum = 0;
           let totalSqLum = 0;
@@ -183,14 +182,16 @@ class ApiService {
                   count++;
                 }
               }
-              vector.push(patchLum / (patchSize * patchSize));
+              rawValues.push(patchLum / (patchSize * patchSize));
             }
           }
 
-          const norm = Math.sqrt(vector.reduce((acc, v) => acc + v * v, 0));
-          const normalized = norm > 1e-6 ? vector.map((v) => v / norm) : vector;
-          const mean = totalLum / count;
-          const variance = totalSqLum / count - mean * mean;
+          const meanLum = totalLum / Math.max(1, count);
+          // Zero-mean center the patch descriptors to remove baseline illumination overlap
+          const centered = rawValues.map((v) => v - meanLum);
+          const norm = Math.sqrt(centered.reduce((acc, v) => acc + v * v, 0));
+          const normalized = norm > 1e-6 ? centered.map((v) => v / norm) : centered;
+          const variance = totalSqLum / Math.max(1, count) - meanLum * meanLum;
           resolve({ vector: normalized, variance });
         };
         img.onerror = () => {
@@ -213,7 +214,7 @@ class ApiService {
     const isMatch = rawSim >= threshold;
     const livenessScore = Math.min(
       0.99,
-      Math.max(0.4, Math.round((Math.sqrt(Math.max(0, liveRes.variance)) / 60.0) * 1000) / 1000)
+      Math.max(0.1, Math.round((Math.sqrt(Math.max(0, liveRes.variance)) / 65.0) * 1000) / 1000)
     );
 
     return {
@@ -222,7 +223,7 @@ class ApiService {
       liveness_score: livenessScore,
       liveness_detected: livenessScore >= 0.65,
       threshold: threshold,
-      method: "Spatial Feature Cosine Matcher (Module 4 Engine)",
+      method: "Spatial Feature Cosine Matcher (Zero-Mean Centered)",
     };
   }
 
