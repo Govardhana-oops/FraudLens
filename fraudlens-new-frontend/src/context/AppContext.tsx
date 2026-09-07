@@ -143,14 +143,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem(STORAGE_SETTINGS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // If loaded on cloud but settings were saved as localhost, upgrade to current base URL
+        // If loaded on cloud, enforce production Render backend
         if (
           typeof window !== "undefined" &&
           window.location.hostname !== "localhost" &&
-          window.location.hostname !== "127.0.0.1" &&
-          parsed.apiBaseUrl === "http://localhost:8000"
+          window.location.hostname !== "127.0.0.1"
         ) {
-          parsed.apiBaseUrl = api.getBaseUrl();
+          if (
+            !parsed.apiBaseUrl ||
+            parsed.apiBaseUrl === "http://localhost:8000" ||
+            parsed.apiBaseUrl.includes("vercel.app") ||
+            parsed.apiBaseUrl.startsWith("/")
+          ) {
+            parsed.apiBaseUrl = "https://fraudlens-api-xpym.onrender.com";
+          }
         }
         return { ...DEFAULT_SETTINGS, ...parsed };
       }

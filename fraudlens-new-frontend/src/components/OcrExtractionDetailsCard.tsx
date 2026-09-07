@@ -17,19 +17,52 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // Extract helper
-  const fields = currentResult?.extracted_fields || [];
+  // Extract helper supporting Arrays, Dictionary Objects, and direct properties
+  const rawFields = currentResult?.extracted_fields;
   const getField = (aliases: string[], fallback = "UNKNOWN"): string => {
-    for (const alias of aliases) {
-      const target = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
-      const found = fields.find((f) => {
-        const name = f.field_name.toLowerCase().replace(/[^a-z0-9]/g, "");
-        return name === target || name.includes(target) || target.includes(name);
-      });
-      if (found && found.extracted_value && found.extracted_value.trim() !== "") {
-        return found.extracted_value.trim();
+    if (!currentResult) return fallback;
+
+    // 1. If extracted_fields is an Array of ExtractedField objects
+    if (Array.isArray(rawFields)) {
+      for (const alias of aliases) {
+        const target = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
+        const found = rawFields.find((f) => {
+          if (!f || !f.field_name) return false;
+          const name = f.field_name.toLowerCase().replace(/[^a-z0-9]/g, "");
+          return name === target || name.includes(target) || target.includes(name);
+        });
+        if (found && found.extracted_value && String(found.extracted_value).trim() !== "" && String(found.extracted_value).trim() !== "UNKNOWN") {
+          return String(found.extracted_value).trim();
+        }
       }
     }
+
+    // 2. If extracted_fields is a Dictionary / Record Object
+    if (rawFields && typeof rawFields === "object" && !Array.isArray(rawFields)) {
+      for (const alias of aliases) {
+        const target = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
+        for (const [key, val] of Object.entries(rawFields)) {
+          const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (normKey === target || normKey.includes(target) || target.includes(normKey)) {
+            if (val !== undefined && val !== null) {
+              const v = typeof val === "object" && (val as any).value !== undefined ? (val as any).value : val;
+              if (v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "UNKNOWN") {
+                return String(v).trim();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 3. Direct top-level properties on currentResult
+    for (const alias of aliases) {
+      const propVal = (currentResult as any)[alias];
+      if (propVal !== undefined && propVal !== null && String(propVal).trim() !== "" && String(propVal).trim() !== "UNKNOWN") {
+        return String(propVal).trim();
+      }
+    }
+
     return fallback;
   };
 
@@ -44,7 +77,7 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
   const dob = getField(["date_of_birth", "dob", "birth_date"]);
   const gender = getField(["gender", "sex"]);
   const nationality = getField(["nationality", "country_code", "nat", "citizenship"]);
-  const docNumber = getField(["passport_number", "document_number", "doc_number", "passport_no", "id_number"], currentResult?.document_number || "UNKNOWN");
+  const docNumber = getField(["passport_number", "document_number", "doc_number", "passport_no", "id_number", "license_number", "permit_number"], currentResult?.document_number || "UNKNOWN");
   const issueDate = getField(["date_of_issue", "issue_date", "doi", "issued_date"]);
   const expiryDate = getField(["date_of_expiry", "expiry_date", "expiration_date", "doe", "valid_until"]);
   const pob = getField(["place_of_birth", "pob", "birth_place"]);
@@ -52,8 +85,18 @@ export function OcrExtractionDetailsCard({ currentResult }: OcrExtractionDetails
   const issuingCountry = getField(["issuing_country", "issuing_state", "country", "state"]);
 
   // Format MRZ lines from real OCR extraction only
-  const mrz1 = getField(["mrz_line_1", "mrz1", "mrz_line1", "mrz_1", "line_1"]);
-  const mrz2 = getField(["mrz_line_2", "mrz2", "mrz_line2", "mrz_2", "line_2"]);
+  let mrz1 = getField(["mrz_line_1", "mrz1", "mrz_line1", "mrz_1", "line_1"]);
+  let mrz2 = getField(["mrz_line_2", "mrz2", "mrz_line2", "mrz_2", "line_2"]);
+
+  const rawMrz = (currentResult as any)?.mrz;
+  if (mrz1 === "UNKNOWN" && rawMrz) {
+    if (rawMrz.line1) mrz1 = String(rawMrz.line1);
+    if (rawMrz.line2) mrz2 = String(rawMrz.line2);
+    if (mrz1 === "UNKNOWN" && rawMrz.lines && Array.isArray(rawMrz.lines) && rawMrz.lines[0]) {
+      mrz1 = String(rawMrz.lines[0]);
+      if (rawMrz.lines[1]) mrz2 = String(rawMrz.lines[1]);
+    }
+  }
 
   const hasConfidence = currentResult?.confidence_score !== undefined && currentResult?.confidence_score !== null;
   const confidenceScore = hasConfidence
